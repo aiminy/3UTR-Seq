@@ -1,0 +1,60 @@
+---
+title: "Differential DOGs analysis"
+author: "Aimin Yan"
+output: 
+  html_document: 
+    css: custom.css
+    fig_caption: yes
+    number_sections: yes
+---
+
+# Time for generating this report
+
+```{r starting_time,eval=TRUE,message=F, warning=F,results='asis',echo=FALSE}
+time.string = gsub(":", "-", gsub(" ", "_", as.character(Sys.time())))
+cat("This report is generated at:", time.string,"\n")
+```
+
+# Analysis: 
+
+```{r add_library, message=F, warning=F,results='hide',echo=F} 
+## Load required library
+suppressPackageStartupMessages(library(DESeq2))
+library(ThreeUTR)
+library(hwriter)
+library(knitr)
+library(printr)
+```
+
+
+## set input 
+```{r input: dir and files, eval=TRUE, message=F, warning=F,results='hide',echo=TRUE}
+#dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/"
+dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
+input.file.pattern="*downstream.count.hg19.strand.based.txt"
+#input.file.pattern.upstream="*downstream.count.hg19.txt"
+input.file.pattern.upstream="*downstream.count.hg19.strand.based.2.txt"
+```
+
+##Get gene downstream count and test
+```{r get_count_DE, eval=TRUE, message=F, warning=F,results='hide',echo=TRUE}
+#re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern)
+```
+
+```{r generate_table, echo=FALSE,results='asis'}
+#tbl1<-re.rMAT$DE[1:3,]
+#tbl1<-re.rMAT$DE[which(rownames(re.rMAT$DE)=="uc002qwk.3"),]
+#knitr::kable(tbl1, digits = 2, caption = 'Gene downstream count table')
+```
+
+##Get gene upstream count and test
+```{r get_count_DE2, eval=TRUE, message=F, warning=F,results='hide',echo=TRUE}
+#re.rMAT.up<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern.upstream)
+```
+
+```{r generate_table2, echo=FALSE,results='asis'}
+#tbl1<-re.rMAT$DE[1:3,]
+#tbl2<-re.rMAT.up$DE[which(rownames(re.rMAT.up$DE)=="uc002qwk.3"),]
+#knitr::kable(tbl2, digits = 2, caption = 'Gene upstream count table')
+```
+

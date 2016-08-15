@@ -4,21 +4,37 @@
 \alias{ProcessOutputFilesFrom3UTR}
 \title{ProcessOutputFilesFrom3UTR}
 \usage{
-ProcessOutputFilesFrom3UTR(dir.name, input.file.pattern)
+ProcessOutputFilesFrom3UTR(dir.name, input.file.pattern, normal.factor, out)
 }
 \arguments{
-\item{input_file_pattern}{}
+\item{dir.name:}{the path for input files}
+
+\item{input.file.pattern:}{input file pattern}
 }
 \description{
-ProcessOutputFilesFrom3UTR
+read the mapping results from the Dogs of each gene
 }
 \examples{
 
 dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/"
-input.file.pattern="*downstream.count.txt"
 
-re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern)
+#new data
+dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
+input.file.pattern="*downstream.count.hg19.strand.based.txt"
 
+#use intergenic reads as normal factor
+normal.factor="*.rm.exon.intron.hg19.bed"
+
+#use total reads as normal factor
+normal.factor="*.bed"
+
+sink("testcode.txt")
+re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"test9")
+
+
+re.rMAT.total<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"total")
+
+sink()
 
 
 }
