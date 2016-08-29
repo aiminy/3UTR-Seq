@@ -36,6 +36,73 @@ input.file.pattern="*downstream.count.hg19.strand.based.txt"
 input.file.pattern.upstream="*downstream.count.hg19.strand.based.2.txt"
 ```
 
+
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/2016-02-10-emp1_Dox.alignments.bam
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq
+2016-02-10-emp1_Dox.alignments.bam
+2016-02-10-emp1_Dox
+Extract exon regions from  /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed...
+Counting total fragment ...  Done
+Total fragment = 30361271.0          
+Total exonic fragment = 9670425.0           
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/2016-02-10-emp1_WT.alignments.bam
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq
+2016-02-10-emp1_WT.alignments.bam
+2016-02-10-emp1_WT
+Extract exon regions from  /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed...
+Counting total fragment ...  Done
+Total fragment = 34655000.0          
+Total exonic fragment = 10635644.0          
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/2016-02-10-emp2_Dox.alignments.bam
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq
+2016-02-10-emp2_Dox.alignments.bam
+2016-02-10-emp2_Dox
+Extract exon regions from  /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed...
+Counting total fragment ...  Done
+Total fragment = 40143439.0          
+Total exonic fragment = 11064781.0          
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/2016-02-10-emp2_WT.alignments.bam
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq
+2016-02-10-emp2_WT.alignments.bam
+2016-02-10-emp2_WT
+Extract exon regions from  /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed...
+Counting total fragment ...  Done
+Total fragment = 15122374.0          
+Total exonic fragment = 4452921.0           
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/hela_dox1.alignments.bam
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq
+hela_dox1.alignments.bam
+hela_dox1
+Extract exon regions from  /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed...
+Counting total fragment ...  Done
+Total fragment = 19670250.0          
+Total exonic fragment = 5301153.0           
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/hela_dox2.alignments.bam
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq
+hela_dox2.alignments.bam
+hela_dox2
+Extract exon regions from  /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed...
+Counting total fragment ...  Done
+Total fragment = 13368071.0          
+Total exonic fragment = 3547809.0           
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/hela_wt1.alignments.bam
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq
+hela_wt1.alignments.bam
+hela_wt1
+Extract exon regions from  /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed...
+Counting total fragment ...  Done
+Total fragment = 20874073.0          
+Total exonic fragment = 6661547.0           
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/hela_wt2.alignments.bam
+/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq
+hela_wt2.alignments.bam
+hela_wt2
+Extract exon regions from  /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed...
+Counting total fragment ...  Done
+Total fragment = 21642953.0          
+Total exonic fragment = 6987217.0           
+
+
 ##Get gene downstream count and test
 ```{r get_count_DE, eval=TRUE, message=F, warning=F,results='hide',echo=TRUE}
 #re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern)

@@ -22,6 +22,10 @@ dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/"
 dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
 input.file.pattern="*downstream.count.hg19.strand.based.txt"
 
+com.input.file.pattern="*downstream.com.count.hg19.strand.based.txt"
+
+total.com.input.file.pattern="*.gene.downstream.count.hg19.strand.based.total2.txt"
+
 #use intergenic reads as normal factor
 normal.factor="*.rm.exon.intron.hg19.bed"
 
@@ -29,13 +33,92 @@ normal.factor="*.rm.exon.intron.hg19.bed"
 normal.factor="*.bed"
 
 sink("testcode.txt")
-re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"test9")
+re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"intergenic")
+re.rMAT.com<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_intergenic")
+
+re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,"com_total")
+
+re.rMAT.com.total.interested<-re.rMAT.com.total$DE[which(re.rMAT.com.total$DE$gene \%in\% genes.interested[,1]),]
+
+re.com.total.pos<-re.rMAT.com.total.interested[which(re.rMAT.com.total.interested$`FoldChange(WT/Dox)`<1),]
+re.com.total.neg<-re.rMAT.com.total.interested[which(re.rMAT.com.total.interested$`FoldChange(WT/Dox)`>=1),]
+
+
+re.com.total.pos[which(re.com.total.pos$gene \%in\% c("TPCN2")),]
+
+re.rMAT.com.interested<-re.rMAT.com$DE[which(re.rMAT.com$DE$gene \%in\% genes.interested[,1]),]
+re.pos<-re.rMAT.com.interested[which(re.rMAT.com.interested$`FoldChange(WT/Dox)`<1),]
+re.neg<-re.rMAT.com.interested[which(re.rMAT.com.interested$`FoldChange(WT/Dox)`>=1),]
 
 
 re.rMAT.total<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"total")
+re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total")
 
 sink()
 
+sink("test_com_total.txt")
+re.rMAT.com.total.test<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total_test")
+sink()
 
+re.rMAT.com.total.test.2<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,"com_total_test_3")
+
+geoMeans <- exp(rowMeans(log(counts(re.rMAT.com.total.test$dds))))
+
+temp.dds<-re.rMAT.com.total.test.2$dds
+
+normalizationFactors(temp.dds)
+size..factor<-estimateSizeFactors(re.rMAT.com.total.test$dds,geoMeans=geoMeans)
+sizeFactors(size..factor)
+
+temp.dds <- estimateSizeFactors(temp.dds)
+
+count.norm<-counts(temp.dds,normalized = TRUE)
+
+head(count.norm)
+
+DE.norm.with.rpkm.norm<-cbind(count.norm,re.rMAT.com.total.test.2$MergedNorma[,c(1,3,7,11,13,5,9,15,17)])
+
+DE.norm.with.rpkm.norm.2<-DE.norm.with.rpkm.norm[,-9]
+
+col.name<-c(paste0("D.",sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[1:8],"\\\\."),"[[",2)),
+paste0("R.",sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[9:16],"\\\\."),"[[",3)))
+
+col.name.2<-gsub("2016-02-10-","",col.name)
+
+cbind(colnames(DE.norm.with.rpkm.norm.2),col.name.2)
+
+colnames(DE.norm.with.rpkm.norm.2)<-col.name.2
+
+
+DE.norm.with.rpkm.norm.3<-apply(DE.norm.with.rpkm.norm.2,2,as.numeric)
+
+par(mfrow = c(4, 2))  # 3 rows and 2 columns
+for (i in 1:8) {
+plot(DE.norm.with.rpkm.norm.3[,c(i,i+8)])
+model <- lm(DE.norm.with.rpkm.norm.3[,i+8] ~ DE.norm.with.rpkm.norm.3[,i], data = as.data.frame(DE.norm.with.rpkm.norm.3))
+abline(model, col = "red")
+}
+
+plot(apply(DE.norm.with.rpkm.norm.2,2,as.numeric)[,1:3])
+
+M <- cor(DE.norm.with.rpkm.norm.3[,1:8])
+
+corrplot.mixed(M)
+
+corrplot(M,method="ellipse",order = "hclust", addrect = 2)
+
+corrplot(M,method="number",order = "hclust", addrect = 2)
+
+corrplot(M,method="number",order = "FPC", addrect = 2)
+
+corrplot(M,method="ellipse")
+
+corrplot(M,method="ellipse",type="upper",)
+corrplot(M, method="number")
+
+corrplot(M,method="ellipse",order="hclust", addrect=4)
+
+size.factor.2<-estimateSizeFactors(re.rMAT.com.total.test.2$dds)
+sizeFactors(size.factor.2)
 }
 

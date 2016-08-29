@@ -4,6 +4,8 @@
 #' @export
 #'
 #' @examples
+#' InstallRequiredPackage()
+#'
 InstallRequiredPackage<- function() {
   source("https://bioconductor.org/biocLite.R")
   biocLite("Homo.sapiens")
@@ -22,4 +24,9 @@ InstallRequiredPackage<- function() {
   devtools::install_github("pachterlab/sleuth")
   library("sleuth")
   biocLite("biomaRt")
+  install.packages("corrplot")
+  library(corrplot)
+  biocLite("sva")
+  library(sva)
+  #library(plyr)
 }
