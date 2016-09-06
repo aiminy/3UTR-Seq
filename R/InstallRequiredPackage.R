@@ -28,5 +28,6 @@ InstallRequiredPackage<- function() {
   library(corrplot)
   biocLite("sva")
   library(sva)
+  suppressPackageStartupMessages(library(DESeq2))
   #library(plyr)
 }

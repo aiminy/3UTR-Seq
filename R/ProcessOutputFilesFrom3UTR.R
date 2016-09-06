@@ -148,7 +148,7 @@ ProcessOutputFilesFrom3UTR<-function(dir.name,input.file.pattern,normal.factor,o
   num.intergenic.reads.2<-final.filtered.norm$num.intergenic.reads.2
 
   n=length(num.intergenic.reads.2)-1
-  suppressPackageStartupMessages(library(DESeq2))
+  #suppressPackageStartupMessages(library(DESeq2))
 
   print(head(final.filtered))
 

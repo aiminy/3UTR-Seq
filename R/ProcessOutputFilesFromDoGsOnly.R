@@ -1,32 +1,37 @@
-#' @title ProcessOutputFilesFrom5Cases
+#' ProcessOutputFilesFromDoGsOnly
 #'
-#' @description  read the mapping results from the Dogs of each gene
-#'
-#' @param dir.name: the path for input files
-#' @param input.file.pattern: input file pattern
-#'
-#'
+#' @param dir.name
+#' @param input.file.pattern
+#' @param out.dir.name
+#' @param out.file.pattern.interested
+#' @param out.file.pattern.positive.gene
+#' @param out.file.pattern.negative.gene
+#' @param out.file.pattern.all
+#' @param dir.name.gene.list
+#' @param pattern.4.gene.list
+#' @param adjust_by_batch
 #'
 #' @return
 #' @export
 #'
 #' @examples
 #'
-#' dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/"
+#' dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnly/"
+#'
 #' input.file.pattern="*count.2.txt"
 #'
 #' dir.name.gene.list="/media/H_driver/2016/Ramin_azhang/"
 #' pattern.4.gene.list="final_list.csv"
 #'
-
-#' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/"
+#'
+#' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnly/"
 #'
 #' out.file.pattern.interested="DoGs_adjust_by_batch_interested_gene"
 #' out.file.pattern.positive.gene="DoGs_adjust_by_batch_positive"
 #' out.file.pattern.negative.gene="DoGs_adjust_by_batch_negative"
 #' out.file.pattern.all= "DoGs_adjust_by_batch_all"
 #'
-#' Re.unadjusted.adjusted<-ProcessOutputFilesFrom5Cases(dir.name,input.file.pattern,out.dir.name,out.file.pattern.interested,
+#' Re.unadjusted.adjusted<-ProcessOutputFilesFromDoGsOnly(dir.name,input.file.pattern,out.dir.name,out.file.pattern.interested,
 #' out.file.pattern.positive.gene,
 #' out.file.pattern.negative.gene,
 #' out.file.pattern.all,
@@ -36,11 +41,17 @@
 #'
 #' save.image(file=paste0(out.dir.name,"re_save_2.RData"))
 #' savehistory(file=paste0(out.dir.name,"re_save_2.Rhistory"))
-#'
 
-ProcessOutputFilesFrom5Cases<-function(dir.name,input.file.pattern,out.dir.name,out.file.pattern.interested,out.file.pattern.positive.gene,
-                                       out.file.pattern.negative.gene,out.file.pattern.all,dir.name.gene.list,pattern.4.gene.list,adjust_by_batch){
-
+ProcessOutputFilesFromDoGsOnly<-function(dir.name,
+                                         input.file.pattern,
+                                         out.dir.name,
+                                         out.file.pattern.interested,
+                                         out.file.pattern.positive.gene,
+                                       out.file.pattern.negative.gene,
+                                       out.file.pattern.all,
+                                       dir.name.gene.list,
+                                       pattern.4.gene.list,
+                                       adjust_by_batch){
   file.name=paste0(dir.name,dir(dir.name,recursive = TRUE,pattern=input.file.pattern))
   file.name.2<-as.list(file.name)
 
@@ -96,28 +107,11 @@ ProcessOutputFilesFrom5Cases<-function(dir.name,input.file.pattern,out.dir.name,
 
         gene<-as.character(reformat.count.gene.matched.2$GeneName)
 
-        count.DoGs.plus.read<-apply(reformat.count.gene.matched.2[,c(grep("plus.read.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                           grep("plus.read.overlap.Gene.and.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                           grep("plus.read.overlap.Gene.and.DoGs.start.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                           grep("plus.read.overlap.Gene.and.DoGs.end.count.2.txt",colnames(reformat.count.gene.matched.2)))],1,sum)
-
-        count.DoGs.minus.read<-apply(reformat.count.gene.matched.2[,c(grep("minus.read.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.start.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.end.count.2.txt",colnames(reformat.count.gene.matched.2)))],1,sum)
-
-        count.gene.plus.read<-apply(reformat.count.gene.matched.2[,c(grep("plus.read.gene.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                                     grep("plus.read.overlap.Gene.and.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                                     grep("plus.read.overlap.Gene.and.DoGs.start.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                                     grep("plus.read.overlap.Gene.and.DoGs.end.count.2.txt",colnames(reformat.count.gene.matched.2)))],1,sum)
-
-        count.gene.minus.read<-apply(reformat.count.gene.matched.2[,c(grep("minus.read.gene.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.start.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.end.count.2.txt",colnames(reformat.count.gene.matched.2)))],1,sum)
+        count.DoGs.plus.read<-apply(as.data.frame(reformat.count.gene.matched.2[,c(grep("plus.read.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)))]),1,sum)
+        count.DoGs.minus.read<-apply(as.data.frame(reformat.count.gene.matched.2[,c(grep("minus.read.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)))]),1,sum)
 
 
-        reformat.count.gene.matched.3<-as.data.frame(cbind(gene,count.gene.plus.read,count.gene.minus.read,count.DoGs.plus.read,count.DoGs.minus.read))
+        reformat.count.gene.matched.3<-as.data.frame(cbind(gene,count.DoGs.plus.read,count.DoGs.minus.read))
 
         return(reformat.count.gene.matched.3)
       }
@@ -192,10 +186,11 @@ ProcessOutputFilesFrom5Cases<-function(dir.name,input.file.pattern,out.dir.name,
 
    }
 
-  re.BL<-ProcessEachCorner(re.8.samples,2) #BL
-  re.TL<-ProcessEachCorner(re.8.samples,3) #TL
-  re.BR<-ProcessEachCorner(re.8.samples,4) #BR
-  re.TR<-ProcessEachCorner(re.8.samples,5) #TR
+  #re.BL<-ProcessEachCorner(re.8.samples,2) #BL
+  #re.TL<-ProcessEachCorner(re.8.samples,3) #TL
+
+  re.BR<-ProcessEachCorner(re.8.samples,2) #BR
+  re.TR<-ProcessEachCorner(re.8.samples,3) #TR
 
   #head(re.BL)
   #head(re.BR)
@@ -224,11 +219,12 @@ ProcessOutputFilesFrom5Cases<-function(dir.name,input.file.pattern,out.dir.name,
   #re.BR[[1]][which(re.TR[[1]]$Row.names =="uc001aac.4"),]#BL for gene(-) DoGs
 
   #if(adjust_by_batch=="NO"){
-  re.BL.4.plus.gene.BR.4.minus.gene<-re.BL
-  re.TL.4.plus.gene.TR.4.minus.gene<-re.TL
+  #re.BL.4.plus.gene.BR.4.minus.gene<-re.BL
+  #re.TL.4.plus.gene.TR.4.minus.gene<-re.TL
+
   re.BR.4.plus.gene.BL.4.minus.gene<-re.BR
   re.TR.4.plus.gene.TL.4.minus.gene<-re.TR
-  #}else{
+#}else{
   #  re.BL.4.plus.gene.BR.4.minus.gene<-re.BL[[2]]
   #  re.TL.4.plus.gene.TR.4.minus.gene<-re.TL[[2]]
   #  re.BR.4.plus.gene.BL.4.minus.gene<-re.BR[[2]]
@@ -301,6 +297,6 @@ ProcessOutputFilesFrom5Cases<-function(dir.name,input.file.pattern,out.dir.name,
                  DE=re.DESeq.DoGs.plus.minus.gene,
                  DE_interested= re.DESeq.DoGs.plus.minus.gene.interested)
 
-  return(re.out.3)
+   return(re.out.3)
 
 }
