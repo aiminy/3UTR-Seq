@@ -15,8 +15,11 @@ DEAnalysisAdjustByBatch
 \examples{
 
 df.NT<-re.DESeq.DoGs.plus.minus.gene.interested[,c(1,9:16)]
+
+df.NT<-Re.unadjusted.adjusted$DE[,c(1,9:16)]
+
 rownames(df.NT)<-df.NT[,1]
-df.NT.2<- df.NT[,-1]
+df.NT<- df.NT[,-1]
 
 re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(df.NT.2)
 

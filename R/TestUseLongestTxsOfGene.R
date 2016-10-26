@@ -1,4 +1,4 @@
-#' Title
+#' TestUseLongestTxsOfGene
 #'
 #' @param Re.unadjusted.adjusted
 #'
@@ -12,7 +12,6 @@
 #' out.file.pattern="DoGs_using_longest_txs_adjust_by_batch"
 #'
 #' re.longest.transcript<-TestUseLongestTxsOfGene(Re.unadjusted.adjusted,out.dir.name,out.file.pattern)
-#'
 #'
 TestUseLongestTxsOfGene<-function(Re.unadjusted.adjusted,out.dir.name,out.file.pattern){
 
@@ -34,9 +33,12 @@ TestUseLongestTxsOfGene<-function(Re.unadjusted.adjusted,out.dir.name,out.file.p
   df.NT<-data.byGSym[,c(1,9:16)]
   rownames(df.NT)<-df.NT[,1]
   df.NT.2<- df.NT[,-1]
-  #'
+
   re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(df.NT.2)
 
+  re2<-re.DoGs.adjusted.by.batch
+  re2$gene<-as.character(re2$gene)
+  re2$gene<-paste0("'",as.character(re2$gene),"'")
 
   re.DoGs.adjusted.by.batch[which(re.DoGs.adjusted.by.batch$Row.names=="uc010paz.2"),]
 
@@ -44,8 +46,8 @@ TestUseLongestTxsOfGene<-function(Re.unadjusted.adjusted,out.dir.name,out.file.p
   #unique(as.character(re.DoGs.adjusted.by.batch$gene))
   #[grep("uc002jah.2",unique(as.character(re.DoGs.adjusted.by.batch$Row.names)))]
 
-  write.csv(re.DoGs.adjusted.by.batch,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern,".csv")
-            ,row.names = FALSE,quote=FALSE)
+  write.csv(re2,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern,".csv")
+            ,row.names = FALSE,quote=TRUE)
 
   return(re.DoGs.adjusted.by.batch)
 

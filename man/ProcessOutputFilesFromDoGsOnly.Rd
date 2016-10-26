@@ -17,7 +17,7 @@ ProcessOutputFilesFromDoGsOnly
 }
 \examples{
 
-dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnly/"
+dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOne/"
 
 input.file.pattern="*count.2.txt"
 
@@ -25,7 +25,9 @@ dir.name.gene.list="/media/H_driver/2016/Ramin_azhang/"
 pattern.4.gene.list="final_list.csv"
 
 
-out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnly/"
+out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOne/"
+
+out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOnePermutation/"
 
 out.file.pattern.interested="DoGs_adjust_by_batch_interested_gene"
 out.file.pattern.positive.gene="DoGs_adjust_by_batch_positive"

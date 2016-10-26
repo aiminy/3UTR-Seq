@@ -8,18 +8,21 @@
 #' @examples
 #'
 #' df.NT<-re.DESeq.DoGs.plus.minus.gene.interested[,c(1,9:16)]
+#'
+#' df.NT<-Re.unadjusted.adjusted$DE[,c(1,9:16)]
+#'
 #' rownames(df.NT)<-df.NT[,1]
-#' df.NT.2<- df.NT[,-1]
+#' df.NT<- df.NT[,-1]
 #'
 #' re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(df.NT.2)
 #'
 
 DEAnalysisAdjustByBatch <- function(df.NT) {
 
-  cell<-factor(rep(c('emp','hela'),c(2,2)))
+  cell<-factor(rep(c('emp','hela'),c(1,2)))
   cell=rep(cell,2)
 
-  colData <- data.frame(condition=factor(rep(c('Dox', 'WT'),c(4, 4))),cell=cell)
+  colData <- data.frame(condition=factor(rep(c('Dox', 'WT'),c(3, 3))),cell=cell)
 
   dds <- DESeqDataSetFromMatrix(df.NT, colData, formula(~condition))
   dat <- counts(dds)
@@ -28,11 +31,35 @@ DEAnalysisAdjustByBatch <- function(df.NT) {
   mod0 <- model.matrix(~1,colData(dds))
   svseq.NT <- svaseq(dat, mod, mod0)
 
+  #How many significant surrogate variables is?
+
+  ncol <- dim(svseq.NT$sv)[2]
+
+  cat(ncol,"\n")
+
+  #ncol<-2
   #Adjust by surrogate variables 1 and 2
   ddssva <- dds
-  ddssva$SV1 <- svseq.NT$sv[,1]
-  ddssva$SV2 <- svseq.NT$sv[,2]
-  design(ddssva) <- ~ SV1 + SV2 + condition
+
+  for(i in 1:ncol){
+    colData(ddssva)<-cbind2(colData(ddssva),svseq.NT$sv[,i])
+    colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",i)
+  }
+
+
+  #ddssva$SV1 <- svseq.NT$sv[,1]
+  #ddssva$SV2 <- svseq.NT$sv[,2]
+
+  #design(ddssva) <- ~ SV1 + SV2 + condition
+
+  cat("ddssva")
+  print(head(ddssva))
+  cat("ddsva_done")
+
+  design(ddssva)<-formula(paste("~ ",paste(paste0("SV", 1:ncol), collapse = "+"),"+", "condition" ))
+
+  #formula(paste("~ ",paste(paste0("SV", 1:2), collapse = "+"),"+", "condition" ))
+
   ddssva <- DESeq(ddssva)
   re.DESeq <- results(ddssva)
 

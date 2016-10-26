@@ -16,7 +16,7 @@
 #'
 #' @examples
 #'
-#' dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnly/"
+#' dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOne/"
 #'
 #' input.file.pattern="*count.2.txt"
 #'
@@ -24,7 +24,9 @@
 #' pattern.4.gene.list="final_list.csv"
 #'
 #'
-#' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnly/"
+#' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOne/"
+#'
+#' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOnePermutation/"
 #'
 #' out.file.pattern.interested="DoGs_adjust_by_batch_interested_gene"
 #' out.file.pattern.positive.gene="DoGs_adjust_by_batch_positive"
@@ -130,7 +132,7 @@ ProcessOutputFilesFromDoGsOnly<-function(dir.name,
      YY},txs.name.count,re.out)
 
    DEAnalysis <- function(countData) {
-     colData <- data.frame(condition=factor(c(rep("Dox",4),rep("WT",4))))
+     colData <- data.frame(condition=factor(c(rep("Dox",3),rep("WT",3))))
 
      dds <- DESeqDataSetFromMatrix(countData, colData, formula(~ condition))
 
@@ -167,7 +169,15 @@ ProcessOutputFilesFromDoGsOnly<-function(dir.name,
      rownames(dff)<-dff$gene
      dff<-dff[,-1]
 
-    countData <- apply(dff[,c(1,3,5,6,2,4,7,8)], 2, as.numeric)
+     #print(head(dff))
+
+    #countData <- apply(dff[,c(1,3,5,6,2,4,7,8)], 2, as.numeric)
+    real.index<-c(1,3,4,2,5,6)
+
+    permutation.index<-real.index
+    #permutation.index=array(sample(real.index))
+
+    countData <- apply(dff[,permutation.index], 2, as.numeric)
 
     rownames(countData)<-rownames(dff)
 
@@ -241,7 +251,7 @@ ProcessOutputFilesFromDoGsOnly<-function(dir.name,
   #DoGs.4.minus.Gene[which( DoGs.4.minus.Gene$Row.names =="uc001aac.4"),]#BL for gene(-) DoGs
 
   GeneTypeBasedDE <- function(DoGs.4.plus.Gene) {
-    Count.DoGs.4.plus.Gene<-DoGs.4.plus.Gene[,c(1,9:16)]
+    Count.DoGs.4.plus.Gene<-DoGs.4.plus.Gene[,c(1,9:14)]
     rownames(Count.DoGs.4.plus.Gene)<-Count.DoGs.4.plus.Gene$Row.names
     Count.DoGs.4.plus.Gene.2<-Count.DoGs.4.plus.Gene[,-1]
     head(Count.DoGs.4.plus.Gene.2)
@@ -249,18 +259,26 @@ ProcessOutputFilesFromDoGsOnly<-function(dir.name,
     if(adjust_by_batch=="NO"){
     re.DESeq.DoGs.plus.gene<-DEAnalysis(Count.DoGs.4.plus.Gene.2)
     }else{
+
+      cat("get count\n")
+      print(head(Count.DoGs.4.plus.Gene.2))
+      cat("get count done \n")
+
     re.DESeq.DoGs.plus.gene<-DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2)
     }
 
     return(re.DESeq.DoGs.plus.gene)
   }
 
+  print(head(DoGs.4.plus.Gene))
   re.DESeq.DoGs.plus.gene<-GeneTypeBasedDE(DoGs.4.plus.Gene)
   #head(re.DESeq.DoGs.plus.gene[which(re.DESeq.DoGs.plus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.gene$pvalue<0.05),])
 
+  print(head(DoGs.4.minus.Gene))
   re.DESeq.DoGs.minus.gene<-GeneTypeBasedDE(DoGs.4.minus.Gene)
   #head(re.DESeq.DoGs.minus.gene[which(re.DESeq.DoGs.minus.gene$log2FoldChange<0&re.DESeq.DoGs.minus.gene$pvalue<0.05),])
 
+  print(head(DoGs.4.plus.minus.Gene))
   re.DESeq.DoGs.plus.minus.gene<-GeneTypeBasedDE(DoGs.4.plus.minus.Gene)
   #head(re.DESeq.DoGs.plus.minus.gene[which(re.DESeq.DoGs.plus.minus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.minus.gene$pvalue<0.05),])
 
@@ -271,18 +289,26 @@ ProcessOutputFilesFromDoGsOnly<-function(dir.name,
   #re.DESeq.DoGs.plus.minus.gene.interested[which(re.DESeq.DoGs.plus.minus.gene.interested$gene %in% c("TPCN2")),]
   #re.FC.sorted<-re.FC[order(re.FC$pvalue),]
 
+  ReformatGeneSymbol <- function(re.DoGs.adjusted.by.batch) {
+    re2<-re.DoGs.adjusted.by.batch
+    re2$gene<-as.character(re2$gene)
+    re2$gene<-paste0("'",as.character(re2$gene),"'")
+    return(re2)
+  }
 
-  write.csv(re.DESeq.DoGs.plus.gene,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.positive.gene,".csv"),row.names = FALSE,quote=FALSE)
+  re2<-ReformatGeneSymbol(re.DESeq.DoGs.plus.gene)
+  write.csv(re2,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.positive.gene,".csv"),row.names = FALSE,quote=FALSE)
 
-  write.csv(re.DESeq.DoGs.minus.gene,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.negative.gene,".csv"),row.names = FALSE,quote=FALSE)
+  re2<-ReformatGeneSymbol(re.DESeq.DoGs.minus.gene)
+  write.csv(re2,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.negative.gene,".csv"),row.names = FALSE,quote=FALSE)
 
-  write.csv(re.DESeq.DoGs.plus.minus.gene,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.all,".csv"),row.names = FALSE,quote=FALSE)
+  re2<-ReformatGeneSymbol(re.DESeq.DoGs.plus.minus.gene)
+  write.csv(re2,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.all,".csv"),row.names = FALSE,quote=FALSE)
   #Re.unadjusted.adjusted$DE
 
   #write.csv(Re.unadjusted.adjusted$DE,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.all,".csv"),row.names = FALSE,quote=FALSE)
-
-  write.csv(re.DESeq.DoGs.plus.minus.gene.interested,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.interested,".csv"))
-
+  re2<-ReformatGeneSymbol(re.DESeq.DoGs.plus.minus.gene.interested)
+  write.csv(re2,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.interested,".csv"))
 
   #write.csv(re.DESeq.DoGs.plus.minus.gene,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.all,".csv"),row.names = FALSE,quote=FALSE)
   #Re.unadjusted.adjusted$DE
