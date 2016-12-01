@@ -1,0 +1,1 @@
+intersectBed -a "/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/""hela_wt1".alignments.bam -b /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4_coverageBed.bed -wb -s -bed > "/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/""hela_wt1".gene.DoGs.using.coverageBed.2.txt
