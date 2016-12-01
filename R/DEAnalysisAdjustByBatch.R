@@ -33,7 +33,9 @@ DEAnalysisAdjustByBatch <- function(df.NT) {
 
   #How many significant surrogate variables is?
 
-  ncol <- dim(svseq.NT$sv)[2]
+  #ncol <- dim(svseq.NT$sv)[2]
+
+  ncol <- svseq.NT$n.sv
 
   cat(ncol,"\n")
 
@@ -41,9 +43,14 @@ DEAnalysisAdjustByBatch <- function(df.NT) {
   #Adjust by surrogate variables 1 and 2
   ddssva <- dds
 
-  for(i in 1:ncol){
+  if(ncol==1){
+    colData(ddssva)<-cbind2(colData(ddssva),svseq.NT$sv)
+    colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",1)
+  }else{
+    for(i in 1:ncol){
     colData(ddssva)<-cbind2(colData(ddssva),svseq.NT$sv[,i])
     colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",i)
+    }
   }
 
 
