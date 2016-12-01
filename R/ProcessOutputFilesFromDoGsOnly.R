@@ -26,7 +26,11 @@
 #'
 #' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOne/"
 #'
-#' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOnePermutation/"
+#' for (i in 1:10) {
+#'
+#' time.string = gsub(":", "-", gsub(" ", "_", as.character(Sys.time())))
+#' out.dir.name=paste0("/media/aiminyan/DATA/Ramin_azhang/Counts4DoGsOnlyRmOnePermutationAt_",time.string,"/")
+#' dir.create(out.dir.name)
 #'
 #' out.file.pattern.interested="DoGs_adjust_by_batch_interested_gene"
 #' out.file.pattern.positive.gene="DoGs_adjust_by_batch_positive"
@@ -40,6 +44,8 @@
 #' dir.name.gene.list,
 #' pattern.4.gene.list,
 #' adjust_by_batch="YES")
+#'
+#' }
 #'
 #' save.image(file=paste0(out.dir.name,"re_save_2.RData"))
 #' savehistory(file=paste0(out.dir.name,"re_save_2.Rhistory"))
@@ -254,16 +260,25 @@ ProcessOutputFilesFromDoGsOnly<-function(dir.name,
     Count.DoGs.4.plus.Gene<-DoGs.4.plus.Gene[,c(1,9:14)]
     rownames(Count.DoGs.4.plus.Gene)<-Count.DoGs.4.plus.Gene$Row.names
     Count.DoGs.4.plus.Gene.2<-Count.DoGs.4.plus.Gene[,-1]
-    head(Count.DoGs.4.plus.Gene.2)
+
+    #head(Count.DoGs.4.plus.Gene.2)
+
+
+
+    real.index<-c(1,2,3,4,5,6)
+    permutation.index<-real.index
+    permutation.index=array(sample(real.index))
+    tmp<-Count.DoGs.4.plus.Gene.2
+
+    Count.DoGs.4.plus.Gene.2<-tmp[,permutation.index]
+
+    cat("get count\n")
+    print(head(Count.DoGs.4.plus.Gene.2))
+    cat("get count done \n")
 
     if(adjust_by_batch=="NO"){
     re.DESeq.DoGs.plus.gene<-DEAnalysis(Count.DoGs.4.plus.Gene.2)
     }else{
-
-      cat("get count\n")
-      print(head(Count.DoGs.4.plus.Gene.2))
-      cat("get count done \n")
-
     re.DESeq.DoGs.plus.gene<-DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2)
     }
 
