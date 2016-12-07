@@ -20,7 +20,7 @@ FilterTranscripts <- function(input.dir,input.file.pattern) {
   #print(genes.interested)
 
   #library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-  #txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+  txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 
   library("Homo.sapiens")
 
@@ -47,14 +47,18 @@ FilterTranscripts <- function(input.dir,input.file.pattern) {
   # txs2
   #
   # txdb
-  # GRList <- transcriptsBy(txdb, by = "gene")
+   GRList <- transcriptsBy(txdb, by = "gene")
   # length(GRList)
   # which(names(GRList) %in% c("129787"))
   # GRList[[4237]]
   # as.data.frame(GRList[[4237]])
   #
-  # num.of.txs.4.gene<-unlist2(lapply(GRList,length))
-  #
+   num.of.txs.4.gene<-unlist2(lapply(GRList,length))
+
+   boxplot(num.of.txs.4.gene)
+
+   hist(num.of.txs.4.gene)
+
   # which.max(num.of.txs.4.gene)
   #
   # index<-which(names(unlist(num.of.txs.4.gene))=="4237")
@@ -68,6 +72,8 @@ FilterTranscripts <- function(input.dir,input.file.pattern) {
   colnames(data3)[9]="Gene"
 
   txs.num<-count(data3,"Gene")
+  hist(txs.num)
+
   txs.min<-do.call(rbind, by(data3, data3$Gene, function(x) x[which.min(x$width),]))
   txs.max<-do.call(rbind, by(data3, data3$Gene, function(x) x[which.max(x$width),]))
 
@@ -110,3 +116,4 @@ FilterTranscripts <- function(input.dir,input.file.pattern) {
 
 #do.call(rbind,tapply(1:nrow(data2), unlist(data2$SYMBOL), function(x) data2[x,][which.min(data2$width[x]),]))
 #dara
+

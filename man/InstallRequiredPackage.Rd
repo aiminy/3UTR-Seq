@@ -9,4 +9,8 @@ InstallRequiredPackage()
 \description{
 InstallRequiredPackage
 }
+\examples{
+InstallRequiredPackage()
+
+}
 

@@ -1,0 +1,1 @@
+python /home/aiminyan/GETUTR.1.0.3/GETUTR.py -i /media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/2016-02-10-emp1_Dox.alignments.bam -o /home/aiminyan/GETUTR.1.0.3/2016-02-10-emp1_Dox.alignments.3UTR -m 10 -r /home/aiminyan/GETUTR.1.0.3/refFlat.txt

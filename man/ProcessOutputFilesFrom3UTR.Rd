@@ -53,9 +53,75 @@ re.neg<-re.rMAT.com.interested[which(re.rMAT.com.interested$`FoldChange(WT/Dox)`
 
 re.rMAT.total<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"total")
 re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total")
+<<<<<<< HEAD
+=======
 
 sink()
+>>>>>>> c1c64f9808c66e4747eca3aae618ab8f9843e6eb
+
+sink("test_com_total.txt")
+re.rMAT.com.total.test<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total_test")
+sink()
+
+re.rMAT.com.total.test.2<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,"com_total_test_3")
+
+geoMeans <- exp(rowMeans(log(counts(re.rMAT.com.total.test$dds))))
+
+temp.dds<-re.rMAT.com.total.test.2$dds
+
+normalizationFactors(temp.dds)
+size..factor<-estimateSizeFactors(re.rMAT.com.total.test$dds,geoMeans=geoMeans)
+sizeFactors(size..factor)
+
+temp.dds <- estimateSizeFactors(temp.dds)
+
+count.norm<-counts(temp.dds,normalized = TRUE)
+
+head(count.norm)
+
+DE.norm.with.rpkm.norm<-cbind(count.norm,re.rMAT.com.total.test.2$MergedNorma[,c(1,3,7,11,13,5,9,15,17)])
+
+DE.norm.with.rpkm.norm.2<-DE.norm.with.rpkm.norm[,-9]
+
+col.name<-c(paste0("D.",sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[1:8],"\\\\."),"[[",2)),
+paste0("R.",sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[9:16],"\\\\."),"[[",3)))
+
+col.name.2<-gsub("2016-02-10-","",col.name)
+
+cbind(colnames(DE.norm.with.rpkm.norm.2),col.name.2)
+
+colnames(DE.norm.with.rpkm.norm.2)<-col.name.2
 
 
+DE.norm.with.rpkm.norm.3<-apply(DE.norm.with.rpkm.norm.2,2,as.numeric)
+
+par(mfrow = c(4, 2))  # 3 rows and 2 columns
+for (i in 1:8) {
+plot(DE.norm.with.rpkm.norm.3[,c(i,i+8)])
+model <- lm(DE.norm.with.rpkm.norm.3[,i+8] ~ DE.norm.with.rpkm.norm.3[,i], data = as.data.frame(DE.norm.with.rpkm.norm.3))
+abline(model, col = "red")
+}
+
+plot(apply(DE.norm.with.rpkm.norm.2,2,as.numeric)[,1:3])
+
+M <- cor(DE.norm.with.rpkm.norm.3[,1:8])
+
+corrplot.mixed(M)
+
+corrplot(M,method="ellipse",order = "hclust", addrect = 2)
+
+corrplot(M,method="number",order = "hclust", addrect = 2)
+
+corrplot(M,method="number",order = "FPC", addrect = 2)
+
+corrplot(M,method="ellipse")
+
+corrplot(M,method="ellipse",type="upper",)
+corrplot(M, method="number")
+
+corrplot(M,method="ellipse",order="hclust", addrect=4)
+
+size.factor.2<-estimateSizeFactors(re.rMAT.com.total.test.2$dds)
+sizeFactors(size.factor.2)
 }
 

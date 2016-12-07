@@ -57,7 +57,10 @@ output:
 <!-- input.file.pattern.upstream="*downstream.count.hg19.strand.based.2.txt" -->
 <!-- ``` -->
 
-##Get transcript downstream count
+##Get gene downstream count and test
+```{r get_count_DE, eval=TRUE, message=F, warning=F,results='hide',echo=TRUE}
+#re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern)
+```
 
 ![Count](/Volumes/Bioinformatics$/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/uc002qwk.3.downstream.4500bp.right.2.png)
 

@@ -52,7 +52,77 @@
 #'
 #' sink()
 #'
+#' sink("test_com_total.txt")
+#' re.rMAT.com.total.test<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total_test")
+#' sink()
 #'
+#' re.rMAT.com.total.test.2<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,"com_total_test_3")
+#'
+#' geoMeans <- exp(rowMeans(log(counts(re.rMAT.com.total.test$dds))))
+#'
+#' temp.dds<-re.rMAT.com.total.test.2$dds
+#'
+#' normalizationFactors(temp.dds)
+
+#' size..factor<-estimateSizeFactors(re.rMAT.com.total.test$dds,geoMeans=geoMeans)
+#' sizeFactors(size..factor)
+#'
+#' temp.dds <- estimateSizeFactors(temp.dds)
+#'
+#' count.norm<-counts(temp.dds,normalized = TRUE)
+#'
+#' head(count.norm)
+#'
+#' DE.norm.with.rpkm.norm<-cbind(count.norm,re.rMAT.com.total.test.2$MergedNorma[,c(1,3,7,11,13,5,9,15,17)])
+#'
+#' DE.norm.with.rpkm.norm.2<-DE.norm.with.rpkm.norm[,-9]
+#'
+#' col.name<-c(paste0("D.",sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[1:8],"\\."),"[[",2)),
+#' paste0("R.",sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[9:16],"\\."),"[[",3)))
+#'
+#' col.name.2<-gsub("2016-02-10-","",col.name)
+#'
+#' cbind(colnames(DE.norm.with.rpkm.norm.2),col.name.2)
+#'
+#' colnames(DE.norm.with.rpkm.norm.2)<-col.name.2
+#'
+#'
+#' DE.norm.with.rpkm.norm.3<-apply(DE.norm.with.rpkm.norm.2,2,as.numeric)
+#'
+#'par(mfrow = c(4, 2))  # 3 rows and 2 columns
+#'for (i in 1:8) {
+#' plot(DE.norm.with.rpkm.norm.3[,c(i,i+8)])
+#' model <- lm(DE.norm.with.rpkm.norm.3[,i+8] ~ DE.norm.with.rpkm.norm.3[,i], data = as.data.frame(DE.norm.with.rpkm.norm.3))
+#' abline(model, col = "red")
+#'}
+#'
+#' plot(apply(DE.norm.with.rpkm.norm.2,2,as.numeric)[,1:3])
+#'
+#' M <- cor(DE.norm.with.rpkm.norm.3[,1:8])
+#'
+#' corrplot.mixed(M)
+#'
+#' corrplot(M,method="ellipse",order = "hclust", addrect = 2)
+#'
+#' corrplot(M,method="number",order = "hclust", addrect = 2)
+#'
+#' corrplot(M,method="number",order = "FPC", addrect = 2)
+#'
+#
+#' corrplot(M,method="ellipse")
+#'
+#' corrplot(M,method="ellipse",type="upper",)
+#' corrplot(M, method="number")
+#'
+#' corrplot(M,method="ellipse",order="hclust", addrect=4)
+
+#'
+#' size.factor.2<-estimateSizeFactors(re.rMAT.com.total.test.2$dds)
+#' sizeFactors(size.factor.2)
+
+#corrplot(M, order="hclust", addrect=2, col="wb", bg="gold2")
+
+
 ProcessOutputFilesFrom3UTR<-function(dir.name,input.file.pattern,normal.factor,out){
 
   file.name=paste0(dir.name,dir(dir.name,recursive = TRUE,pattern=input.file.pattern))
@@ -78,7 +148,7 @@ ProcessOutputFilesFrom3UTR<-function(dir.name,input.file.pattern,normal.factor,o
   num.intergenic.reads.2<-final.filtered.norm$num.intergenic.reads.2
 
   n=length(num.intergenic.reads.2)-1
-  suppressPackageStartupMessages(library(DESeq2))
+  #suppressPackageStartupMessages(library(DESeq2))
 
   print(head(final.filtered))
 
@@ -88,6 +158,10 @@ ProcessOutputFilesFrom3UTR<-function(dir.name,input.file.pattern,normal.factor,o
 
   colData <- data.frame(condition=factor(c(rep("Dox",4),rep("WT",4))))
   dds <- DESeqDataSetFromMatrix(countData, colData, formula(~ condition))
+
+  #size.factor<-estimateSizeFactors(dds)
+
+  #print(size.factor)
 
   re.DESeq<-results(DESeq(dds))
 
@@ -122,7 +196,7 @@ ProcessOutputFilesFrom3UTR<-function(dir.name,input.file.pattern,normal.factor,o
 
   re2<-cbind(trimws(do.call("rbind",lapply(num.intergenic.reads.2[1:n],"[[",1))),do.call("rbind",lapply(num.intergenic.reads.2[1:n],"[[",9)))
 
-  re.out.3<-list(ReadDownstream45kb=re.out,intergenic_reads=re2,MergedNorma=final.filtered,DE=re.FC.sorted)
+  re.out.3<-list(ReadDownstream45kb=re.out,intergenic_reads=re2,MergedNorma=final.filtered,DE=re.FC.sorted,dds=dds)
 
   return(re.out.3)
 
