@@ -53,11 +53,8 @@ re.neg<-re.rMAT.com.interested[which(re.rMAT.com.interested$`FoldChange(WT/Dox)`
 
 re.rMAT.total<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"total")
 re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total")
-<<<<<<< HEAD
-=======
 
 sink()
->>>>>>> c1c64f9808c66e4747eca3aae618ab8f9843e6eb
 
 sink("test_com_total.txt")
 re.rMAT.com.total.test<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total_test")
