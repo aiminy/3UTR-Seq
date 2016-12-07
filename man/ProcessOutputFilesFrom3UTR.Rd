@@ -22,6 +22,10 @@ dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/"
 dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
 input.file.pattern="*downstream.count.hg19.strand.based.txt"
 
+com.input.file.pattern="*downstream.com.count.hg19.strand.based.txt"
+
+total.com.input.file.pattern="*.gene.downstream.count.hg19.strand.based.total2.txt"
+
 #use intergenic reads as normal factor
 normal.factor="*.rm.exon.intron.hg19.bed"
 
@@ -29,10 +33,26 @@ normal.factor="*.rm.exon.intron.hg19.bed"
 normal.factor="*.bed"
 
 sink("testcode.txt")
-re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"test9")
+re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"intergenic")
+re.rMAT.com<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_intergenic")
+
+re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,"com_total")
+
+re.rMAT.com.total.interested<-re.rMAT.com.total$DE[which(re.rMAT.com.total$DE$gene \%in\% genes.interested[,1]),]
+
+re.com.total.pos<-re.rMAT.com.total.interested[which(re.rMAT.com.total.interested$`FoldChange(WT/Dox)`<1),]
+re.com.total.neg<-re.rMAT.com.total.interested[which(re.rMAT.com.total.interested$`FoldChange(WT/Dox)`>=1),]
+
+
+re.com.total.pos[which(re.com.total.pos$gene \%in\% c("TPCN2")),]
+
+re.rMAT.com.interested<-re.rMAT.com$DE[which(re.rMAT.com$DE$gene \%in\% genes.interested[,1]),]
+re.pos<-re.rMAT.com.interested[which(re.rMAT.com.interested$`FoldChange(WT/Dox)`<1),]
+re.neg<-re.rMAT.com.interested[which(re.rMAT.com.interested$`FoldChange(WT/Dox)`>=1),]
 
 
 re.rMAT.total<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"total")
+re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total")
 
 sink()
 
