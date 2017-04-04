@@ -21,4 +21,3 @@ out.file.pattern="DoGs_using_longest_txs_adjust_by_batch"
 re.longest.transcript<-TestUseLongestTxsOfGene(Re.unadjusted.adjusted,out.dir.name,out.file.pattern)
 
 }
-

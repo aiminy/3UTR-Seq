@@ -35,4 +35,3 @@ out_gene_interested_sig=paste0(out_put,"DE_by_interested_gene_sig.csv")
 re<-ProcessOutputFilesFrom3UTR_recount(dir.name,input.file.pattern,input.file.pattern.4.interested.gene,out_by_p,out_by_gene,out_gene_interested,out_gene_interested_sig)
 
 }
-

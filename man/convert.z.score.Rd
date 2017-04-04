@@ -28,4 +28,3 @@ one.sided.p<-convert.z.score(re.3UTR$re.FC.sorted$pvalue,two.sided=F)
 
 
 }
-

@@ -12,4 +12,3 @@ NormalizedCount(re.out, dir.name, by_what)
 \description{
 Title
 }
-

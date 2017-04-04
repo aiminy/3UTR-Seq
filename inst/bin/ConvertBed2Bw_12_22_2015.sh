@@ -1,20 +1,20 @@
  1015  ls ~/
  1016  ls ~/IGV_2.3.67/
  1017  cd ~/IGV_2.3.67/
- 1018  sh igv.sh 
+ 1018  sh igv.sh
  1019  ls
  1020  history
  1021  ls ~/Code/Com*
  1022  history >  ~/Code/CommandHistory10.txt
  1023  exit
- 1024  ps aux 
+ 1024  ps aux
  1025  ps aux  | grep igv
  1026  kill 17990
  1027  ls
  1028  cd IGV_2.3.67/
  1029  ls
- 1030  sg igv.sh 
- 1031  sh igv.sh 
+ 1030  sg igv.sh
+ 1031  sh igv.sh
  1032  ls
  1033  history
  1034  history | head
@@ -22,21 +22,21 @@
  1036  ls ~/Code/
  1037  cd ~/Code/
  1038  ls
- 1039  ~/Code/ 
+ 1039  ~/Code/
  1040  ls ~/
  1041  ls ~/bishopric/
  1042  ls ~/bishopric/RNAseq/
  1043  ls ~/bishopric/RNAseq/rawData/
  1044  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/
- 1045  less ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/merged_counts.txt 
- 1046  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/ 
+ 1045  less ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/merged_counts.txt
+ 1046  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/
  1047  locate Sample_10_raw_count.txt
  1048  less Sample_10_raw_count.txt
  1049  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count.txt
  1050  less ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count.txt
- 1051  emacs  ~/Downloads/merge_tables.py 
- 1052  emacs ~/Downloads/merge_tables.py > ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/sample_information.txt 
- 1053  Rscript ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/merged_counts.txt > ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/sample_information.txt 
+ 1051  emacs  ~/Downloads/merge_tables.py
+ 1052  emacs ~/Downloads/merge_tables.py > ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/sample_information.txt
+ 1053  Rscript ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/merged_counts.txt > ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/sample_information.txt
  1054  Rscript ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/merged_counts.txt
  1055  Rscript Run_DESeq_3.R ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/merged_counts.txt
  1056  Rscript Run_DESeq_3.R ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/merged_counts.txt > ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/sample_information.txt
@@ -121,17 +121,17 @@
  1135  git commit -m "delete some commented lines"
  1136  git pull --rebase
  1137  git push origin master
- 1138  ls 
+ 1138  ls
  1139  ls *.R
- 1140  mv alignment2count_PE.R ./RNA-seq-data-analysis-pipeline/ 
- 1141  mv alignment2count_SE.R ./RNA-seq-data-analysis-pipeline/ 
- 1142  mv run_trimmomatic_PE.R ./RNA-seq-data-analysis-pipeline/ 
- 1143  mv run_trimmomatic_SE.R ./RNA-seq-data-analysis-pipeline/ 
+ 1140  mv alignment2count_PE.R ./RNA-seq-data-analysis-pipeline/
+ 1141  mv alignment2count_SE.R ./RNA-seq-data-analysis-pipeline/
+ 1142  mv run_trimmomatic_PE.R ./RNA-seq-data-analysis-pipeline/
+ 1143  mv run_trimmomatic_SE.R ./RNA-seq-data-analysis-pipeline/
  1144  ls ./RNA-seq-data-analysis-pipeline/
  1145  git status
  1146  cd RNA-seq-data-analysis-pipeline/
  1147  git status
- 1148  git add alignment2count_PE.R 
+ 1148  git add alignment2count_PE.R
  1149  git commit -m "run alignment to get count"
  1150  git add alignment2count_SE.R
  1151  git commit -m "run alignment to get count for single end"
@@ -155,7 +155,7 @@
  1169  ls
  1170  ls *.rd
  1171  ls READ*
- 1172  less README.txt 
+ 1172  less README.txt
  1173  cp README.md ./RNA-seq-data-analysis-pipeline/
  1174  git add ./R
  1175  git add ./RNA-seq-data-analysis-pipeline/README.md
@@ -165,23 +165,23 @@
  1179  ls
  1180  cd RNA-seq-data-analysis-pipeline/
  1181  ls
- 1182  emacs README.md 
+ 1182  emacs README.md
  1183  git status
  1184  git add README.md
  1185  git commit -m "Update readme file"
  1186  git pull --rebase
  1187  git push origin master
- 1188  emacs README.md 
+ 1188  emacs README.md
  1189  git add README.md
  1190  git commit -m "Update readme file"
  1191  git pull --rebase
  1192  git push origin master
- 1193  emacs README.md 
+ 1193  emacs README.md
  1194  git add README.md
  1195  git commit -m "Update readme file"
  1196  git pull --rebase
  1197  git push origin master
- 1198  emacs README.md 
+ 1198  emacs README.md
  1199  git add README.md
  1200  git commit -m "Update readme file"
  1201  git pull --rebase
@@ -198,9 +198,9 @@
  1212  ls ../*.py
  1213  cp ../merge_tables.py ../QcSum.py .
  1214  ls
- 1215  git add merge_tables.py 
+ 1215  git add merge_tables.py
  1216  git commit -m "To merge all count files to a table"
- 1217  git add QcSum.py 
+ 1217  git add QcSum.py
  1218  git commit -m "To get a summary from QC files After applying FastQC on fastq files"
  1219  git status
  1220  git pull --rebase
@@ -230,12 +230,12 @@
  1244  less ../Run_Fq_24.sh
  1245  ls ../*.sh
  1246  cp ../RunAlignment4SingleEnd.sh .
- 1247  cp RunAlignment4SingleEnd.sh RunAlignment4PairEnd.sh 
- 1248  emacs RunAlignment4PairEnd.sh 
+ 1247  cp RunAlignment4SingleEnd.sh RunAlignment4PairEnd.sh
+ 1248  emacs RunAlignment4PairEnd.sh
  1249  git status
- 1250  git add RunAlignment4PairEnd.sh 
+ 1250  git add RunAlignment4PairEnd.sh
  1251  git commit -m "Run tophat2 for pair end short read files"
- 1252  git add RunAlignment4SingleEnd.sh 
+ 1252  git add RunAlignment4SingleEnd.sh
  1253  git commit -m "Run tophat2 for single end short read files"
  1254  git status
  1255  git pull --rebase
@@ -244,9 +244,9 @@
  1258  git pull --rebase
  1259  ls *.py
  1260  ls
- 1261  emacs merge_tables.py 
- 1262  python merge_tables.py 
- 1263  emacs merge_tables.py 
+ 1261  emacs merge_tables.py
+ 1262  python merge_tables.py
+ 1263  emacs merge_tables.py
  1264  ls ~/
  1265  ls ~/bishopric/
  1266  ls ~/bishopric/RNASeq
@@ -258,54 +258,54 @@
  1272  less ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/sample_information.txt
  1273  less ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt
  1274  python merge_tables.py ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1275  emacs merge_tables.py 
+ 1275  emacs merge_tables.py
  1276  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
  1277  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1278  emacs merge_tables.py 
+ 1278  emacs merge_tables.py
  1279  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1280  emacs merge_tables.py 
+ 1280  emacs merge_tables.py
  1281  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1282  emacs merge_tables.py 
+ 1282  emacs merge_tables.py
  1283  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1284  emacs merge_tables.py 
+ 1284  emacs merge_tables.py
  1285  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1286  emacs merge_tables.py 
+ 1286  emacs merge_tables.py
  1287  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1288  emacs merge_tables.py 
+ 1288  emacs merge_tables.py
  1289  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1290  emacs merge_tables.py 
+ 1290  emacs merge_tables.py
  1291  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1292  emacs merge_tables.py 
+ 1292  emacs merge_tables.py
  1293  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1294  emacs merge_tables.py 
+ 1294  emacs merge_tables.py
  1295  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1296  emacs merge_tables.py 
+ 1296  emacs merge_tables.py
  1297  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1298  emacs merge_tables.py 
+ 1298  emacs merge_tables.py
  1299  python merge_tables.py -i ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt -o ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1300  emacs merge_tables.py 
+ 1300  emacs merge_tables.py
  1301  git status
  1302  git pull --rebase
- 1303  emacs merge_tables.py 
+ 1303  emacs merge_tables.py
  1304  python merge_tables.py ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count_after_sorting.txt ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
  1305  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
  1306  less ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
  1307  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
  1308  vi ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
- 1309  emacs merge_tables.py 
- 1310  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/[D
+ 1309  emacs merge_tables.py
+ 1310  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/[D
  1311  ls ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/
  1312  python merge_tables.py ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Sample_10_raw_count.txt ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/Output_count_samples10.txt
  1313  cd ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/
  1314  python ~/Code/RNA-seq-data-analysis-pipeline/merge_tables.py Sample_10_raw_count.txt Output_count_samples10.txt
- 1315  ls Output_count_samples10.txt 
- 1316  less Output_count_samples10.txt 
+ 1315  ls Output_count_samples10.txt
+ 1316  less Output_count_samples10.txt
  1317  emacs ~/Code/RNA-seq-data-analysis-pipeline/merge_tables.py
  1318  python ~/Code/RNA-seq-data-analysis-pipeline/merge_tables.py Sample_10_raw_count.txt Output_count_samples10.txt
- 1319  les Output_count_samples10.txt 
- 1320  less Output_count_samples10.txt 
+ 1319  les Output_count_samples10.txt
+ 1320  less Output_count_samples10.txt
  1321  cd ~/Code/RNA-seq-data-analysis-pipeline/
- 1322  emacs merge_tables.py 
+ 1322  emacs merge_tables.py
  1323  git add merge_tables.py
  1324  git commit -m "specify a outfile name from comand argument, and pass to the program"
  1325  git pull --rebase
@@ -319,7 +319,7 @@
  1333  ls
  1334  ls ../
  1335  les
- 1336  less ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/all_mod_scores.csv 
+ 1336  less ~/bishopric/RNAseq/rawData/140128_SN392_0190_AC3EYUACXX/all_mod_scores.csv
  1337  ls *.py
  1338  less QCSum.py
  1339  less QcSum.py
@@ -363,10 +363,10 @@
  1377  ack-grep fastqc
  1378  ack-grep fastqc ~/
  1379  ack-grep fastqc
- 1380  ack-grep fastqc ~/Code 
+ 1380  ack-grep fastqc ~/Code
  1381  ls
  1382  ls ~/
- 1383  ack-grep fastqc ~/workspace 
+ 1383  ack-grep fastqc ~/workspace
  1384  ls /home/aiminyan/workspace/rnaseq/tools/FastQC/fastqc
  1385  ls /home/aiminyan/workspace/rnaseq/tools/FastQC/
  1386  /home/aiminyan/workspace/rnaseq/tools/FastQC/fastqc
@@ -374,11 +374,11 @@
  1388  ls
  1389  cd /home/aiminyan/workspace/rnaseq/tools/FastQC/
  1390  ls
- 1391  ack-grep fastqc ./ 
+ 1391  ack-grep fastqc ./
  1392  ls
- 1393  vi run_fastqc.bat 
+ 1393  vi run_fastqc.bat
  1394  cd /home/aiminyan/workspace/rnaseq/tools/FastQC/
- 1395  vi run_fastqc.bat 
+ 1395  vi run_fastqc.bat
  1396  ack-grep fastqc ./
  1397  pwd
  1398  ls
@@ -402,7 +402,7 @@
  1416  ls /media/DATA/nBishopric_Project1_201348189-01_S_1_2.txt
  1417  fastqc /media/DATA/nBishopric_Project1_201348189-01_S_1_1.txt /media/DATA/nBishopric_Project1_201348189-01_S_1_2.txt
  1418  ls -lrt
- 1419  ls 
+ 1419  ls
  1420  fastqc -o QC_output /media/DATA/nBishopric_Project1_201348189-01_S_1_1.txt
  1421  fastqc /media/DATA/nBishopric_Project1_201348189-01_S_1_1.txt -o QC_output
  1422  mkdir QC_output
@@ -413,25 +413,25 @@
  1427  ls -lrt .
  1428  fastqc ./QC_output /media/DATA/nBishopric_Project1_201348189-01_S_1_1.txt /media/DATA/nBishopric_Project1_201348189-01_S_1_2.txt
  1429  fastqc -o ./QC_output /media/DATA/nBishopric_Project1_201348189-01_S_1_1.txt /media/DATA/nBishopric_Project1_201348189-01_S_1_2.txt
- 1430  ls 
+ 1430  ls
  1431  ls -lrt
  1432  ls -lrt QC_output/
  1433  cd QC_output/
  1434  ls
  1435  python ~/Code/RNA-seq-data-analysis-pipeline/QcSum.py
  1436  ls
- 1437  less all_mod_scores.csv 
+ 1437  less all_mod_scores.csv
  1438  cd ~/Code/RNA-seq-data-analysis-pipeline/
  1439  ls
  1440  pwd
  1441  ls
- 1442  git pull --rebase 
- 1443  git push origin master 
+ 1442  git pull --rebase
+ 1443  git push origin master
  1444  pwd
  1445  ls
- 1446  less ofile 
- 1447  ls -alh ofile 
- 1448  rm ofile 
+ 1446  less ofile
+ 1447  ls -alh ofile
+ 1448  rm ofile
  1449  ls
  1450  emacs QCSum.py
  1451  ls
@@ -459,16 +459,16 @@
  1473  emacs /home/aiminyan/Code/RNA-seq-data-analysis-pipeline/QcSum.py
  1474  python ~/Code/RNA-seq-data-analysis-pipeline/QcSum.py QC_sum_4_2_fs.csv
  1475  ls
- 1476  less QC_sum_4_2_fs.csv 
+ 1476  less QC_sum_4_2_fs.csv
  1477  cd /home/aiminyan/Code/RNA-seq-data-analysis-pipeline/
  1478  ls
  1479  git status
  1480  git add QcSum.py
  1481  git commit -m "specify a QC summary output file name"
  1482  git pull --rebase
- 1483  git push origin master 
+ 1483  git push origin master
  1484  git pull --rebase
- 1485  git push origin master 
+ 1485  git push origin master
  1486  locate Sample_9.txt
  1487  emacs /home/aiminyan/Result/Jianping/Sample_9.txt
  1488  locate FileBam.txt
@@ -488,7 +488,7 @@
  1502  sudo apt-get install default-jre
  1503  java -version
  1504  sudo update-alternatives --config java
- 1505  sudo apt-get install openjdk-7-jre 
+ 1505  sudo apt-get install openjdk-7-jre
  1506  java -version
  1507  sudo update-alternatives --config java
  1508  java -version
@@ -510,7 +510,7 @@
  1524  ls
  1525  cd IGV_2.3.67/
  1526  ls
- 1527  sh igv.sh 
+ 1527  sh igv.sh
  1528  ls ~/Code/Com*
  1529  ls -l ~/Code/Com*
  1530  history > ~/Code/CommandHistory15.txt
@@ -519,7 +519,7 @@
  1533  ls /media/DATA/
  1534  ls /media/DATA/*.bed
  1535  ls /media/DATA/Chip_Seq/
- 1536  head /media/DATA/Chip_Seq/mtgr1_peaks.bed 
+ 1536  head /media/DATA/Chip_Seq/mtgr1_peaks.bed
  1537  R
  1538  ssh axy148@pegasus.ccs.miami.edu
  1539  ls ~/Code/Com*
@@ -541,11 +541,11 @@
  1555  ls ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/GEO_sample_data/sample_peaks.txt
  1556  ls ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/GEO_sample_data/
  1557  ls ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/
- 1558  ls ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/sample_peaks.txt 
- 1559  less ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/sample_peaks.txt 
- 1560  less ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/GEO_sample_data/ 
- 1561  ls ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/GEO_sample_data/ 
- 1562  cd ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/GEO_sample_data/ 
+ 1558  ls ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/sample_peaks.txt
+ 1559  less ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/sample_peaks.txt
+ 1560  less ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/GEO_sample_data/
+ 1561  ls ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/GEO_sample_data/
+ 1562  cd ~/R/x86_64-pc-linux-gnu-library/3.2/ChIPseeker/extdata/GEO_sample_data/
  1563  ls
  1564  zcat GSM1174480_ARmo_0M_peaks.bed.gz | head
  1565  ls
@@ -555,8 +555,8 @@
  1569  ls
  1570  wc -l GSE19013_MCF7_E2-ethl_chr_7_17_peaks.bed
  1571  cat <(grep chr7 GSM1329660_RelA_mid.bed) <(grep chr17 GSM1329660_RelA_mid.bed) > GSM1329660_RelA_mid_chr_7_17_peaks.bed
- 1572  ls 
- 1573  ls -alh 
+ 1572  ls
+ 1573  ls -alh
  1574  less GSM1329660_RelA_mid_chr_7_17_peaks.bed
  1575  wc -l GSM1329660_RelA_mid_chr_7_17_peaks.bed
  1576  wc -l GSM1329660_RelA_mid_peaks.bed
@@ -572,7 +572,7 @@
  1586  ls -alh
  1587  rm GSE19013_MCF7_E2-ethl_peaks.bed GSM1329660_RelA_mid.bed GSM1329661_RelB_mid.bed
  1588  ls
- 1589  cat <(grep chr7 /media/DATA/Chip_Seq/GSM1329661_RelB_mid.bed) <(grep chr17  /media/DATA/Chip_Seq/GSM1329661_RelB_mid.bed) > GSM1329661_RelB_mid_chr_7_17_peaks.bed 
+ 1589  cat <(grep chr7 /media/DATA/Chip_Seq/GSM1329661_RelB_mid.bed) <(grep chr17  /media/DATA/Chip_Seq/GSM1329661_RelB_mid.bed) > GSM1329661_RelB_mid_chr_7_17_peaks.bed
  1590  ls -alh
  1591  less GSM1329660_RelA_mid_chr_7_17_peaks.bed
  1592  tail GSM1329660_RelA_mid_chr_7_17_peaks.bed
@@ -589,12 +589,12 @@
  1603  ls ~/Downloads/
  1604  head ~/Downloads/GSE19013_MCF7_E2-ethl.hpeak.out.txt
  1605  ls ~/Downloads/
- 1606  ls ~/Downloads/bedGraphToBigWig 
- 1607  ~/Downloads/bedGraphToBigWig 
- 1608  chmod 777 ~/Downloads/bedGraphToBigWig 
- 1609  ~/Downloads/bedGraphToBigWig 
+ 1606  ls ~/Downloads/bedGraphToBigWig
+ 1607  ~/Downloads/bedGraphToBigWig
+ 1608  chmod 777 ~/Downloads/bedGraphToBigWig
+ 1609  ~/Downloads/bedGraphToBigWig
  1610  ls
- 1611  wc -l GSE19013_MCF7_E2-ethl_chr_7_17_peaks.bed 
+ 1611  wc -l GSE19013_MCF7_E2-ethl_chr_7_17_peaks.bed
  1612  wc -l GSM1329660_RelA_mid_chr_7_17_peaks.bed
  1613  ls
  1614  ls ~/Downloads/
@@ -620,26 +620,26 @@
  1634  ls
  1635  ls igv/
  1636  ls igv/genomes/
- 1637  ls igv/genomes/user-defined-genomes.txt 
- 1638  less igv/genomes/user-defined-genomes.txt 
+ 1637  ls igv/genomes/user-defined-genomes.txt
+ 1638  less igv/genomes/user-defined-genomes.txt
  1639  ls igv/genomes/
- 1640  ls 
+ 1640  ls
  1641  ls igv
- 1642  ls igv/lists/ 
+ 1642  ls igv/lists/
  1643  ls IGV_2.3.67/
  1644  ls igv
  1645  ls igv/genomes/
- 1646  ls igv/genomes/hg19.genome 
- 1647  ls -alh igv/genomes/hg19.genome 
- 1648  head -alh igv/genomes/hg19.genome 
- 1649  head  igv/genomes/hg19.genome 
+ 1646  ls igv/genomes/hg19.genome
+ 1647  ls -alh igv/genomes/hg19.genome
+ 1648  head -alh igv/genomes/hg19.genome
+ 1649  head  igv/genomes/hg19.genome
  1650  ssh axy148@pegasus.ccs.miami.edu
  1651  ls
  1652  ls -l ~/Code/CommandHistory*
  1653  history > ~/Code/CommandHistory21.txt
  1654  exit
- 1655  ls 
- 1656  ls bishopric/  
+ 1655  ls
+ 1656  ls bishopric/
  1657  ls bishopric/RNAseq/
  1658  ls bishopric/RNAseq/eawData
  1659  ls bishopric/RNAseq/rawData/*.bam
@@ -684,7 +684,7 @@
  1698  cd IGV_2.3.67/
  1699  ls
  1700  ls
- 1701  sh igv.sh 
+ 1701  sh igv.sh
  1702  pwd
  1703  ls
  1704  cd ..
@@ -695,7 +695,7 @@
  1709  ls
  1710  cd Code
  1711  ls
- 1712  emacs ConvertBamtoBigwig.sh 
+ 1712  emacs ConvertBamtoBigwig.sh
  1713  ls -l ~/Comm*
  1714  ls -l ~/Code/C*
  1715  history > ~/Code/CommandHistory26.txt
@@ -710,7 +710,7 @@
  1724  ls
  1725  cd source
  1726  ls
- 1727  emacs Makefile 
+ 1727  emacs Makefile
  1728  cd ..
  1729  ls
  1730  make STAR
@@ -763,7 +763,7 @@
  1777  ls -l ~/Code/Com*
  1778  history > ~/Code/CommandHistory27.txt
  1779  exit
- 1780  ls 
+ 1780  ls
  1781  STAR
  1782  ls /DATA/
  1783  ls
@@ -786,7 +786,7 @@
  1800  du -sh /media/DATA/hg38/Homo_sapiens/UCSC/hg38/Sequence/STARIndex/
  1801  cd /media/DATA/hg38/Homo_sapiens/UCSC/hg38/Sequence/STARIndex/
  1802  ls
- 1803  ls -alh 
+ 1803  ls -alh
  1804  ls
  1805  cd ..
  1806  ls
@@ -877,14 +877,14 @@
  1891  ls
  1892  ls*.R
  1893  ls *.R
- 1894  less Run_DESeq2.R 
+ 1894  less Run_DESeq2.R
  1895  less DESeq2_modified_with_istallation.R
- 1896  less DESeq2.R 
+ 1896  less DESeq2.R
  1897  rstudio
  1898  history | grep Rscript
  1899  history
  1900  ls ~/Code/C*
- 1901  history > 
+ 1901  history >
  1902  ls ~/Code/C*
  1903  ls -l ~/Code/C*
  1904  ls ~/Code/Com*
@@ -989,7 +989,7 @@
  2003  awk '{printf "%s\t%d\t%d\t%2.3f\n" , $1,$2,$3,$5}' /media/DATA/ChrisWilliams/ChIPseq/eto2_peaks.bed > /media/DATA/ChrisWilliams/ChIPseq/eto2_peaks.bedgraph
  2004  /home/aiminyan/kentUtils/bin/linux.x86_64/bedGraphToBigWig mtgr1_peaks.bed.bedgraph ../../Data_Chip-Seq/mm10.genome mtgr1_peaks.bw
  2005  /home/aiminyan/kentUtils/bin/linux.x86_64/bedGraphToBigWig /media/DATA/ChrisWilliams/ChIPseq/eto2_peaks.bedgraph ./Data_Chip-Seq/mm10.genome /media/DATA/ChrisWilliams/ChIPseq/eto2_peaks.bw
- 2006  ls 
+ 2006  ls
  2007  ls ./Mus_musculus/
  2008  ls ./Mus_musculus/UCSC
  2009  /home/aiminyan/kentUtils/bin/linux.x86_64/bedGraphToBigWig /media/DATA/ChrisWilliams/ChIPseq/eto2_peaks.bedgraph ./Mus_musculus/UCSC/mm10.genome /media/DATA/ChrisWilliams/ChIPseq/eto2_peaks.bw

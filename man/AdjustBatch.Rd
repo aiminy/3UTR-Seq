@@ -27,4 +27,3 @@ re.3UTR.one.side.norm<-AdjustBatch(re.rMAT.com.total.test.2,DE.norm.with.rpkm.no
 "Interested_gene_only_one_side_norm_2","Interested_gene_only_sig_one_side_norm_2")
 
 }
-

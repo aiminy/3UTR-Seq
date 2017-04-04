@@ -18,4 +18,3 @@ Title
 gene.interested<-ReadGeneList(dir.name, input.file.pattern.4.interested.gene)
 
 }
-

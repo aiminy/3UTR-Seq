@@ -22,4 +22,3 @@ df.NT.2<- df.NT[,-1]
 CheckBatch(dir.name,"Btach_using_DoGs",df.NT.2)
 
 }
-
