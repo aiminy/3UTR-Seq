@@ -24,4 +24,3 @@ df.NT<- df.NT[,-1]
 re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(df.NT.2)
 
 }
-

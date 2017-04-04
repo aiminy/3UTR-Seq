@@ -121,4 +121,3 @@ corrplot(M,method="ellipse",order="hclust", addrect=4)
 size.factor.2<-estimateSizeFactors(re.rMAT.com.total.test.2$dds)
 sizeFactors(size.factor.2)
 }
-

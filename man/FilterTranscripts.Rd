@@ -16,4 +16,3 @@ Re.txs<-FilterTranscripts("/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RN
 
 
 }
-

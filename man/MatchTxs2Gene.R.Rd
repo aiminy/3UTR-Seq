@@ -25,4 +25,3 @@ Re.interested.gene[which(Re.interested.gene$SYMBOL \%in\% c("XYLB")),]
 
 
 }
-

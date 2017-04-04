@@ -26,4 +26,3 @@ in2="/Volumes/Bioinformatics$/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/final_l
 Compare2Pos(in1,threshold,in2)
 
 }
-
