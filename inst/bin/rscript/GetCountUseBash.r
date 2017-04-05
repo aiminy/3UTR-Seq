@@ -41,8 +41,9 @@ if(row=="Yes") {
     rd <- readLines(input, n=1)
 
     cmd1="bsub -P bbc -J \"DogFT\" -o %J.DogFT.log -e %J.DogFT.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd2=paste0(R_lib,"/ThreeUTR/bin/rscript/convertbam2bed.r")
 
-    cmd2=paste("Rscript",R_lib,"/ThreeUTR/bin/rscript/convertbam2bed.r",
+    cmd3=paste("Rscript",cmd2,
                input.bamfile.dir,
                annotation.bed.file,
                ld,
@@ -50,7 +51,7 @@ if(row=="Yes") {
                output.count.file.dir,
                sep=" ")
 
-    system(paste0(cmd1," ",cmd2))
+    system(paste0(cmd1," ",cmd3))
 
     cat("Finished conversion...\n")
 
