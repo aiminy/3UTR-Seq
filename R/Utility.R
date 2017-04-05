@@ -131,3 +131,164 @@ convertbam2bed <- function(input.bamfile.dir,output.bedfile.dir){
   re
 
 }
+
+#' matchbed2annotation
+#'
+#' @param input.bedfile.dir
+#' @param annotation.bed.file
+#' @param ld upstream base
+#' @param rd downstream base
+#' @param output.matched.bed.file.dir
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
+#' input.bedfile.dir <- res$output.bedfile.dir
+#' annotation.bed.file <- annotation.bed.file
+#' ld <- ld
+#' rd <- rd
+#' output.matched.bed.file.dir <- output.matched.bed.file.dir
+#'
+#' res <- matchbed2annotation(input.bedfile.dir,annotation.bed.file,
+#' ld,rd,output.matched.bed.file.dir)
+#'
+matchbed2annotation <- function(input.bedfile.dir,annotation.bed.file,
+                                ld,rd,output.matched.bed.file.dir){
+
+  res <- parserreadfiles(input.file.dir=input.bedfile.dir,
+                         "bed")
+
+  res <- res$input
+
+  cmd0 <- paste("bedtools window -a",annotation.bed.file,"-b",sep=" ")
+
+  cmd1 <- paste("-l",ld,"-r",rd,"-sw",">",sep=" ")
+
+  output.bedfile.dir <-file.path(output.matched.bed.file.dir,"MatchedBedFile")
+
+  if (!dir.exists(output.bedfile.dir)) {
+    dir.create(output.bedfile.dir)
+  }
+
+  cmd.l <- lapply(res,function(u,output.bedfile.dir){
+
+    # cat(u,"\n")
+    # cmd9 <- "grep"
+    # cmd10 <- "~/PathwaySplice/inst/extdata/"
+    # cmd11 <- "/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt"
+    # cmd12 <- ">"
+    # cmd13 <- paste0("/Counts.",n,".genes.txt")
+    # xxx <- gsub(";","",xx)
+    #
+    file_name = file_path_sans_ext(basename(u))
+
+    cmd2 <- paste(cmd0,u,cmd1,file.path(output.bedfile.dir,paste0(file_name,"_matched.bed")),sep = " ")
+
+    system(cmd2)
+
+    cmd2
+  },output.bedfile.dir)
+
+  re <- list(cmdl = cmd.l,output.bedfile.dir = output.bedfile.dir)
+
+  re
+
+}
+
+
+#' matchbed2annotation
+#'
+#' @param input.bedfile.dir
+#' @param annotation.bed.file
+#' @param ld upstream base
+#' @param rd downstream base
+#' @param output.matched.bed.file.dir
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' res <- matchbed2annotation(input.bedfile.dir,annotation.bed.file,
+#' ld,rd,output.matched.bed.file.dir)
+#'
+#' input.bedfile.dir <- res$output.bedfile.dir
+#'
+#' res <- getcountsfromMatchedbed (input.bedfile.dir,output.count.file.dir)
+#'
+getcountsfromMatchedbed <- function(input.bedfile.dir,output.count.file.dir){
+
+  res <- parserreadfiles(input.file.dir=input.bedfile.dir,
+                         "bed")
+
+  res <- res$input
+
+  cmd0 <- 'awk -F "\t"'
+  cmd1 <- '$6=="+"&&$12=="-"'
+  cmd2 <- "$8<$2&&$9>==$2 | awk '{print $4}' | sort | uniq -c | sort -nr"
+  cmd3 <- ">"
+
+  output.count.file.dir <-file.path(output.count.file.dir,"Counts")
+
+  if (!dir.exists(output.count.file.dir)) {
+    dir.create(output.count.file.dir)
+  }
+
+  cmd.l <- lapply(res,function(u,output.count.file.dir){
+
+    file_name = file_path_sans_ext(basename(u))
+
+    cmd2 <- paste(cmd0,cmd1,u,cmd2,cmd3,file.path(output.count.file.dir,
+                                        paste0(file_name,"_count.txt")),sep = " ")
+
+    system(cmd2)
+
+    cmd2
+  },output.bedfile.dir)
+
+  re <- list(cmdl = cmd.l, output.count.file.dir = output.count.file.dir)
+
+  re
+
+}
+
+#' getcounts
+#'
+#' @param input.bamfile.dir
+#' @param annotation.bed.file
+#' @param ld
+#' @param rd
+#' @param output.count.file.dir
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' getcounts()
+#'
+#'
+#'
+getcounts <- function(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.file.dir) {
+
+   res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
+
+   input.bedfile.dir <- res$output.bedfile.dir
+
+   annotation.bed.file <- annotation.bed.file
+   ld <- ld
+   rd <- rd
+
+   res <- matchbed2annotation(input.bedfile.dir,annotation.bed.file,
+   ld,rd,output.matched.bed.file.dir)
+
+   input.bedfile.dir <- res$output.bedfile.dir
+
+   res <- getcountsfromMatchedbed (input.bedfile.dir,output.count.file.dir)
+
+   res
+}
+

@@ -8,7 +8,10 @@ if (length(args)==0) {
 } else if (length(args)>1) {
 
   input.bamfile.dir=args[1]
-  output.bedfile.dir=args[2]
+  annotation.bed.file=args[2]
+  ld=args[3]
+  rd=args[4]
+  output.count.file.dir=args[5]
 }
 
 cat(input.bamfile.dir,"\t",output.bedfile.dir,"\n")
@@ -16,4 +19,6 @@ cat(input.bamfile.dir,"\t",output.bedfile.dir,"\n")
 library(ChipSeq)
 library(ThreeUTR)
 
-res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
+#res1 <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
+
+res <- getcounts(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.file.dir)
