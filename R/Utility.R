@@ -1,4 +1,3 @@
-
 installercran <- function(.cran_packages) {
   .inst <- .cran_packages %in% installed.packages()
   if(any(!.inst)) {
@@ -76,8 +75,6 @@ parserreadfiles <- function (input.file.dir, input.file.type)
   re2 <- list(input = file.name.4, input.file.type = input.file.type)
   return(re2)
 }
-
-
 
 #' convertbam2bed
 #'
