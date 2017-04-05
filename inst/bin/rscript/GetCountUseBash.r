@@ -2,7 +2,7 @@
 
 #Usage:
 
-#Rscript  Rscript ~/R/lib64/R/library/ThreeUTR/bin/rscript/convertbam2bed.r
+#Rscript  Rscript ~/R/lib64/R/library/ThreeUTR/bin/rscript/GetCountUseBash.r
 
 R_lib=.libPaths()[1]
 
@@ -26,13 +26,6 @@ if(row=="Yes") {
 
     input<-file('stdin', 'r')
     output.file.dir <- readLines(input, n=1)
-
-    #out.file.dir=row
-
-    cat("please define genome name:\n")
-
-    input<-file('stdin', 'r')
-    genome <- readLines(input, n=1)
 
     cmd1="bsub -P bbc -J \"DogFT\" -o %J.DogFT.log -e %J.DogFT.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
