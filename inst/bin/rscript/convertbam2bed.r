@@ -13,6 +13,7 @@ if (length(args)==0) {
 
 cat(input.bamfile.dir,"\t",output.bedfile.dir,"\n")
 
+library(ChipSeq)
 library(ThreeUTR)
 
 res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
