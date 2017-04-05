@@ -228,7 +228,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir)
     # system("awk -F '\\t' '$6==\"+\" && $12==\"-\"' ~/MatchedBedFile/R1_Dox_matched.bed | awk '$8<$2&&$9>=$2' | awk '{print $4}' | sort | uniq -c | sort -nr | head")
 
     cmd0 <- "awk -F '\\t'"
-    cmd1 <- '$6==\"+\" && $12==\"-\"'
+    cmd1 <- "'$6==\"+\" && $12==\"-\"'"
     cmd2 <- "| awk | $8 < $2 && $9 >= $2 | awk '{print $4}' | sort | uniq -c | sort -nr"
     cmd3 <- ">"
 
