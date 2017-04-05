@@ -34,7 +34,7 @@ installerbioc <- function(.bioc_packages)
 #' input.file.dir <- '/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq'
 #' output.file.dir <- '/Volumes/Bioinformatics$/Aimin_project'
 #'
-#' res <- parserreadfiles(input.file.dir=input.file.dir,'bam',output.file.dir=output.file.dir)
+#' res <- parserreadfiles(input.file.dir,'bam')
 #'
 parserreadfiles <- function(input.file.dir, input.file.type)
 {
@@ -98,8 +98,7 @@ parserreadfiles <- function(input.file.dir, input.file.type)
 #'
 convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
 {
-
-    res <- parserreadfiles(input.file.dir = input.bamfile.dir, "bam")
+    res <- parserreadfiles(input.bamfile.dir,"bam")
 
     res <- res$input
 
@@ -161,7 +160,7 @@ convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
 matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld, rd, output.matched.bed.file.dir)
 {
 
-    res <- parserreadfiles(input.file.dir = input.bedfile.dir, "bed")
+    res <- parserreadfiles(input.bedfile.dir, "bed")
 
     res <- res$input
 
@@ -222,7 +221,7 @@ matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld, rd, 
 getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir)
 {
 
-    res <- parserreadfiles(input.file.dir = input.bedfile.dir, "bed")
+    res <- parserreadfiles(input.bedfile.dir, "bed")
 
     res <- res$input
 
