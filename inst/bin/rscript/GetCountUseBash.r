@@ -23,12 +23,12 @@ if(row=="Yes") {
     cat("please define the output file directory:\n")
 
     input<-file('stdin', 'r')
-    output.file.dir <- readLines(input, n=1)
+    output.count.file.dir <- readLines(input, n=1)
 
     cat("please define the annotation file:\n")
 
     input<-file('stdin', 'r')
-    annotation.file <- readLines(input, n=1)
+    annotation.bed.file <- readLines(input, n=1)
 
     cat("please define the upstream base of each transcript :\n")
 
