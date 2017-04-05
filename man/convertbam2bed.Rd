@@ -14,8 +14,8 @@ convertbam2bed
 }
 \examples{
 
-input.bamfile.dir <- "/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq"
-output.bedfile.dir <- "/Volumes/Bioinformatics$/Aimin_project"
+input.bamfile.dir <- '/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq'
+output.bedfile.dir <- '/Volumes/Bioinformatics$/Aimin_project'
 
 res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
 

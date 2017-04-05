@@ -226,9 +226,9 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir)
 
     res <- res$input
 
-    cmd0 <- "awk -F \"\t\""
-    cmd1 <- "$6==\"+\"&&$12==\"-\""
-    cmd2 <- "$8<$2&&$9>==$2 | awk '{print $4}' | sort | uniq -c | sort -nr"
+    cmd0 <- 'awk -F "\t"'
+    cmd1 <- '$6 == "+" && $12 == "-"'
+    cmd2 <- "$8 < $2 && $9 >= $2 | awk '{print $4}' | sort | uniq -c | sort -nr"
     cmd3 <- ">"
 
     output.count.file.dir <- file.path(output.count.file.dir, "Counts")

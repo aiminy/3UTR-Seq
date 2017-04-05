@@ -13,9 +13,9 @@ parserreadfiles(input.file.dir, input.file.type)
 parserreadfiles
 }
 \examples{
-input.file.dir <- "/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq"
-output.file.dir <- "/Volumes/Bioinformatics$/Aimin_project"
+input.file.dir <- '/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq'
+output.file.dir <- '/Volumes/Bioinformatics$/Aimin_project'
 
-res <- parserreadfiles(input.file.dir=input.file.dir,"bam",output.file.dir=output.file.dir)
+res <- parserreadfiles(input.file.dir=input.file.dir,'bam',output.file.dir=output.file.dir)
 
 }
