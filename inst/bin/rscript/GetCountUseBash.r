@@ -18,7 +18,7 @@ if(row=="Yes") {
     cat("please define the input Bam file directory:\n")
 
     input<-file('stdin', 'r')
-    input.file.dir <- readLines(file('stdin', 'r'), n=1)
+    input.bamfile.dir <- readLines(file('stdin', 'r'), n=1)
 
     cat("please define the output file directory:\n")
 
