@@ -1,20 +1,24 @@
-installercran <- function(.cran_packages) {
-  .inst <- .cran_packages %in% installed.packages()
-  if(any(!.inst)) {
-    install.packages(.cran_packages[!.inst])
-  }
-  # Load packages into session, and print package version
-  sapply(c(.cran_packages, .bioc_packages), require, character.only = TRUE)
+installercran <- function(.cran_packages)
+{
+    .inst <- .cran_packages %in% installed.packages()
+    if (any(!.inst))
+    {
+        install.packages(.cran_packages[!.inst])
+    }
+    # Load packages into session, and print package version
+    sapply(c(.cran_packages, .bioc_packages), require, character.only = TRUE)
 }
 
-installerbioc <- function(.bioc_packages){
-  .inst <- .bioc_packages %in% installed.packages()
-  if(any(!.inst)) {
-    source("http://bioconductor.org/biocLite.R")
-    biocLite(.bioc_packages[!.inst], ask = F)
-  }
-  # Load packages into session, and print package version
-  sapply(.bioc_packages, require, character.only = TRUE)
+installerbioc <- function(.bioc_packages)
+{
+    .inst <- .bioc_packages %in% installed.packages()
+    if (any(!.inst))
+    {
+        source("http://bioconductor.org/biocLite.R")
+        biocLite(.bioc_packages[!.inst], ask = F)
+    }
+    # Load packages into session, and print package version
+    sapply(.bioc_packages, require, character.only = TRUE)
 }
 
 #' parserreadfiles
@@ -27,53 +31,54 @@ installerbioc <- function(.bioc_packages){
 #' @export
 #'
 #' @examples
-#' input.file.dir <- "/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq"
-#' output.file.dir <- "/Volumes/Bioinformatics$/Aimin_project"
+#' input.file.dir <- '/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq'
+#' output.file.dir <- '/Volumes/Bioinformatics$/Aimin_project'
 #'
-#' res <- parserreadfiles(input.file.dir=input.file.dir,"bam",output.file.dir=output.file.dir)
+#' res <- parserreadfiles(input.file.dir=input.file.dir,'bam',output.file.dir=output.file.dir)
 #'
-parserreadfiles <- function (input.file.dir, input.file.type)
+parserreadfiles <- function(input.file.dir, input.file.type)
 {
-  dir.name = input.file.dir
-  dir.name = reformatPath(dir.name)
-  file.name = file.path(dir.name, dir(dir.name, recursive = TRUE))
-  file.name.2 <- as.list(file.name)
-  file.name.3 <- lapply(1:length(file.name.2), function(u,
-                                                        input.file.type, file.name.2) {
-    tmp = file.name.2
-    x = tmp[[u]]
-    path_name = dirname(x)
-    file_name = basename(x)
-    n <- length(grep(input.file.type, file_name))
-    if (n == 1) {
-      if(file_ext(file_name)==input.file.type){
-      re <- file.path(path_name, file_name)
-      } else{
-        re <- NULL
-    }
+    dir.name = input.file.dir
+    dir.name = reformatPath(dir.name)
+    file.name = file.path(dir.name, dir(dir.name, recursive = TRUE))
+    file.name.2 <- as.list(file.name)
+    file.name.3 <- lapply(1:length(file.name.2), function(u, input.file.type, file.name.2)
+    {
+        tmp = file.name.2
+        x = tmp[[u]]
+        path_name = dirname(x)
+        file_name = basename(x)
+        n <- length(grep(input.file.type, file_name))
+        if (n == 1)
+        {
+            if (file_ext(file_name) == input.file.type)
+            {
+                re <- file.path(path_name, file_name)
+            } else
+            {
+                re <- NULL
+            }
 
-    }
-    else {
-      re <- NULL
-    }
-    re
-  }, input.file.type, file.name.2)
+        } else
+        {
+            re <- NULL
+        }
+        re
+    }, input.file.type, file.name.2)
 
-  file.name.4 <- file.name.3[lapply(file.name.3, length) >
-                               0]
-  names(file.name.4) = unlist(lapply(1:length(file.name.4),
-                                     function(u, file.name.4) {
-                                       tmp = file.name.4
-                                       x = tmp[[u]]
-                                       path_name = dirname(x)
-                                       file_name = basename(x)
-                                       file_name
-                                     }, file.name.4))
+    file.name.4 <- file.name.3[lapply(file.name.3, length) > 0]
+    names(file.name.4) = unlist(lapply(1:length(file.name.4), function(u, file.name.4)
+    {
+        tmp = file.name.4
+        x = tmp[[u]]
+        path_name = dirname(x)
+        file_name = basename(x)
+        file_name
+    }, file.name.4))
 
-  #output.dir.name = reformatPath(output.file.dir)
-  #temp3 = output.dir.name
-  re2 <- list(input = file.name.4, input.file.type = input.file.type)
-  return(re2)
+    # output.dir.name = reformatPath(output.file.dir) temp3 = output.dir.name
+    re2 <- list(input = file.name.4, input.file.type = input.file.type)
+    return(re2)
 }
 
 #' convertbam2bed
@@ -86,49 +91,47 @@ parserreadfiles <- function (input.file.dir, input.file.type)
 #'
 #' @examples
 #'
-#' input.bamfile.dir <- "/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq"
-#' output.bedfile.dir <- "/Volumes/Bioinformatics$/Aimin_project"
+#' input.bamfile.dir <- '/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq'
+#' output.bedfile.dir <- '/Volumes/Bioinformatics$/Aimin_project'
 #'
 #' res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
 #'
-convertbam2bed <- function(input.bamfile.dir,output.bedfile.dir){
+convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
+{
 
-  res <- parserreadfiles(input.file.dir=input.bamfile.dir,
-                         "bam")
+    res <- parserreadfiles(input.file.dir = input.bamfile.dir, "bam")
 
-  res <- res$input
+    res <- res$input
 
-  cmd0 <- "bedtools bamtobed -i"
-  cmd1 <- ">"
+    cmd0 <- "bedtools bamtobed -i"
+    cmd1 <- ">"
 
-  output.bedfile.dir <-file.path(output.bedfile.dir,"BedFileFromBam")
+    output.bedfile.dir <- file.path(output.bedfile.dir, "BedFileFromBam")
 
-  if (!dir.exists(output.bedfile.dir)) {
-    dir.create(output.bedfile.dir)
-  }
+    if (!dir.exists(output.bedfile.dir))
+    {
+        dir.create(output.bedfile.dir)
+    }
 
-  cmd.l <- lapply(res,function(u,output.bedfile.dir){
+    cmd.l <- lapply(res, function(u, output.bedfile.dir)
+    {
 
-    # cat(u,"\n")
-    # cmd9 <- "grep"
-    # cmd10 <- "~/PathwaySplice/inst/extdata/"
-    # cmd11 <- "/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt"
-    # cmd12 <- ">"
-    # cmd13 <- paste0("/Counts.",n,".genes.txt")
-    # xxx <- gsub(";","",xx)
-    #
-    file_name = file_path_sans_ext(basename(u))
+        # cat(u,'\n') cmd9 <- 'grep' cmd10 <- '~/PathwaySplice/inst/extdata/' cmd11 <-
+        # '/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt' cmd12 <- '>' cmd13 <-
+        # paste0('/Counts.',n,'.genes.txt') xxx <- gsub(';','',xx)
+        file_name = file_path_sans_ext(basename(u))
 
-    cmd2 <- paste(cmd0,u,cmd1,file.path(output.bedfile.dir,paste0(file_name,".bed")),sep = " ")
+        cmd2 <- paste(cmd0, u, cmd1, file.path(output.bedfile.dir, paste0(file_name,
+            ".bed")), sep = " ")
 
-    system(cmd2)
+        system(cmd2)
 
-    cmd2
-  },output.bedfile.dir)
+        cmd2
+    }, output.bedfile.dir)
 
-  re <- list(cmdl = cmd.l,output.bedfile.dir = output.bedfile.dir)
+    re <- list(cmdl = cmd.l, output.bedfile.dir = output.bedfile.dir)
 
-  re
+    re
 
 }
 
@@ -155,46 +158,43 @@ convertbam2bed <- function(input.bamfile.dir,output.bedfile.dir){
 #' res <- matchbed2annotation(input.bedfile.dir,annotation.bed.file,
 #' ld,rd,output.matched.bed.file.dir)
 #'
-matchbed2annotation <- function(input.bedfile.dir,annotation.bed.file,
-                                ld,rd,output.matched.bed.file.dir){
+matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld, rd, output.matched.bed.file.dir)
+{
 
-  res <- parserreadfiles(input.file.dir=input.bedfile.dir,
-                         "bed")
+    res <- parserreadfiles(input.file.dir = input.bedfile.dir, "bed")
 
-  res <- res$input
+    res <- res$input
 
-  cmd0 <- paste("bedtools window -a",annotation.bed.file,"-b",sep=" ")
+    cmd0 <- paste("bedtools window -a", annotation.bed.file, "-b", sep = " ")
 
-  cmd1 <- paste("-l",ld,"-r",rd,"-sw",">",sep=" ")
+    cmd1 <- paste("-l", ld, "-r", rd, "-sw", ">", sep = " ")
 
-  output.bedfile.dir <-file.path(output.matched.bed.file.dir,"MatchedBedFile")
+    output.bedfile.dir <- file.path(output.matched.bed.file.dir, "MatchedBedFile")
 
-  if (!dir.exists(output.bedfile.dir)) {
-    dir.create(output.bedfile.dir)
-  }
+    if (!dir.exists(output.bedfile.dir))
+    {
+        dir.create(output.bedfile.dir)
+    }
 
-  cmd.l <- lapply(res,function(u,output.bedfile.dir){
+    cmd.l <- lapply(res, function(u, output.bedfile.dir)
+    {
 
-    # cat(u,"\n")
-    # cmd9 <- "grep"
-    # cmd10 <- "~/PathwaySplice/inst/extdata/"
-    # cmd11 <- "/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt"
-    # cmd12 <- ">"
-    # cmd13 <- paste0("/Counts.",n,".genes.txt")
-    # xxx <- gsub(";","",xx)
-    #
-    file_name = file_path_sans_ext(basename(u))
+        # cat(u,'\n') cmd9 <- 'grep' cmd10 <- '~/PathwaySplice/inst/extdata/' cmd11 <-
+        # '/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt' cmd12 <- '>' cmd13 <-
+        # paste0('/Counts.',n,'.genes.txt') xxx <- gsub(';','',xx)
+        file_name = file_path_sans_ext(basename(u))
 
-    cmd2 <- paste(cmd0,u,cmd1,file.path(output.bedfile.dir,paste0(file_name,"_matched.bed")),sep = " ")
+        cmd2 <- paste(cmd0, u, cmd1, file.path(output.bedfile.dir, paste0(file_name,
+            "_matched.bed")), sep = " ")
 
-    system(cmd2)
+        system(cmd2)
 
-    cmd2
-  },output.bedfile.dir)
+        cmd2
+    }, output.bedfile.dir)
 
-  re <- list(cmdl = cmd.l,output.bedfile.dir = output.bedfile.dir)
+    re <- list(cmdl = cmd.l, output.bedfile.dir = output.bedfile.dir)
 
-  re
+    re
 
 }
 
@@ -219,39 +219,41 @@ matchbed2annotation <- function(input.bedfile.dir,annotation.bed.file,
 #'
 #' res <- getcountsfromMatchedbed (input.bedfile.dir,output.count.file.dir)
 #'
-getcountsfromMatchedbed <- function(input.bedfile.dir,output.count.file.dir){
+getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir)
+{
 
-  res <- parserreadfiles(input.file.dir=input.bedfile.dir,
-                         "bed")
+    res <- parserreadfiles(input.file.dir = input.bedfile.dir, "bed")
 
-  res <- res$input
+    res <- res$input
 
-  cmd0 <- 'awk -F "\t"'
-  cmd1 <- '$6=="+"&&$12=="-"'
-  cmd2 <- "$8<$2&&$9>==$2 | awk '{print $4}' | sort | uniq -c | sort -nr"
-  cmd3 <- ">"
+    cmd0 <- "awk -F \"\t\""
+    cmd1 <- "$6==\"+\"&&$12==\"-\""
+    cmd2 <- "$8<$2&&$9>==$2 | awk '{print $4}' | sort | uniq -c | sort -nr"
+    cmd3 <- ">"
 
-  output.count.file.dir <-file.path(output.count.file.dir,"Counts")
+    output.count.file.dir <- file.path(output.count.file.dir, "Counts")
 
-  if (!dir.exists(output.count.file.dir)) {
-    dir.create(output.count.file.dir)
-  }
+    if (!dir.exists(output.count.file.dir))
+    {
+        dir.create(output.count.file.dir)
+    }
 
-  cmd.l <- lapply(res,function(u,output.count.file.dir){
+    cmd.l <- lapply(res, function(u, output.count.file.dir)
+    {
 
-    file_name = file_path_sans_ext(basename(u))
+        file_name = file_path_sans_ext(basename(u))
 
-    cmd2 <- paste(cmd0,cmd1,u,cmd2,cmd3,file.path(output.count.file.dir,
-                                        paste0(file_name,"_count.txt")),sep = " ")
+        cmd2 <- paste(cmd0, cmd1, u, cmd2, cmd3, file.path(output.count.file.dir,
+            paste0(file_name, "_count.txt")), sep = " ")
 
-    system(cmd2)
+        system(cmd2)
 
-    cmd2
-  },output.bedfile.dir)
+        cmd2
+    }, output.count.file.dir)
 
-  re <- list(cmdl = cmd.l, output.count.file.dir = output.count.file.dir)
+    re <- list(cmdl = cmd.l, output.count.file.dir = output.count.file.dir)
 
-  re
+    re
 
 }
 
@@ -272,23 +274,23 @@ getcountsfromMatchedbed <- function(input.bedfile.dir,output.count.file.dir){
 #'
 #'
 #'
-getcounts <- function(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.file.dir) {
+getcounts <- function(input.bamfile.dir, annotation.bed.file, ld, rd, output.count.file.dir)
+{
 
-   res <- convertbam2bed(input.bamfile.dir,output.count.file.dir)
+    res <- convertbam2bed(input.bamfile.dir, output.count.file.dir)
 
-   input.bedfile.dir <- res$output.bedfile.dir
+    input.bedfile.dir <- res$output.bedfile.dir
 
-   annotation.bed.file <- annotation.bed.file
-   ld <- ld
-   rd <- rd
+    annotation.bed.file <- annotation.bed.file
+    ld <- ld
+    rd <- rd
 
-   res <- matchbed2annotation(input.bedfile.dir,annotation.bed.file,
-   ld,rd,output.count.file.dir)
+    res <- matchbed2annotation(input.bedfile.dir, annotation.bed.file, ld, rd, output.count.file.dir)
 
-   input.bedfile.dir <- res$output.bedfile.dir
+    input.bedfile.dir <- res$output.bedfile.dir
 
-   res <- getcountsfromMatchedbed (input.bedfile.dir,output.count.file.dir)
+    res <- getcountsfromMatchedbed(input.bedfile.dir, output.count.file.dir)
 
-   res
+    res
 }
 
