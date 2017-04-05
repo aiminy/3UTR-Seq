@@ -14,7 +14,7 @@ if (length(args)==0) {
   output.count.file.dir=args[5]
 }
 
-cat(input.bamfile.dir,"\t",output.bedfile.dir,"\n")
+#cat(input.bamfile.dir,"\t",output.bedfile.dir,"\n")
 
 library(ChipSeq)
 library(ThreeUTR)

@@ -274,7 +274,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir,output.count.file.dir){
 #'
 getcounts <- function(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.file.dir) {
 
-   res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
+   res <- convertbam2bed(input.bamfile.dir,output.count.file.dir)
 
    input.bedfile.dir <- res$output.bedfile.dir
 
@@ -283,7 +283,7 @@ getcounts <- function(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.f
    rd <- rd
 
    res <- matchbed2annotation(input.bedfile.dir,annotation.bed.file,
-   ld,rd,output.matched.bed.file.dir)
+   ld,rd,output.count.file.dir)
 
    input.bedfile.dir <- res$output.bedfile.dir
 
