@@ -199,7 +199,7 @@ matchbed2annotation <- function(input.bedfile.dir,annotation.bed.file,
 }
 
 
-#' matchbed2annotation
+#' getcountsfromMatchedbed
 #'
 #' @param input.bedfile.dir
 #' @param annotation.bed.file
