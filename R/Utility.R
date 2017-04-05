@@ -225,9 +225,11 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir)
 
     res <- res$input
 
-    cmd0 <- 'awk -F "\t"'
-    cmd1 <- '$6=="+" && $12=="-"'
-    cmd2 <- "$8 < $2 && $9 >= $2 | awk '{print $4}' | sort | uniq -c | sort -nr"
+    # system("awk -F '\\t' '$6==\"+\" && $12==\"-\"' ~/MatchedBedFile/R1_Dox_matched.bed | awk '$8<$2&&$9>=$2' | awk '{print $4}' | sort | uniq -c | sort -nr | head")
+
+    cmd0 <- "awk -F '\\t'"
+    cmd1 <- '$6==\"+\" && $12==\"-\"'
+    cmd2 <- "| awk | $8 < $2 && $9 >= $2 | awk '{print $4}' | sort | uniq -c | sort -nr"
     cmd3 <- ">"
 
     output.count.file.dir <- file.path(output.count.file.dir, "Counts")
@@ -242,12 +244,14 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir)
 
         file_name = file_path_sans_ext(basename(u))
 
-        cmd2 <- paste(cmd0, cmd1, u, cmd2, cmd3, file.path(output.count.file.dir,
+        cmd4 <- paste(cmd0, cmd1, u, cmd2, cmd3, file.path(output.count.file.dir,
             paste0(file_name, "_count.txt")), sep = " ")
 
-        system(cmd2)
+        cat(cmd4,"\n")
 
-        cmd2
+        system(cmd4)
+
+        cmd4
     }, output.count.file.dir)
 
     re <- list(cmdl = cmd.l, output.count.file.dir = output.count.file.dir)
