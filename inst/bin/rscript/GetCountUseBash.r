@@ -37,5 +37,3 @@ if(row=="Yes") {
     cat("Finished conversion...\n")
 
   }else{quit()}
-
-}
