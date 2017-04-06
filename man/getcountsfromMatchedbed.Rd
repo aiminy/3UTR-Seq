@@ -4,7 +4,7 @@
 \alias{getcountsfromMatchedbed}
 \title{getcountsfromMatchedbed}
 \usage{
-getcountsfromMatchedbed(input.bedfile.dir, output.count.file.dir)
+getcountsfromMatchedbed(input.bedfile.dir, output.count.file.dir, filter.sample)
 }
 \arguments{
 \item{ld}{upstream base}

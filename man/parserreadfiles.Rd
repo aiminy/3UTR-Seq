@@ -4,7 +4,7 @@
 \alias{parserreadfiles}
 \title{parserreadfiles}
 \usage{
-parserreadfiles(input.file.dir, input.file.type)
+parserreadfiles(input.file.dir, input.file.type, filter.sample = NULL)
 }
 \arguments{
 \item{output.file.dir}{}
@@ -16,6 +16,7 @@ parserreadfiles
 input.file.dir <- '/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq'
 output.file.dir <- '/Volumes/Bioinformatics$/Aimin_project'
 
-res <- parserreadfiles(input.file.dir,'bam')
+
+res <- parserreadfiles(input.file.dir,'bam',filter.sample="emp1")
 
 }

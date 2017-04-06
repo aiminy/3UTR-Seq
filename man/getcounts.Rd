@@ -4,7 +4,8 @@
 \alias{getcounts}
 \title{getcounts}
 \usage{
-getcounts(input.bamfile.dir, annotation.bed.file, ld, rd, output.count.file.dir)
+getcounts(input.bamfile.dir, annotation.bed.file, ld, rd, output.count.file.dir,
+  filter.sample)
 }
 \arguments{
 \item{output.count.file.dir}{}
