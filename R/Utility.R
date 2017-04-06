@@ -228,9 +228,23 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir)
     # system("awk -F '\\t' '$6==\"+\" && $12==\"-\"' ~/MatchedBedFile/R1_Dox_matched.bed | awk '$8<$2&&$9>=$2' | awk '{print $4}' | sort | uniq -c | sort -nr | head")
 
     cmd0 <- "awk -F '\\t'"
+
     cmd1 <- "'$6==\"+\" && $12==\"-\"'"
+    cmd11 <- "'$6==\"+\" && $12==\"+\"'"
+    cmd12 <- "'$6==\"-\" && $12==\"+\"'"
+    cmd13 <- "'$6==\"-\" && $12==\"-\"'"
+
     cmd2 <- "| awk '$8 < $2 && $9 >= $2' | awk '{print $4}' | sort | uniq -c | sort -nr"
+    cmd21 <- "| awk '$8 >= $2 && $9 <= $3' | awk '{print $4}' | sort | uniq -c | sort -nr"
+    cmd22 <- "| awk '$8 <= $3 && $9 > $3' | awk '{print $4}' | sort | uniq -c | sort -nr"
+
     cmd3 <- ">"
+
+    cmdtemp<-rbind(
+    cbind(rep(cmd1,3),c(cmd2,cmd21,cmd22),rep("plus",3),rep("minus",3),c("below.DoGs","DoGs","over.DoGs")),
+    cbind(rep(cmd11,3),c(cmd2,cmd21,cmd22),rep("plus",3),rep("plus",3),c("below.DoGs","DoGs","over.DoGs")),
+    cbind(rep(cmd12,3),c(cmd2,cmd21,cmd22),rep("minus",3),rep("plus",3),c("over.DoGs","DoGs","below.DoGs")),
+    cbind(rep(cmd13,3),c(cmd2,cmd21,cmd22),rep("minus",3),rep("minus",3),c("over.DoGs","DoGs","below.DoGs")))
 
     output.count.file.dir <- file.path(output.count.file.dir, "Counts")
 
@@ -239,22 +253,47 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir)
         dir.create(output.count.file.dir)
     }
 
-    cmd.l <- lapply(res, function(u, output.count.file.dir)
-    {
+    counteachcase <- function(res, cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand, location, output.count.file.dir) {
 
-        file_name = file_path_sans_ext(basename(u))
+      cmd.l <- lapply(res, function(u, output.count.file.dir)
+      {
 
-        cmd4 <- paste(cmd0, cmd1, u, cmd2, cmd3, file.path(output.count.file.dir,
-            paste0(file_name, "_count.txt")), sep = " ")
+          file_name = file_path_sans_ext(basename(u))
 
-        cat(cmd4,"\n")
+          cmd4 <- paste(cmd0, cmd1, u, cmd2, cmd3, file.path(output.count.file.dir,
+              paste0(file_name,".",gene.strand,".gene.",read.strand,".read.",
+                     location,".count.txt")), sep = " ")
+          cat(cmd4,"\n")
 
-        system(cmd4)
+          system(cmd4)
 
-        cmd4
-    }, output.count.file.dir)
+          cmd4
 
-    re <- list(cmdl = cmd.l, output.count.file.dir = output.count.file.dir)
+      }, output.count.file.dir)
+
+     return(cmd.1)
+
+    }
+
+
+    cmdtempres2 <- apply(cmdtemp,1,function(u,cmd0,cmd3,output.count.file.dir){
+     x <- as.data.frame(t(u))
+
+     cmd1 <- x[,1]
+     cmd2 <- x[,2]
+     gene.strand <- x[,3]
+
+     read.strand <- x[,4]
+
+     location <- x[,5]
+
+     cmdtempres <- counteachcase(res, cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand, location, output.count.file.dir)
+
+     cmdtempres
+
+    },cmd0,cmd3,output.count.file.dir)
+
+    re <- list(cmdl = cmdtempres2, output.count.file.dir = output.count.file.dir)
 
     re
 
