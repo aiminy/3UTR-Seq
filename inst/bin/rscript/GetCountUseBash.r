@@ -41,11 +41,16 @@ if (row == "Yes") {
   input <- file("stdin", "r")
   rd <- readLines(input, n = 1)
 
+  cat("please define the sample that will not used for count :\n")
+
+  input <- file("stdin", "r")
+  no.use.sample <- readLines(input, n = 1)
+
   cmd1 = "bsub -P bbc -J \"DogFT\" -o %J.DogFT.log -e %J.DogFT.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
   cmd2 = paste0(R_lib, "/ThreeUTR/bin/rscript/convertbam2bed.r")
 
   cmd3 = paste("Rscript", cmd2, input.bamfile.dir, annotation.bed.file,
-    ld, rd, output.count.file.dir, sep = " ")
+    ld, rd, output.count.file.dir,no.use.sample,sep = " ")
 
   system(paste0(cmd1, " ", cmd3))
 

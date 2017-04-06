@@ -12,6 +12,7 @@ if (length(args)==0) {
   ld=args[3]
   rd=args[4]
   output.count.file.dir=args[5]
+  sample.not.used=args[6]
 }
 
 #cat(input.bamfile.dir,"\t",output.bedfile.dir,"\n")
@@ -29,4 +30,10 @@ if (!dir.exists(output.count.file.dir))
   dir.create(output.count.file.dir)
 }
 
-res <- getcounts(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.file.dir)
+if(sample.not.used == "No"){
+filter.sample <- NULL
+}else{
+filter.sample <- sample.not.used
+}
+
+res <- getcounts(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.file.dir,filter.sample)
