@@ -1,0 +1,1 @@
+awk -F"\t" '{OFS="\t";print $1,$2,$3,$4,$5,$6}' /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4.bed | awk -v OFS="\t" '$1=$1' > /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene_pos_neg_downstream_sorted_4_coverageBed.bed

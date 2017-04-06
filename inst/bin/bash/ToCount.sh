@@ -1,0 +1,1 @@
+htseq-count -f bam 201348189-01.bam genes.gtf > 201348189-01_raw_count.txt 

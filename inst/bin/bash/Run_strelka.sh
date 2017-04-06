@@ -1,0 +1,1 @@
+$STRELKA_INSTALL_DIR/bin/configureStrelkaWorkfslow.pl --normal=./zLi_MouseExome_201519492-01_S_3_.bam --tumor=./zLi_MouseExome_201519495-01_S_3_.bam --ref=/home/aiminyan/Mus_musculus/UCSC/mm10/Sequence/WholeGenomeFasta/genome.fa --config=config.ini --output-dir=./myAnalysis
