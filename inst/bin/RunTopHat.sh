@@ -1,1 +1,0 @@
-tophat mm10_index_bt2/genome ~/RNAseqData/nBishopric_Project1_201348189-01_S_1_1.txt ~/RNAseqData/nBishopric_Project1_201348189-01_S_1_2.txt

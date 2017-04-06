@@ -1,1 +1,0 @@
-zcat $1 | awk '{OFS="\t";print "chr"$1,$2,$3}' > $2
