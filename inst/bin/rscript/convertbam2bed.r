@@ -20,8 +20,13 @@ library(ChipSeq)
 library(ThreeUTR)
 
 #res1 <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
-input.bedfile.dir <-  input.bamfile.dir
+#input.bedfile.dir <-  input.bamfile.dir
 
-res <- getcountsfromMatchedbed (input.bedfile.dir,output.count.file.dir)
+#res <- getcountsfromMatchedbed (input.bedfile.dir,output.count.file.dir)
 
-#res <- getcounts(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.file.dir)
+if (!dir.exists(output.count.file.dir))
+{
+  dir.create(output.count.file.dir)
+}
+
+res <- getcounts(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.file.dir)
