@@ -12,7 +12,7 @@
 #' gene.interested<-ReadGeneList(dir.name, input.file.pattern.4.interested.gene)
 #'
 ReadGeneList<- function(dir.name, input.file.pattern.4.interested.gene) {
-  file.name=paste0(dir.name,dir(dir.name,recursive = TRUE,pattern=input.file.pattern.4.interested.gene))
+  file.name=file.path(dir.name,input.file.pattern.4.interested.gene)
   genes.interested<-read.csv(file.name,header=F)
   return(genes.interested)
 }

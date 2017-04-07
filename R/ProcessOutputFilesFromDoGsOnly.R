@@ -351,23 +351,23 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     }
 
     re2 <- ReformatGeneSymbol(re.DESeq.DoGs.plus.gene)
-    write.csv(re2, file = paste0(out.dir.name, "3UTR_DE_", out.file.pattern.positive.gene,
-        ".csv"), row.names = FALSE, quote = FALSE)
+    write.csv(re2, file = file.path(out.dir.name, paste0("3UTR_DE_", out.file.pattern.positive.gene,
+        ".csv")), row.names = FALSE, quote = FALSE)
 
     re2 <- ReformatGeneSymbol(re.DESeq.DoGs.minus.gene)
-    write.csv(re2, file = paste0(out.dir.name, "3UTR_DE_", out.file.pattern.negative.gene,
-        ".csv"), row.names = FALSE, quote = FALSE)
+    write.csv(re2, file = file.path(out.dir.name, paste0("3UTR_DE_", out.file.pattern.negative.gene,
+        ".csv")), row.names = FALSE, quote = FALSE)
 
     re2 <- ReformatGeneSymbol(re.DESeq.DoGs.plus.minus.gene)
-    write.csv(re2, file = paste0(out.dir.name, "3UTR_DE_", out.file.pattern.all,
-        ".csv"), row.names = FALSE, quote = FALSE)
+    write.csv(re2, file = file.path(out.dir.name, paste0("3UTR_DE_", out.file.pattern.all,
+        ".csv")), row.names = FALSE, quote = FALSE)
     # Re.unadjusted.adjusted$DE
 
     # write.csv(Re.unadjusted.adjusted$DE,file=paste0(out.dir.name,'3UTR_DE_',out.file.pattern.all,'.csv'),row.names
     # = FALSE,quote=FALSE)
     re2 <- ReformatGeneSymbol(re.DESeq.DoGs.plus.minus.gene.interested)
-    write.csv(re2, file = paste0(out.dir.name, "3UTR_DE_", out.file.pattern.interested,
-        ".csv"))
+    write.csv(re2, file = file.path(out.dir.name, paste0("3UTR_DE_", out.file.pattern.interested,
+        ".csv")))
 
     # write.csv(re.DESeq.DoGs.plus.minus.gene,file=paste0(out.dir.name,'3UTR_DE_',out.file.pattern.all,'.csv'),row.names
     # = FALSE,quote=FALSE) Re.unadjusted.adjusted$DE
