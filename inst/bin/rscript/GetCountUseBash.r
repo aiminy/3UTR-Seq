@@ -97,13 +97,14 @@ if (row == "Yes") {
 
    print(count.file.dir)
 
-  # cmd1 = "bsub -P bbc -J \"DogFT\" -o %J.DogFT.log -e %J.DogFT.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-  # cmd2 = paste0(R_lib, "/ThreeUTR/bin/rscript/analysis.r")
-  #
-  # cmd3 = paste("Rscript", cmd2, input.bamfile.dir, annotation.bed.file,
-  #              ld, rd, output.count.file.dir,no.use.sample,sep = " ")
-  #
-  # system(paste0(cmd1, " ", cmd3))
+   cmd1 = "bsub -P bbc -J \"DogFT\" -o %J.DogFT.log -e %J.DogFT.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+   cmd2 = paste0(R_lib, "/ThreeUTR/bin/rscript/analysis.r")
+
+   cmd3 = paste("Rscript",cmd2,paste(count.file.dir,collapse = " "))
+
+   print(cmd3)
+
+   # system(paste0(cmd1, " ", cmd3))
   #
   # cat("Finished analysis...\n")
 
