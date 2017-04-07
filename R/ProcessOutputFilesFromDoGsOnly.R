@@ -55,15 +55,17 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     out.file.pattern.negative.gene, out.file.pattern.all, dir.name.gene.list,
     pattern.4.gene.list, adjust_by_batch)
     {
-    file.name = paste0(dir.name, dir(dir.name, recursive = TRUE,
+    file.name = file.path(dir.name, dir(dir.name, recursive = TRUE,
         pattern = input.file.pattern))
 
     print(file.name)
 
     file.name.2 <- as.list(file.name)
 
-    names(file.name.2) = sapply(strsplit(file.name, split = "\\/"),
-        "[[", 7)
+    #names(file.name.2) = sapply(strsplit(file.name, split = "\\/"),
+    #    "[[", 7)
+
+    names(file.name.2) = basename(file.name)
 
     print(file.name.2)
 
