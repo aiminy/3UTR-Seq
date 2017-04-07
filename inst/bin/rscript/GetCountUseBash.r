@@ -57,43 +57,46 @@ if (row == "Yes") {
 
 } else {
 
-   cat("I already have counts, so I need to perform analysis.\n")
+  cat("I already have counts, so I need to perform analysis.\n")
 
-  library("optparse")
+  # library("optparse")
+  #
+  # option_list = list(
+  #   make_option(c("-i", "--input.count.file.dir"), type="character", default=NULL,
+  #               help="count file dir", metavar="character"),
+  #   make_option(c("-o", "--output.analysis.dir"), type="character", default="Analysis",
+  #               help="output file name [default= %default]", metavar="character")
+  #   make_option(c("-pattern", "--input.file.pattern"), type="character", default=NULL,
+  #               help="a pattern you define", metavar="character"),
+  #   make_option(c("-o", "--out"), type="character", default="out.txt",
+  #               help="output file name [default= %default]", metavar="character")
+  # );
+  #
+  # opt_parser = OptionParser(option_list=option_list);
+  # opt = parse_args(opt_parser);
+  #
+  # if (is.null(opt$file)){
+  #   print_help(opt_parser)
+  #   stop("At least one argument must be supplied (input file).n", call.=FALSE)
+  # }
 
-  option_list = list(
-    make_option(c("-f", "--file"), type="character", default=NULL,
-                help="dataset file name", metavar="character"),
-    make_option(c("-o", "--out"), type="character", default="out.txt",
-                help="output file name [default= %default]", metavar="character")
-  );
+    cat("Please define the following setting parameters: \n",
+    "input.count.file.dir (ex: UTR/Counts)\n",
+    "input.file.pattern (ex: count.txt)\n",
+    "output.anlysis.dir (ex:UTR/Analysis)\n",
+    "out.file.pattern.interested(ex:DoGs_adjust_by_batch_interested_gene) \n",
+    "out.file.pattern.positive.gene(ex:DoGs_adjust_by_batch_positive) \n",
+    "out.file.pattern.negative.gene(ex:DoGs_adjust_by_batch_negative) \n",
+    "out.file.pattern.all(ex:DoGs_adjust_by_batch_all) \n",
+    "dir.name.gene.list(ex:/scratch/projects/exempt/tr/azhang/for_bioinfo_core/RNA_seq) \n",
+    "pattern.4.gene.list(ex:final_list.csv) \n",
+    "adjust_by_batch(ex:Yes) \n")
 
-  opt_parser = OptionParser(option_list=option_list);
-  opt = parse_args(opt_parser);
+   input <- file("stdin", "r")
+   count.file.dir <- readLines(input, n = 10)
 
-  if (is.null(opt$file)){
-    print_help(opt_parser)
-    stop("At least one argument must be supplied (input file).n", call.=FALSE)
-  }
+   print(count.file.dir)
 
-  #  cat("Please define the following setting parameters: \n")
-  #
-  #
-  #  input.count.file.dir = arg[1]
-  #  input.file.pattern = arg[2]
-  #  output.anlysis.dir = arg[3]
-  #  out.file.pattern.interested = arg[4]
-  #  out.file.pattern.positive.gene = arg[5]
-  #  out.file.pattern.negative.gene = arg[6]
-  #  out.file.pattern.all = arg[7]
-  #  dir.name.gene.list = arg[8]
-  #  pattern.4.gene.list = arg[9]
-  #  adjust_by_batch = arg[10]
-  #
-  #
-  #  input <- file("stdin", "r")
-  #  count.file.dir <- readLines(input, n = 1)
-  #
   # cmd1 = "bsub -P bbc -J \"DogFT\" -o %J.DogFT.log -e %J.DogFT.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
   # cmd2 = paste0(R_lib, "/ThreeUTR/bin/rscript/analysis.r")
   #
