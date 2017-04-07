@@ -28,6 +28,7 @@ if (!dir.exists(output.anlysis.dir))
 
 library(ChipSeq)
 library(ThreeUTR)
+library(org.Hs.eg.db)
 
 Re.unadjusted.adjusted <- ProcessOutputFilesFromDoGsOnly(input.count.file.dir,
     input.file.pattern, output.anlysis.dir, out.file.pattern.interested,
