@@ -21,9 +21,9 @@ if (length(args) == 0)
     adjust_by_batch = args[10]
 }
 
-if (!dir.exists(output.count.file.dir))
+if (!dir.exists(output.anlysis.dir))
 {
-    dir.create(output.count.file.dir)
+    dir.create(output.anlysis.dir)
 }
 
 library(ChipSeq)
