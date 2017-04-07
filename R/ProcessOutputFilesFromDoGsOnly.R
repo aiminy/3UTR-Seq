@@ -62,9 +62,6 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
     file.name.2 <- as.list(file.name)
 
-    #names(file.name.2) = sapply(strsplit(file.name, split = "\\/"),
-    #    "[[", 7)
-
     names(file.name.2) = basename(file.name)
 
     print(file.name.2)
@@ -133,10 +130,10 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
             gene <- as.character(reformat.count.gene.matched.2$GeneName)
 
             count.DoGs.plus.read <- apply(as.data.frame(reformat.count.gene.matched.2[,
-                c(grep("plus.read.DoGs.count.2.txt", colnames(reformat.count.gene.matched.2)))]),
+                c(grep("plus.read.DoGs.count.txt", colnames(reformat.count.gene.matched.2)))]),
                 1, sum)
             count.DoGs.minus.read <- apply(as.data.frame(reformat.count.gene.matched.2[,
-                c(grep("minus.read.DoGs.count.2.txt", colnames(reformat.count.gene.matched.2)))]),
+                c(grep("minus.read.DoGs.count.txt", colnames(reformat.count.gene.matched.2)))]),
                 1, sum)
 
 
