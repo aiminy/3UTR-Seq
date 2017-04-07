@@ -57,6 +57,9 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     {
     file.name = paste0(dir.name, dir(dir.name, recursive = TRUE,
         pattern = input.file.pattern))
+
+    print(file.name)
+
     file.name.2 <- as.list(file.name)
 
     names(file.name.2) = sapply(strsplit(file.name, split = "\\/"),
