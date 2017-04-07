@@ -7,7 +7,7 @@
 ProcessOutputFilesFromDoGsOnly(dir.name, input.file.pattern, out.dir.name,
   out.file.pattern.interested, out.file.pattern.positive.gene,
   out.file.pattern.negative.gene, out.file.pattern.all, dir.name.gene.list,
-  pattern.4.gene.list, adjust_by_batch)
+  pattern.4.gene.list, adjust_by_batch, permutation.set.up = NULL)
 }
 \arguments{
 \item{adjust_by_batch}{}

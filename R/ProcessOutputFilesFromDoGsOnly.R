@@ -53,7 +53,7 @@
 ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     out.dir.name, out.file.pattern.interested, out.file.pattern.positive.gene,
     out.file.pattern.negative.gene, out.file.pattern.all, dir.name.gene.list,
-    pattern.4.gene.list, adjust_by_batch)
+    pattern.4.gene.list, adjust_by_batch,permutation.set.up=NULL)
     {
     file.name = file.path(dir.name, dir(dir.name, recursive = TRUE,
         pattern = input.file.pattern))
@@ -298,10 +298,16 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
         # head(Count.DoGs.4.plus.Gene.2)
 
 
-
+        if(!is.null(permutation.set.up)){
         real.index <- c(1, 2, 3, 4, 5, 6)
         permutation.index <- real.index
         permutation.index = array(sample(real.index))
+        }else
+        {
+          real.index <- c(1, 3, 4, 2, 5, 6)
+          permutation.index <- real.index
+        }
+
         tmp <- Count.DoGs.4.plus.Gene.2
 
         Count.DoGs.4.plus.Gene.2 <- tmp[, permutation.index]
