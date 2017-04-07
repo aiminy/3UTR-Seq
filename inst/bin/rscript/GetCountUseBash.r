@@ -99,7 +99,7 @@ if (row == "Yes") {
 
    cmd1 = "bsub -P bbc -J \"DogFT\" -o %J.DogFT.log -e %J.DogFT.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-   cmd2 = paste0(R_lib, "/ThreeUTR/bin/rscript/analysis.r")
+   cmd2 = paste0(R_lib, "/ThreeUTR/bin/rscript/analysisdog.r")
    cmd3 = paste("Rscript",cmd2,paste(count.file.dir,collapse = " "))
 
    print(cmd3)
