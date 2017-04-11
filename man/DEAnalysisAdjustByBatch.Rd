@@ -4,7 +4,7 @@
 \alias{DEAnalysisAdjustByBatch}
 \title{DEAnalysisAdjustByBatch}
 \usage{
-DEAnalysisAdjustByBatch(df.NT)
+DEAnalysisAdjustByBatch(df.NT, Nbatch)
 }
 \arguments{
 \item{df.NT}{}

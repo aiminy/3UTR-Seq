@@ -216,7 +216,7 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
         dox.index <- grep("DOX",toupper(colnames(dff)))
 
-        real.index <- c(wt.index,dox.index)
+        real.index <- c(dox.index,wt.index)
 
         #real.index <- c(1, 3, 4, 2, 5, 6)
 
@@ -305,7 +305,7 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     # DoGs.4.minus.Gene[which( DoGs.4.minus.Gene$Row.names
     # =='uc001aac.4'),]#BL for gene(-) DoGs
 
-    GeneTypeBasedDE <- function(DoGs.4.plus.Gene,n)
+    GeneTypeBasedDE <- function(DoGs.4.plus.Gene)
     {
 
         a <- n+9-1
@@ -317,6 +317,13 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
         # head(Count.DoGs.4.plus.Gene.2)
 
+        wt.index <- grep("WT",toupper(colnames(Count.DoGs.4.plus.Gene.2)))
+
+        dox.index <- grep("DOX",toupper(colnames(Count.DoGs.4.plus.Gene.2)))
+
+        real.index <- c(dox.index,wt.index)
+
+        n <- length(real.index)
 
         if(!is.null(permutation.set.up)){
         real.index <- seq(1,n)
@@ -324,7 +331,6 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
         permutation.index = array(sample(real.index))
         }else
         {
-          real.index <- seq(1,n)
           permutation.index <- real.index
         }
 
@@ -338,10 +344,10 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
         if (adjust_by_batch == "NO")
         {
-            re.DESeq.DoGs.plus.gene <- DEAnalysis(Count.DoGs.4.plus.Gene.2)
+            re.DESeq.DoGs.plus.gene <- DEAnalysis(Count.DoGs.4.plus.Gene.2,wt.index,dox.index)
         } else
         {
-            re.DESeq.DoGs.plus.gene <- DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2)
+            re.DESeq.DoGs.plus.gene <- DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2,Nbatch=c(3,2))
         }
 
         return(re.DESeq.DoGs.plus.gene)
