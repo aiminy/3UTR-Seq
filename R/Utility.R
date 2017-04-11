@@ -21,6 +21,32 @@ installerbioc <- function(.bioc_packages)
     sapply(.bioc_packages, require, character.only = TRUE)
 }
 
+
+
+parsersample <-function()
+  {
+
+  cell<-factor(rep(c('batch1','batch2'),c(3,2)))
+  cell=rep(cell,2)
+
+sample <- c("R1_Dox.bam",
+              "R2_Dox.bam",
+              "R3_Dox.bam",
+              "R4_Dox.bam",
+              "R5_Dox.bam",
+              "R1_WT.bam",
+              "R2_WT.bam",
+              "R3_WT.bam",
+              "R4_WT.bam",
+              "R5_WT.bam")
+
+  colData <- data.frame(sample=sample,condition=factor(rep(c('Dox', 'WT'),c(5, 5))),cell=cell)
+
+   colData
+}
+
+
+
 #' parserreadfiles
 #'
 #' @param input.file.dir
@@ -106,7 +132,12 @@ parserreadfiles <- function(input.file.dir,input.file.type,sample.group=NULL,fil
       re2 <- list(input = file.name.5,input.file.type = input.file.type)
     }
 
+    pkg.env <- new.env(parent = emptyenv())
+    pkg.env$sample <- ThreeUTR:::parsersample()
+
     return(re2)
+
+
 }
 
 #' convertbam2bed
@@ -405,30 +436,3 @@ parserAnnotationFile <- function(input.annotation.file){
 
    xx
 }
-
-parsersample <- function(input.bamfile.dir) {
-
-  xx <- parserreadfiles(input.bamfile.dir,"bam")
-
-  cell<-factor(rep(c('emp','hela'),Nbatch))
-  cell=rep(cell,2)
-
-  a <- length(wt.index)
-  b <- length(dox.index)
-
-  sample <- c("R1_Dox.bam",
-              "R2_Dox.bam",
-              "R3_Dox.bam",
-              "R4_Dox.bam",
-              "R5_Dox.bam",
-              "R1_WT.bam",
-              "R2_WT.bam",
-              "R3_WT.bam",
-              "R4_WT.bam",
-              "R5_WT.bam")
-
-  colData <- data.frame(sample=sample,condition=factor(rep(c('Dox', 'WT'),c(5, 5))),cell=cell)
-
-  colData
-}
-

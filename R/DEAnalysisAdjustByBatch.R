@@ -19,6 +19,9 @@
 
 DEAnalysisAdjustByBatch <- function(df.NT,Nbatch) {
 
+
+  print(pkg.env$sample)
+
   cell<-factor(rep(c('emp','hela'),Nbatch))
   cell=rep(cell,2)
 
