@@ -37,7 +37,7 @@ installerbioc <- function(.bioc_packages)
 #'
 #' res <- parserreadfiles(input.file.dir,'bam',filter.sample="emp1")
 #'
-parserreadfiles <- function(input.file.dir,input.file.type,sample.group=c("WT","Dox"),filter.sample=NULL)
+parserreadfiles <- function(input.file.dir,input.file.type,sample.group=NULL,filter.sample=NULL)
 {
     dir.name = input.file.dir
     dir.name = reformatPath(dir.name)
@@ -93,12 +93,19 @@ parserreadfiles <- function(input.file.dir,input.file.type,sample.group=c("WT","
      }
 
 
-    g1 <- grep(sample.group[1],names(res$input))
+    if(!is.null(sample.group)){
+    g1 <- grep(sample.group[1],toupper(names(res$input)))
 
-    g2 <- grep(sample.group[2],names(res$input))
+    g2 <- grep(sample.group[2],toupper(names(res$input)))
 
     # output.dir.name = reformatPath(output.file.dir) temp3 = output.dir.name
-    re2 <- list(input = file.name.5,g1=g1,g2=g2,input.file.type = input.file.type)
+    re2 <- list(input = file.name.5,g1=g1,g2=g2,input.file.type = input.file.type)}
+
+    else
+    {
+      re2 <- list(input = file.name.5,input.file.type = input.file.type)
+    }
+
     return(re2)
 }
 
