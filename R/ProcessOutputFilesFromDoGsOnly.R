@@ -348,15 +348,15 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     }
 
     print(head(DoGs.4.plus.Gene))
-    re.DESeq.DoGs.plus.gene <- GeneTypeBasedDE(DoGs.4.plus.Gene)
+    re.DESeq.DoGs.plus.gene <- GeneTypeBasedDE(DoGs.4.plus.Gene,n)
     # head(re.DESeq.DoGs.plus.gene[which(re.DESeq.DoGs.plus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.gene$pvalue<0.05),])
 
     print(head(DoGs.4.minus.Gene))
-    re.DESeq.DoGs.minus.gene <- GeneTypeBasedDE(DoGs.4.minus.Gene)
+    re.DESeq.DoGs.minus.gene <- GeneTypeBasedDE(DoGs.4.minus.Gene,n)
     # head(re.DESeq.DoGs.minus.gene[which(re.DESeq.DoGs.minus.gene$log2FoldChange<0&re.DESeq.DoGs.minus.gene$pvalue<0.05),])
 
     print(head(DoGs.4.plus.minus.Gene))
-    re.DESeq.DoGs.plus.minus.gene <- GeneTypeBasedDE(DoGs.4.plus.minus.Gene)
+    re.DESeq.DoGs.plus.minus.gene <- GeneTypeBasedDE(DoGs.4.plus.minus.Gene,n)
     # head(re.DESeq.DoGs.plus.minus.gene[which(re.DESeq.DoGs.plus.minus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.minus.gene$pvalue<0.05),])
 
     gene.interested <- ReadGeneList(dir.name.gene.list, pattern.4.gene.list)
