@@ -161,7 +161,11 @@ getutrcount <- function(dir.name, input.file.pattern)
 
     rownames(countData) <- rownames(dff)
 
-    re.FC <- countData
+    txs.gene <- ReformatTxsGene()
+
+    re.FC <- merge(countData, txs.gene$txs_genes_DF_2, by = 0)
+
+    #re.FC <- countData
 
     return(re.FC)
 
