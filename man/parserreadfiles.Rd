@@ -4,7 +4,8 @@
 \alias{parserreadfiles}
 \title{parserreadfiles}
 \usage{
-parserreadfiles(input.file.dir, input.file.type, filter.sample = NULL)
+parserreadfiles(input.file.dir, input.file.type, sample.group = NULL,
+  filter.sample = NULL)
 }
 \arguments{
 \item{output.file.dir}{}
