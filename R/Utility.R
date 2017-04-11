@@ -73,8 +73,14 @@ parserreadfiles <- function(input.file.dir,input.file.type,sample.group=c("WT","
         tmp = file.name.4
         x = tmp[[u]]
         path_name = dirname(x)
+        path_name2 <- basename(path_name)
+
         file_name = basename(x)
+
+        file_name <- paste0(path_name2,"-",file_name)
+
         file_name
+
     }, file.name.4))
 
     if(!is.null(filter.sample)){
@@ -133,7 +139,13 @@ convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
         # cat(u,'\n') cmd9 <- 'grep' cmd10 <- '~/PathwaySplice/inst/extdata/' cmd11 <-
         # '/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt' cmd12 <- '>' cmd13 <-
         # paste0('/Counts.',n,'.genes.txt') xxx <- gsub(';','',xx)
-        file_name = file_path_sans_ext(basename(u))
+
+         path_name = dirname(u)
+         path_name2 <- basename(path_name)
+
+         file_name = file_path_sans_ext(basename(u))
+
+         file_name <- paste0(path_name2,"-",file_name)
 
         cmd2 <- paste(cmd0, u, cmd1, file.path(output.bedfile.dir, paste0(file_name,
             ".bed")), sep = " ")
