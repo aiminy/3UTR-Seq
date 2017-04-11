@@ -229,7 +229,7 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
         rownames(countData) <- rownames(dff)
 
-        re.FC <- DEAnalysis(countData,wt.index,dox.index)
+        #re.FC <- DEAnalysis(countData,wt.index,dox.index)
 
         # re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(countData)
 
@@ -238,7 +238,9 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
         # txs.gene<-ReformatTxsGene()
         # re.FC<-list(re.FC=re.FC,re.DoGs.adjusted.by.batch=re.DoGs.adjusted.by.batch)
 
-        re.FC<-list(re.FC=re.FC,n=n.sample)
+        #re.FC<-list(re.FC=re.FC,n=n.sample)
+
+        re.FC <- countData
 
         return(re.FC)
 
@@ -247,10 +249,10 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     # re.BL<-ProcessEachCorner(re.8.samples,2) #BL
     # re.TL<-ProcessEachCorner(re.8.samples,3) #TL
 
-    re.BR <- ProcessEachCorner(re.8.samples, 2)  #BR
-    re.TR <- ProcessEachCorner(re.8.samples, 3)  #TR
+    #re.BR <- ProcessEachCorner(re.8.samples, 2)  #BR
+    #re.TR <- ProcessEachCorner(re.8.samples, 3)  #TR
 
-    n <- re.BR$n
+    #n <- re.BR$n
 
     # head(re.BL) head(re.BR)
 
@@ -285,8 +287,8 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     # re.BL.4.plus.gene.BR.4.minus.gene<-re.BL
     # re.TL.4.plus.gene.TR.4.minus.gene<-re.TL
 
-    re.BR.4.plus.gene.BL.4.minus.gene <- re.BR$re.FC
-    re.TR.4.plus.gene.TL.4.minus.gene <- re.TR$re.FC
+    re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
+    re.TR.4.plus.gene.TL.4.minus.gene <- re.TR
     # }else{ re.BL.4.plus.gene.BR.4.minus.gene<-re.BL[[2]]
     # re.TL.4.plus.gene.TR.4.minus.gene<-re.TL[[2]]
     # re.BR.4.plus.gene.BL.4.minus.gene<-re.BR[[2]]
@@ -308,9 +310,9 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     GeneTypeBasedDE <- function(DoGs.4.plus.Gene)
     {
 
-        a <- n+9-1
+        #a <- n+9-1
 
-        Count.DoGs.4.plus.Gene <- DoGs.4.plus.Gene[, c(1, 9:a)]
+        Count.DoGs.4.plus.Gene <- DoGs.4.plus.Gene
         rownames(Count.DoGs.4.plus.Gene) <- Count.DoGs.4.plus.Gene$Row.names
         Count.DoGs.4.plus.Gene.2 <- Count.DoGs.4.plus.Gene[,
             -1]
@@ -347,7 +349,8 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
             re.DESeq.DoGs.plus.gene <- DEAnalysis(Count.DoGs.4.plus.Gene.2,wt.index,dox.index)
         } else
         {
-            re.DESeq.DoGs.plus.gene <- DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2,Nbatch=c(3,2))
+
+          re.DESeq.DoGs.plus.gene <- DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2,Nbatch=c(3,2))
         }
 
         return(re.DESeq.DoGs.plus.gene)
