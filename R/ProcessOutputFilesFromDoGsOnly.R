@@ -207,7 +207,16 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
         # print(head(dff))
 
         # countData <- apply(dff[,c(1,3,5,6,2,4,7,8)], 2, as.numeric)
-        real.index <- c(1, 3, 4, 2, 5, 6)
+
+        wt.index <- grep("WT",toupper(colnames(dff)))
+
+        dox.index <- grep("DOX",toupper(colnames(dff)))
+
+        real.index <- c(wt.index,dox.index)
+
+        #real.index <- c(1, 3, 4, 2, 5, 6)
+
+        n.sample <- length(real.index)
 
         permutation.index <- real.index
         # permutation.index=array(sample(real.index))
@@ -225,6 +234,8 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
         # txs.gene<-ReformatTxsGene()
         # re.FC<-list(re.FC=re.FC,re.DoGs.adjusted.by.batch=re.DoGs.adjusted.by.batch)
 
+        re.FC<-list(re.FC=re.FC,n=n.sample)
+
         return(re.FC)
 
     }
@@ -234,6 +245,8 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
     re.BR <- ProcessEachCorner(re.8.samples, 2)  #BR
     re.TR <- ProcessEachCorner(re.8.samples, 3)  #TR
+
+    n <- re.BR$n
 
     # head(re.BL) head(re.BR)
 
@@ -268,8 +281,8 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     # re.BL.4.plus.gene.BR.4.minus.gene<-re.BL
     # re.TL.4.plus.gene.TR.4.minus.gene<-re.TL
 
-    re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
-    re.TR.4.plus.gene.TL.4.minus.gene <- re.TR
+    re.BR.4.plus.gene.BL.4.minus.gene <- re.BR$re.FC
+    re.TR.4.plus.gene.TL.4.minus.gene <- re.TR$re.FC
     # }else{ re.BL.4.plus.gene.BR.4.minus.gene<-re.BL[[2]]
     # re.TL.4.plus.gene.TR.4.minus.gene<-re.TL[[2]]
     # re.BR.4.plus.gene.BL.4.minus.gene<-re.BR[[2]]
@@ -288,9 +301,12 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     # DoGs.4.minus.Gene[which( DoGs.4.minus.Gene$Row.names
     # =='uc001aac.4'),]#BL for gene(-) DoGs
 
-    GeneTypeBasedDE <- function(DoGs.4.plus.Gene)
+    GeneTypeBasedDE <- function(DoGs.4.plus.Gene,n)
     {
-        Count.DoGs.4.plus.Gene <- DoGs.4.plus.Gene[, c(1, 9:14)]
+
+        a <- n+9-1
+
+        Count.DoGs.4.plus.Gene <- DoGs.4.plus.Gene[, c(1, 9:a)]
         rownames(Count.DoGs.4.plus.Gene) <- Count.DoGs.4.plus.Gene$Row.names
         Count.DoGs.4.plus.Gene.2 <- Count.DoGs.4.plus.Gene[,
             -1]
@@ -299,12 +315,12 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
 
         if(!is.null(permutation.set.up)){
-        real.index <- c(1, 2, 3, 4, 5, 6)
+        real.index <- seq(1,n)
         permutation.index <- real.index
         permutation.index = array(sample(real.index))
         }else
         {
-          real.index <- c(1, 2, 3, 4, 5, 6)
+          real.index <- seq(1,n)
           permutation.index <- real.index
         }
 
