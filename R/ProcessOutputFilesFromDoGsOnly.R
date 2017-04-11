@@ -159,10 +159,14 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
         YY
     }, txs.name.count, re.out)
 
-    DEAnalysis <- function(countData)
+    DEAnalysis <- function(countData,wt.index,dox.index)
     {
+
+        a <- length(wt.index)
+        b <- length(dox.index)
+
         colData <- data.frame(condition = factor(c(rep("Dox",
-            3), rep("WT", 3))))
+            b), rep("WT", a))))
 
         dds <- DESeqDataSetFromMatrix(countData, colData, formula(~condition))
 
@@ -225,7 +229,7 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
         rownames(countData) <- rownames(dff)
 
-        re.FC <- DEAnalysis(countData)
+        re.FC <- DEAnalysis(countData,wt.index,dox.index)
 
         # re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(countData)
 
