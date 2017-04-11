@@ -346,3 +346,40 @@ getcounts <- function(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.f
     res
 }
 
+#' parserAnnotationFile
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' input.annotation.file <- "/Volumes/Bioinformatics$/Aimin_project/UTR/3UTR_GFF2.txt"
+#'
+#' y <- parserAnnotationFile(input.annotation.file)
+#'
+#'
+parserAnnotationFile <- function(input.annotation.file){
+
+
+   dir.name <- dirname(input.annotation.file)
+
+   file.name <- file_path_sans_ext(basename(input.annotation.file))
+
+   x <- read.table(input.annotation.file)
+
+   d <- x[,5]-x[,4]
+
+   nn <- substr(x[,9],9,23)
+
+   xx <-cbind.data.frame(x[,1],x[,4],x[,5],nn,d,x[,7])
+
+   write.table(xx, file = file.path(dir.name, paste0(file.name,
+                                                        ".bed")),
+             row.names = FALSE,
+             col.names =FALSE,
+             quote = FALSE,
+             sep ="\t"
+             )
+
+   xx
+}
