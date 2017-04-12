@@ -8,9 +8,9 @@ An R package for processing and analyzing 3UTR,DOGs and 5UTR data
 library(devtools)
 
 # This version of PathwaySplice can be installed if your R version is >= 3.4.0
-install_github("aiminy/3UTR-Seq")
+install_github("aiminy/3UTR-Seq",ref = 'DoGs')
 
 #In pegasus terminal 
-R -e 'library(devtools);install_github("aiminy/3UTR-Seq")'
+R -e 'library(devtools);install_github("aiminy/3UTR-Seq",ref = "DoGs")'
 
 ```
