@@ -17,15 +17,12 @@
 #' re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(df.NT.2)
 #'
 
-DEAnalysisAdjustByBatch <- function(df.NT,Nbatch) {
+DEAnalysisAdjustByBatch <- function(df.NT) {
 
-
-  #print(pkg.env$sample)
-
-  cell<-factor(rep(c('emp','hela'),Nbatch))
+  cell<-factor(rep(c('emp','hela'),c(1,2)))
   cell=rep(cell,2)
 
-  colData <- data.frame(condition=factor(rep(c('Dox', 'WT'),c(5, 5))),cell=cell)
+  colData <- data.frame(condition=factor(rep(c('Dox', 'WT'),c(3, 3))),cell=cell)
 
   dds <- DESeqDataSetFromMatrix(df.NT, colData, formula(~condition))
   dat <- counts(dds)
@@ -51,8 +48,8 @@ DEAnalysisAdjustByBatch <- function(df.NT,Nbatch) {
     colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",1)
   }else{
     for(i in 1:ncol){
-    colData(ddssva)<-cbind2(colData(ddssva),svseq.NT$sv[,i])
-    colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",i)
+      colData(ddssva)<-cbind2(colData(ddssva),svseq.NT$sv[,i])
+      colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",i)
     }
   }
 
