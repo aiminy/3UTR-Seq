@@ -11,6 +11,6 @@ library(devtools)
 install_github("aiminy/3UTR-Seq",ref = 'DoGs')
 
 #In pegasus terminal 
-R -e 'library(devtools);install_github("aiminy/3UTR-Seq",ref = 'DoGs')'
+R -e 'library(devtools);install_github("aiminy/3UTR-Seq",ref = "DoGs")'
 
 ```
