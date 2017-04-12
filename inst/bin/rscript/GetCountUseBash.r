@@ -45,7 +45,20 @@ if (row == "Yes") {
   input <- file("stdin", "r")
   no.use.sample <- readLines(input, n = 1)
 
+  cat("Do you want to use bigmem to run your job:\n")
+
+  input <- file("stdin", "r")
+  general.or.bigmem <- readLines(input, n = 1)
+
+
+  if(toupper(general.or.bigmem) == "YES")
+  {
+  cmd1 = "bsub -P bbc -J \"UTR\" -o %J.UTRCount.log -e %J.UTRCount.err -W 72:00 -n 16 -q bigmem -R 'rusage[mem=36864] span[ptile=8]' -u aimin.yan@med.miami.edu"
+  }else
+  {
   cmd1 = "bsub -P bbc -J \"DogFT\" -o %J.DogFT.log -e %J.DogFT.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+  }
+
   cmd2 = paste0(R_lib, "/ThreeUTR/bin/rscript/convertbam2bed.r")
 
   cmd3 = paste("Rscript", cmd2, input.bamfile.dir, annotation.bed.file,
