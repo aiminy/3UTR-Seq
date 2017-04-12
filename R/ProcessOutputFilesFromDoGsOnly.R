@@ -163,7 +163,19 @@ getutrcount <- function(dir.name, input.file.pattern)
 
     txs.gene <- ReformatTxsGene()
 
-    re.FC <- merge(countData, txs.gene$txs_genes_DF_2, by = 0)
+    xx <- txs.gene$txs_genes_DF_2
+
+    mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+
+    results <- getBM(attributes = c("ucsc","ensembl_transcript_id"),
+                     filters = "ensembl_transcript_id", values = xx,
+                     mart = mart)
+
+    xxx <- results[-which(results$ucsc==""),]
+
+    rownames(xxx) <- xxx$ucsc
+
+    re.FC <- merge(countData,xxx, by = 0)
 
     #re.FC <- countData
 
