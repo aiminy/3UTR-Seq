@@ -29,6 +29,21 @@ DEAnalysis <- function(countData,wt.index,dox.index)
 
 }
 
+#' getutrcount
+#'
+#' @param dir.name
+#' @param input.file.pattern
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' dir.name <- "/Volumes/Bioinformatics$/Aimin_project/UTR/Counts/"
+#' input.file.pattern <- "count.txt"
+#'
+#' res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern)
+#'
 getutrcount <- function(dir.name, input.file.pattern)
 {
   file.name = file.path(dir.name, dir(dir.name, recursive = TRUE,
@@ -161,23 +176,23 @@ getutrcount <- function(dir.name, input.file.pattern)
 
     rownames(countData) <- rownames(dff)
 
-    txs.gene <- ReformatTxsGene()
+    # txs.gene <- ReformatTxsGene()
+    #
+    # xx <- txs.gene$txs_genes_DF_2
+    #
+    # mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+    #
+    # results <- getBM(attributes = c("ucsc","ensembl_transcript_id"),
+    #                  filters = "ensembl_transcript_id", values = xx,
+    #                  mart = mart)
+    #
+    # xxx <- results[-which(results$ucsc==""),]
+    #
+    # rownames(xxx) <- xxx$ucsc
+    #
+    # re.FC <- merge(countData,xxx, by = 0)
 
-    xx <- txs.gene$txs_genes_DF_2
-
-    mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
-
-    results <- getBM(attributes = c("ucsc","ensembl_transcript_id"),
-                     filters = "ensembl_transcript_id", values = xx,
-                     mart = mart)
-
-    xxx <- results[-which(results$ucsc==""),]
-
-    rownames(xxx) <- xxx$ucsc
-
-    re.FC <- merge(countData,xxx, by = 0)
-
-    #re.FC <- countData
+    re.FC <- countData
 
     return(re.FC)
 
@@ -187,20 +202,23 @@ getutrcount <- function(dir.name, input.file.pattern)
    re.TR <- ProcessEachCorner(re.8.samples, 3)  #TR
 
 
-   re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
-   re.TR.4.plus.gene.TL.4.minus.gene <- re.TR
+  #  re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
+  #  re.TR.4.plus.gene.TL.4.minus.gene <- re.TR
+  #
+  # # Get the counts for DoGs of plus and minus gene
+  # DoGs.4.plus.Gene <- re.TR.4.plus.gene.TL.4.minus.gene[which(re.TR.4.plus.gene.TL.4.minus.gene$strand ==
+  #                                                               "+"), ]
+  # DoGs.4.minus.Gene <- re.BR.4.plus.gene.BL.4.minus.gene[which(re.BR.4.plus.gene.BL.4.minus.gene$strand ==
+  #                                                                "-"), ]
+  #
+  # DoGs.4.plus.minus.Gene <- rbind(DoGs.4.plus.Gene, DoGs.4.minus.Gene)
+  #
+  # res <- list(DoGs.4.plus.Gene=DoGs.4.minus.Gene,
+  #             DoGs.4.minus.Gene=DoGs.4.minus.Gene,
+  #             DoGs.4.plus.minus.Gene=DoGs.4.plus.minus.Gene)
 
-  # Get the counts for DoGs of plus and minus gene
-  DoGs.4.plus.Gene <- re.TR.4.plus.gene.TL.4.minus.gene[which(re.TR.4.plus.gene.TL.4.minus.gene$strand ==
-                                                                "+"), ]
-  DoGs.4.minus.Gene <- re.BR.4.plus.gene.BL.4.minus.gene[which(re.BR.4.plus.gene.BL.4.minus.gene$strand ==
-                                                                 "-"), ]
+   res <- list(reBR=re.BR,reTR=re.TR,re.8.samples=re.8.samples)
 
-  DoGs.4.plus.minus.Gene <- rbind(DoGs.4.plus.Gene, DoGs.4.minus.Gene)
-
-  res <- list(DoGs.4.plus.Gene=DoGs.4.minus.Gene,
-              DoGs.4.minus.Gene=DoGs.4.minus.Gene,
-              DoGs.4.plus.minus.Gene=DoGs.4.plus.minus.Gene)
 
   return(res)
 
