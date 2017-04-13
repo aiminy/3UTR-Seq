@@ -224,6 +224,39 @@ getutrcount <- function(dir.name, input.file.pattern)
 
 }
 
+#' Title
+#'
+#' @param res
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' y <- ThreeUTR:::annotatetranscript(res$reBR)
+#'
+annotatetranscript <- function(res)
+{
+
+  x <- res
+  mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",
+                           dataset = "hsapiens_gene_ensembl",
+                           host = 'ensembl.org')
+
+  t2g <-  getBM(attributes = c("ensembl_transcript_id","strand","ensembl_gene_id",
+                                       "external_gene_name"),  filters = "ensembl_transcript_id",values = rownames(x),mart = mart)
+
+  #xx <- t2g[-which(t2g$ensembl_transcript_id==""),]
+
+  #rownames(xx) <- xx$ensembl_transcript_id
+
+  #xxx <- merge(x,xx,by=0)
+
+  xxx <- t2g
+
+  xxx
+}
+
 #' ProcessOutputFilesFromDoGsOnly
 #'
 #' @param dir.name

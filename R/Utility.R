@@ -298,9 +298,9 @@ getcountsfromMatchedbed <- function(input.bedfile.dir,output.count.file.dir,filt
     cmd12 <- "'$6==\"-\" && $12==\"+\"'"
     cmd13 <- "'$6==\"-\" && $12==\"-\"'"
 
-    cmd2 <- "| awk '$8 < $2 && $9 >= $2' | awk '{print $4}' | sort | uniq -c | sort -nr"
-    cmd21 <- "| awk '$8 >= $2 && $9 <= $3' | awk '{print $4}' | sort | uniq -c | sort -nr"
-    cmd22 <- "| awk '$8 <= $3 && $9 > $3' | awk '{print $4}' | sort | uniq -c | sort -nr"
+    cmd2 <- "| awk '$8 < $2 && $9 >= $2' | awk '{print $4}' | sort | uniq -c | sort -nr"   #below
+    cmd21 <- "| awk '$8 >= $2 && $9 <= $3' | awk '{print $4}' | sort | uniq -c | sort -nr" #DoGs
+    cmd22 <- "| awk '$8 <= $3 && $9 > $3' | awk '{print $4}' | sort | uniq -c | sort -nr"  #over
 
     cmd3 <- ">"
 
