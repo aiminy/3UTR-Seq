@@ -243,7 +243,7 @@ annotatetranscript <- function(res)
                            dataset = "hsapiens_gene_ensembl",
                            host = 'ensembl.org')
 
-  t2g <-  getBM(attributes = c("ensembl_transcript_id","strand","ensembl_gene_id",
+  t2g <-  getBM(attributes = c("ucsc","ensembl_transcript_id","strand","ensembl_gene_id",
                                        "external_gene_name"),  filters = "ensembl_transcript_id",values = rownames(x),mart = mart)
 
   #xx <- t2g[-which(t2g$ensembl_transcript_id==""),]
@@ -431,4 +431,47 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
     return(re.out.3)
 
+}
+
+
+
+
+idtransform <- function(values_to_be_transforemd) {
+
+  mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",
+                  dataset = "hsapiens_gene_ensembl",
+                  host = 'ensembl.org')
+
+  t2g <-  getBM(attributes = c("ucsc","ensembl_transcript_id","strand","ensembl_gene_id",
+                               "external_gene_name"),  filters = "ucsc",values = values_to_be_transforemd,mart = mart)
+  t2g
+
+
+}
+
+#' Title
+#'
+#' @param input.file
+#' @param output.file
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' input.file <- "/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript.tsv"
+#' output.file <- "/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript-transformed.tsv"
+#' ThreeUTR:::gaoidtransform(input.file,output.file)
+#'
+gaoidtransform <- function(input.file, output.file) {
+
+  res <- read.table(input.file,header=F)
+  colnames(res) <- c("Chr","Start","End","utr","Symbol","Strand","ucsc")
+
+  #head(res)
+
+  y <- ThreeUTR:::idtransform(res$ucsc)
+
+  yy <- merge(res,y,by="ucsc")
+  write.table(yy, file = output.file, append = FALSE, quote = FALSE, sep = "\t",
+                          eol = "\n", na = "NA", dec = ".", row.names = FALSE)
 }
