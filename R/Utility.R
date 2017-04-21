@@ -414,25 +414,33 @@ getcounts <- function(input.bamfile.dir,annotation.bed.file,ld,rd,output.count.f
 #'
 parserAnnotationFile <- function(input.annotation.file){
 
-   dir.name <- dirname(input.annotation.file)
+    dir.name <- dirname(input.annotation.file)
 
-   file.name <- file_path_sans_ext(basename(input.annotation.file))
+    file.name <- file_path_sans_ext(basename(input.annotation.file))
 
-   x <- read.table(input.annotation.file)
+    x <- read.table(input.annotation.file)
 
-   d <- x[,5]-x[,4]
+    d <- x[,5]-x[,4]
 
-   nn <- substr(x[,9],9,23)
+    nn <- substr(x[,9],9,23)
 
-   xx <-cbind.data.frame(x[,1],x[,4],x[,5],nn,d,x[,7])
+    xx <-cbind.data.frame(x,nn,d)
 
-   write.table(xx, file = file.path(dir.name, paste0(file.name,
+    counts <- as.data.frame(table(xx$nn))
+
+    colnames(counts)=c("nn","counts")
+
+    xxx <- merge(xx,counts,by="nn",sort=FALSE)
+
+    xxxx <- xxx[,c(2,5,6,10,11,8)]
+
+    write.table(xxxx, file = file.path(dir.name, paste0(file.name,
                                                         ".bed")),
-             row.names = FALSE,
-             col.names =FALSE,
-             quote = FALSE,
-             sep ="\t"
-             )
+              row.names = FALSE,
+              col.names =FALSE,
+              quote = FALSE,
+              sep ="\t"
+              )
 
-   xx
+    xxxx
 }
