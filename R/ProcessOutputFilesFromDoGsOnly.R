@@ -39,7 +39,7 @@ DEAnalysis <- function(countData,wt.index,dox.index)
 #'
 #' @examples
 #'
-#' dir.name <- "/Volumes/Bioinformatics$/Aimin_project/UTR/Counts/"
+#' dir.name <- "/Volumes/Bioinformatics$/Aimin_project/UTR/NewCounts"
 #' input.file.pattern <- "count.txt"
 #'
 #' res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern)
