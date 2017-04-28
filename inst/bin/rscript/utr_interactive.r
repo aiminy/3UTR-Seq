@@ -88,7 +88,7 @@ bamQC <- function()
 
   print(cmd8)
 
-  system(paste0(cmd1, " ", cmd8))
+  system(paste0(cmd1, " ", cmd8),intern= TRUE)
 
   cat("Finished qcBAM\n")
 
