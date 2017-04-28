@@ -76,12 +76,13 @@ bamQC <- function()
 
   cmd2 = "R -e"
 
-  cmd3 = "ThreeUTR:::"
+
+  cmd3 = "'library(ThreeUTR);ThreeUTR:::"
   cmd4="useInferExperiment("
 
   cmd5 = paste0(cmd3,cmd4)
-  cmd6 = paste(cmd5,input.bam.file.dir,input.ref.gene.bed.file,output.dir,sep=",")
-  cmd7=  paste0(cmd6,")")
+  cmd6 = paste(paste0(cmd5,input.bam.file.dir),input.ref.gene.bed.file,output.dir,sep=",")
+  cmd7=  paste0(cmd6,")'")
 
   cmd8 = paste(cmd2,cmd7,sep=" ")
 
