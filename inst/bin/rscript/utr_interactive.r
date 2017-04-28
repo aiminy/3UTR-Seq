@@ -78,13 +78,16 @@ bamQC <- function()
 
   cmd3 = "ThreeUTR:::"
   cmd4="useInferExperiment("
-  cmd5 =")"
 
-  cmd3 = paste(cmd2,cmd3,cmd4,input.bam.file.dir,input.ref.gene.bed.file, output.dir,cmd5,sep=" ")
+  cmd5 = paste0(cmd3,cmd4)
+  cmd6 = paste(cmd5,input.bam.file.dir,input.ref.gene.bed.file,output.dir,sep=",")
+  cmd7=  paste0(cmd6,")")
+
+  cmd8 = paste(cmd2,cmd7,sep=" ")
 
   print(cmd3)
 
-  system(paste0(cmd1, " ", cmd3))
+  system(paste0(cmd1, " ", cmd8))
 
   cat("Finished qcBAM\n")
 
