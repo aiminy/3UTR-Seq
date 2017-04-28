@@ -21,8 +21,6 @@ installerbioc <- function(.bioc_packages)
     sapply(.bioc_packages, require, character.only = TRUE)
 }
 
-
-
 parsersample <-function()
   {
 
@@ -138,6 +136,47 @@ parserreadfiles <- function(input.file.dir,input.file.type,sample.group=NULL,fil
     return(re2)
 
 
+}
+
+#infer_experiment.py
+useInferExperiment<-function(input.file.dir,ref.gene.bed.file,output.dir){
+
+  re <- parserreadfiles(input.file.dir,'bam')
+
+  res <- res$input
+
+  cmd0 <- "infer_experiment.py -i"
+  cmd1 <- "-r"
+  cmd2 <- ">"
+
+  output.dir <- file.path(output.dir, "BamInfo")
+
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir)
+  }
+
+  cmd.l <- lapply(res, function(u, output.dir)
+  {
+
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
+
+    cmd2 <- paste(cmd0,u,cmd1,ref.gene.bed.file,
+                  cmd2,file.path(output.dir, paste0(file_name,"_infor.txt")), sep = " ")
+
+    system(cmd2)
+
+    cmd2
+  }, output.dir)
+
+  re <- list(cmdl = cmd.l, output.dir = output.dir)
+
+  re
 }
 
 #' convertbam2bed
