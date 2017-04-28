@@ -56,7 +56,7 @@ if (row == 4)
   choose.type <- "All"
 }
 
-bamQC <- function()
+bamQC <- function(R_lib)
 {
   cat("You choose to perform QC on the bam files, please define the following setting parameters: \n",
       "input.bam.files.dir (ex: /scratch/projects/exempt/tr/azhang/for_bioinfo_core/3_end_seq)\n",
@@ -76,20 +76,14 @@ bamQC <- function()
 
   cmd1 = "bsub -P bbc -J \"QCBam\" -o %J.QCBam.log -e %J.QCBam.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd2 = "R -e"
+  cmd2 = paste("Rscript",R_lib,"/ThreeUTR/bin/rscript/qcBAM.r",
+                input.bam.file.dir,input.ref.gene.bed.file,output.dir,sep=" ")
 
-  #cmd3 = "'library(ChipSeq,ThreeUTR);"
-  #cmd4="ThreeUTR:::useInferExperiment("
+  cmd3 = paste(cmd1,cmd2,sep=" ")
 
-  cmd5 = "'ThreeUTR:::useInferExperiment('"
-  cmd6 = paste(paste0(cmd5,input.bam.file.dir),input.ref.gene.bed.file,output.dir,sep=",")
-  cmd7=  paste0(cmd6,")'")
+  print(cmd3)
 
-  cmd8 = paste(cmd2,cmd7,sep=" ")
-
-  print(cmd8)
-
-  system(paste0(cmd1, " ", cmd8),intern= TRUE)
+  system(cmd3,intern= TRUE)
 
   cat("Finished qcBAM\n")
 
