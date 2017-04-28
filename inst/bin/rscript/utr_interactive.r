@@ -77,8 +77,8 @@ bamQC <- function()
   cmd2 = "R -e"
 
 
-  cmd3 = "'library(ChipSeq);library(ThreeUTR);ThreeUTR:::"
-  cmd4="useInferExperiment("
+  cmd3 = "'library(ChipSeq);library(ThreeUTR);"
+  cmd4="ThreeUTR:::useInferExperiment("
 
   cmd5 = paste0(cmd3,cmd4)
   cmd6 = paste(paste0(cmd5,input.bam.file.dir),input.ref.gene.bed.file,output.dir,sep=",")
