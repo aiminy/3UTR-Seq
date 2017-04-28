@@ -70,17 +70,18 @@ bamQC <- function()
   input.ref.gene.bed.file <- count.file.dir[2]
   output.dir <- count.file.dir[3]
 
+  library(ChipSeq)
   library(ThreeUTR)
+
 
   cmd1 = "bsub -P bbc -J \"QCBam\" -o %J.QCBam.log -e %J.QCBam.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
   cmd2 = "R -e"
 
+  #cmd3 = "'library(ChipSeq,ThreeUTR);"
+  #cmd4="ThreeUTR:::useInferExperiment("
 
-  cmd3 = "'library(ChipSeq,ThreeUTR);"
-  cmd4="ThreeUTR:::useInferExperiment("
-
-  cmd5 = paste0(cmd3,cmd4)
+  cmd5 = "'ThreeUTR:::useInferExperiment('"
   cmd6 = paste(paste0(cmd5,input.bam.file.dir),input.ref.gene.bed.file,output.dir,sep=",")
   cmd7=  paste0(cmd6,")'")
 
