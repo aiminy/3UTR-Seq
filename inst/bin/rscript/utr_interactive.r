@@ -76,7 +76,7 @@ bamQC <- function(R_lib)
 
   cmd1 = "bsub -P bbc -J \"QCBam\" -o %J.QCBam.log -e %J.QCBam.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd2 = paste("Rscript",R_lib,"/ThreeUTR/bin/rscript/qcBAM.r",
+  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/qcBAM.r"),
                 input.bam.file.dir,input.ref.gene.bed.file,output.dir,sep=" ")
 
   cmd3 = paste(cmd1,cmd2,sep=" ")
@@ -265,7 +265,7 @@ analysisAll <- function(R_lib)
 
         cmd1 = "bsub -P bbc -J \"BamR\" -o %J.BamR.log -e %J.BamR.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-        cmd2 = paste0("Rscript ", R_lib, "/ChipSeq/bin/Process_Bam.r ",
+        cmd2 = paste0("Rscript", R_lib,"/ChipSeq/bin/Process_Bam.r ",
                       input.file.dir, " ", output.file.dir, " ",
                       genomeID)
 
