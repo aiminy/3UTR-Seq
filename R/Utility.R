@@ -149,7 +149,7 @@ useInferExperiment<-function(input.file.dir,ref.gene.bed.file,output.dir){
   cmd1 <- "-r"
   cmd2 <- ">"
 
-  output.dir <- file.path(output.dir, "BamInfo")
+  #output.dir <- file.path(output.dir, "BamInfo")
 
   if (!dir.exists(output.dir))
   {

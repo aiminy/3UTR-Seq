@@ -86,7 +86,7 @@ bamQC <- function()
 
   cmd8 = paste(cmd2,cmd7,sep=" ")
 
-  print(cmd3)
+  print(cmd8)
 
   system(paste0(cmd1, " ", cmd8))
 
