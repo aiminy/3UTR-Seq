@@ -282,7 +282,7 @@ analysisAll <- function(R_lib)
 }
 
 switch(choose.type, QC = {
-  bamQC()
+  bamQC(R_lib)
 }, peakcalling = {
 }, annotation = {
 
