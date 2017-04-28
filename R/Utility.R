@@ -143,7 +143,7 @@ useInferExperiment<-function(input.file.dir,ref.gene.bed.file,output.dir){
 
   re <- parserreadfiles(input.file.dir,'bam')
 
-  res <- res$input
+  res <- re$input
 
   cmd0 <- "infer_experiment.py -i"
   cmd1 <- "-r"
