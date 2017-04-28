@@ -77,7 +77,7 @@ bamQC <- function()
   cmd2 = "R -e"
 
 
-  cmd3 = "'libraray(ChipSeq);library(ThreeUTR);ThreeUTR:::"
+  cmd3 = "'library(ChipSeq);library(ThreeUTR);ThreeUTR:::"
   cmd4="useInferExperiment("
 
   cmd5 = paste0(cmd3,cmd4)
