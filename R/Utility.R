@@ -484,9 +484,9 @@ parserAnnotationFile <- function(input.annotation.file){
     xxxx
 }
 
-convertBam2Bw <- function(input.bam.file,input.chromosome.size.file,out.bw.file.dir){
+convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,out.bw.file.dir){
 
-  re <- parserreadfiles(input.file.dir,'bam')
+  re <- parserreadfiles(input.bam.file.dir,'bam')
 
   res <- re$input
 
