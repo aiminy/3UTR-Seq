@@ -31,7 +31,7 @@ os <- get_os()
 cat("Your operating system is: ", os, "\n")
 
 cat("Choose analysis: \n")
-cat("\tAvaliable analysis: \t1. QC \t2. Counts \t3. DE_analysis \t4. All\n")
+cat("\tAvaliable analysis: \t1. QC \t2. Bam2Bw \t3. Counts \t4. DE_analysis \t5. All\n")
 
 input <- file("stdin", "r")
 row <- readLines(input, n = 1)
@@ -43,15 +43,20 @@ if (row == 1)
 
 if (row == 2)
 {
-  choose.type <- "Counts"
+  choose.type <- "Bam2Bw"
 }
 
 if (row == 3)
 {
-  choose.type <- "DE_analysis"
+  choose.type <- "Counts"
 }
 
 if (row == 4)
+{
+  choose.type <- "DE_analysis"
+}
+
+if (row == 5)
 {
   choose.type <- "All"
 }
@@ -88,6 +93,49 @@ bamQC <- function(R_lib)
   cat("Finished qcBAM\n")
 
 }
+
+
+bam2Bw <- function(R_lib)
+{
+  cat("You choose to convert bam files to bw files, please define the following setting parameters: \n",
+      "input.bam.files.dir (ex: /scratch/projects/exempt/tr/azhang/for_bioinfo_core/3_end_seq)\n",
+      "input.chrosome.size.file (ex: /nethome/axy148/hg19.genome)\n",
+      "output.bw.file.dir (ex:BW)\n")
+
+  input <- file("stdin", "r")
+  count.file.dir <- readLines(input, n = 3)
+
+  input.bam.file.dir <- count.file.dir[1]
+  input.ref.gene.bed.file <- count.file.dir[2]
+  output.dir <- count.file.dir[3]
+
+  library(ChipSeq)
+  library(ThreeUTR)
+
+
+  cmd1 = "bsub -P bbc -J \"QCBam\" -o %J.QCBam.log -e %J.QCBam.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/bam2Bw.r"),
+               input.bam.file.dir,input.ref.gene.bed.file,output.dir,sep=" ")
+
+  cmd3 = paste(cmd1,cmd2,sep=" ")
+
+  print(cmd3)
+
+  system(cmd3,intern= TRUE)
+
+  cat("Finished bam2Bw\n")
+
+}
+
+
+
+
+
+
+
+
+
 
 analysisAll <- function(R_lib)
 {
