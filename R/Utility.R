@@ -483,3 +483,120 @@ parserAnnotationFile <- function(input.annotation.file){
 
     xxxx
 }
+
+convertBam2Bw <- function(input.bam.file,input.chromosome.size.file,out.bw.file.dir){
+
+  re <- parserreadfiles(input.file.dir,'bam')
+
+  res <- re$input
+
+  cmd0="samtools sort"
+
+  if (!dir.exists(output.bw.file.dir))
+  {
+    dir.create(output.bw.file.dir)
+  }
+
+  cmd.l <- lapply(res, function(u, output.bw.file.dir)
+  {
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
+
+    cmd <- paste(cmd0,u,file.path(output.bw.file.dir, paste0(file_name,"_sorted")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  }, output.bw.file.dir)
+
+  cmd1="samtools index"
+
+  cmd.l <- lapply(res, function(u, output.bw.file.dir)
+  {
+
+    file_name = file_path_sans_ext(basename(u))
+
+    cmd <- paste(cmd1,file.path(output.bw.file.dir, paste0(file_name,"_sorted.bam")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  }, output.bw.file.dir)
+
+  cmd3 <- "tail -n +2"
+
+  path_name = dirname(input.chromosome.size.file)
+  path_name2 <- basename(path_name)
+
+  file_name = file_path_sans_ext(basename(input.chromosome.size.file))
+
+  file_name <- paste0(path_name2,"-",file_name,".txt")
+
+  cmd <- paste(cmd3,input.chromosome.size.file,">",file.path(path_name,file_name), sep = " ")
+
+  system(cmd)
+
+  cmd4 <- "genomeCoverageBed -ibam"
+  cmd5 <- "-bg -g"
+  cmd6 <- ">"
+
+  cmd.l <- lapply(res, function(u, output.bw.file.dir)
+  {
+
+    file_name = file_path_sans_ext(basename(u))
+    x = file.path(output.bw.file.dir, paste0(file_name,"_sorted.bam"))
+
+    cmd <- paste(cmd4,x,cmd5,input.chromosome.size.file,
+                  cmd6,file.path(output.bw.file.dir, paste0(file_name,".bdg")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  }, output.bw.file.dir)
+
+  #re <- list(cmdl = cmd.l, output.dir = output.dir)
+
+  #input.bdg.file.dir <- re$output.dir
+
+  cmd7 <- "LC_COLLATE=C sort -k1,1 -k2,2n"
+
+  #re <- parserreadfiles(input.bdg.file.dir,'bdg')
+
+  #res <- re$input
+
+  cmd.l <- lapply(res, function(u, output.bw.file.dir)
+  {
+
+    file_name = file_path_sans_ext(basename(u))
+    x = file.path(output.bw.file.dir, paste0(file_name,".bdg"))
+
+    cmd <- paste(cmd7,x,cmd6,file.path(output.bw.file.dir, paste0(file_name,".sorted_bdg")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  }, output.bw.file.dir)
+
+  cmd8 = "bedGraphToBigWig"
+
+  #re <- parserreadfiles(input.bdg.file.dir,'.sorted_bdg')
+
+  #res <- re$input
+
+  cmd.l <- lapply(res, function(u, output.bw.file.dir)
+  {
+    file_name = file_path_sans_ext(basename(u))
+    x = file.path(output.bw.file.dir,paste0(file_name,".sorted_bdg"))
+
+    cmd <- paste(cmd3,u,input.chromosome.size.file,file.path(output.bw.file.dir,paste0(file_name,".bw")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  }, output.bw.file.dir)
+
+}
