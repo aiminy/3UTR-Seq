@@ -518,7 +518,12 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
   cmd.l <- lapply(res, function(u, output.bw.file.dir)
   {
 
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
+
     file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
 
     cmd <- paste(cmd1,file.path(output.bw.file.dir, paste0(file_name,"_sorted.bam")), sep = " ")
 
@@ -546,8 +551,13 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   cmd.l <- lapply(res, function(u, output.bw.file.dir)
   {
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
 
     file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
+
     x = file.path(output.bw.file.dir, paste0(file_name,"_sorted.bam"))
 
     cmd <- paste(cmd4,x,cmd5,input.chromosome.size.file,
@@ -570,8 +580,13 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   cmd.l <- lapply(res, function(u, output.bw.file.dir)
   {
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
 
     file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
+
     x = file.path(output.bw.file.dir, paste0(file_name,".bdg"))
 
     cmd <- paste(cmd7,x,cmd6,file.path(output.bw.file.dir, paste0(file_name,".sorted_bdg")), sep = " ")
@@ -589,7 +604,13 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   cmd.l <- lapply(res, function(u, output.bw.file.dir)
   {
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
+
     file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
+
     x = file.path(output.bw.file.dir,paste0(file_name,".sorted_bdg"))
 
     cmd <- paste(cmd8,u,input.chromosome.size.file,file.path(output.bw.file.dir,paste0(file_name,".bw")), sep = " ")
