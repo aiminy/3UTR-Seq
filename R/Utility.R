@@ -615,11 +615,31 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
     x = file.path(output.bw.file.dir,paste0(file_name,".sorted_bdg"))
 
-    cmd <- paste(cmd8,u,input.chromosome.size.file.m,file.path(output.bw.file.dir,paste0(file_name,".bw")), sep = " ")
+    cmd <- paste(cmd8,x,input.chromosome.size.file.m,file.path(output.bw.file.dir,paste0(file_name,".bw")), sep = " ")
 
     system(cmd)
 
     cmd
   },input.chromosome.size.file.m,output.bw.file.dir)
+
+  cmd9 = "bigWigToWig"
+
+  cmd.l <- lapply(res, function(u,output.bw.file.dir)
+  {
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
+
+    x = file.path(output.bw.file.dir,paste0(file_name,".bw"))
+
+    cmd <- paste(cmd9,x,file.path(output.bw.file.dir,paste0(file_name,".wig")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  },output.bw.file.dir)
 
 }
