@@ -598,11 +598,13 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   cmd8 = "bedGraphToBigWig"
 
+  input.chromosome.size.file.m <- file.path(path_name,file_name)
+
   #re <- parserreadfiles(input.bdg.file.dir,'.sorted_bdg')
 
   #res <- re$input
 
-  cmd.l <- lapply(res, function(u, output.bw.file.dir)
+  cmd.l <- lapply(res, function(u,input.chromosome.size.file.m,output.bw.file.dir)
   {
     path_name = dirname(u)
     path_name2 <- basename(path_name)
@@ -613,11 +615,11 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
     x = file.path(output.bw.file.dir,paste0(file_name,".sorted_bdg"))
 
-    cmd <- paste(cmd8,u,input.chromosome.size.file,file.path(output.bw.file.dir,paste0(file_name,".bw")), sep = " ")
+    cmd <- paste(cmd8,u,input.chromosome.size.file.m,file.path(output.bw.file.dir,paste0(file_name,".bw")), sep = " ")
 
     system(cmd)
 
     cmd
-  }, output.bw.file.dir)
+  },input.chromosome.size.file.m,output.bw.file.dir)
 
 }
