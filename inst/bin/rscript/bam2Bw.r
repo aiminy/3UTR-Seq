@@ -17,4 +17,4 @@ if (length(args)==0) {
 library(ChipSeq)
 library(ThreeUTR)
 
-ThreeUTR:::bam2Bw(input.bamfile.dir,input.ref.gene.bed.file,output.dir)
+ThreeUTR:::convertBam2Bw(input.bamfile.dir,input.ref.gene.bed.file,output.dir)
