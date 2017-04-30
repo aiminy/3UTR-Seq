@@ -128,15 +128,6 @@ bam2Bw <- function(R_lib)
 
 }
 
-
-
-
-
-
-
-
-
-
 analysisAll <- function(R_lib)
 {
   cat("Do you want to perform peak calling, annotation, and coverage visualization?\n")
@@ -331,9 +322,16 @@ analysisAll <- function(R_lib)
 
 switch(choose.type, QC = {
   bamQC(R_lib)
-}, peakcalling = {
-}, annotation = {
+},
+Bam2Bw ={
+  bam2Bw(R_lib)
+},
+peakcalling = {
+},
+annotation = {
 
-}, visualization = {
+},
+visualization = {
   analysisVisualization(R_lib)
-})
+}
+)
