@@ -18,3 +18,4 @@ library(ChipSeq)
 library(ThreeUTR)
 
 ThreeUTR:::useInferExperiment(input.bamfile.dir,input.ref.gene.bed.file,output.dir)
+
