@@ -484,7 +484,7 @@ parserAnnotationFile <- function(input.annotation.file){
     xxxx
 }
 
-convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,out.bw.file.dir){
+convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.bw.file.dir){
 
   re <- parserreadfiles(input.bam.file.dir,'bam')
 
@@ -592,7 +592,7 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,out.bw.f
     file_name = file_path_sans_ext(basename(u))
     x = file.path(output.bw.file.dir,paste0(file_name,".sorted_bdg"))
 
-    cmd <- paste(cmd3,u,input.chromosome.size.file,file.path(output.bw.file.dir,paste0(file_name,".bw")), sep = " ")
+    cmd <- paste(cmd8,u,input.chromosome.size.file,file.path(output.bw.file.dir,paste0(file_name,".bw")), sep = " ")
 
     system(cmd)
 
