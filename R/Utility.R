@@ -643,3 +643,49 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
   },output.bw.file.dir)
 
 }
+
+prepareDaPars<-function(input.wig.file.dir,sample.group=c("Dox","WT"),output.dir){
+
+  re <- parserreadfiles(input.wig.file.dir,'wig')
+
+  res <- re$input
+
+  cmd = "tail -n +2"
+
+  cmd.l <- lapply(res, function(u,output.dir)
+  {
+    path_name = dirname(u)
+    #path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    #file_name <- paste0(path_name2,"-",file_name)
+
+    x = u
+
+    cmd <- paste(cmd,x,">",file.path(output.dir,paste0(file_name,"2.wig")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  },output.dir)
+
+  g1 <- "1,2,3,4,5"
+  g2 <- "a,b,c,d,e"
+
+cat(c("Annotated_3UTR=hg19_refseq_extracted_3UTR.bed\n",
+paste0("Group1_Tophat_aligned_Wig=",g1,"\n"),
+paste0("Group2_Tophat_aligned_Wig=",g2,"\n"),
+"Output_directory=DaPars_Dox_WT_data/\n",
+"Output_result_file=DaPars_Dox_WT_data\n",
+"#Parameters\n
+Num_least_in_group1=1\n
+Num_least_in_group2=1\n
+Coverage_cutoff=30\n
+FDR_cutoff=0.05\n
+PDUI_cutoff=0.5\n
+Fold_change_cutoff=0.59\n"),file=file.path(output.dir,"config_test.txt"),sep="")
+}
+
+
+

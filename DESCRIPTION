@@ -6,7 +6,7 @@ Author: Aimin Yan
 Maintainer: Aimin Yan <aimin.at.work@gmail.com>
 Description: This is an package for processing and analyzing 3UTR,DOGs and 5UTR data
 Imports: VennDiagram,knitr,GenomicFeatures,TxDb.Hsapiens.UCSC.hg19.knownGene,
-        annotate,org.Hs.eg.db,SummarizedExperiment,biomaRt
+        annotate,org.Hs.eg.db,SummarizedExperiment,biomaRt,InPAS
 License: What license is it under?
 LazyData: TRUE
 RoxygenNote: 6.0.1
