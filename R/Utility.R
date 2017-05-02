@@ -143,9 +143,11 @@ useWget2Download <- function(sra.accession.number,output.dir){
   cmd0 <- "wget -c -r -nd -np -L"
   cmd1 <- "ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/"
 
-  file.path(substr(sra.accession.number,1,6),sra.accession.number)
+  temp <- file.path(substr(sra.accession.number,1,6),sra.accession.number)
 
-  cmd2 <- paste(cmd0,sra.accession.number,"-P",output.dir,sep=" ")
+  temp2 <- paste0(cmd1,temp)
+
+  cmd2 <- paste(cmd0,temp2,"-P",output.dir,sep=" ")
 
   system(cmd2)
 
