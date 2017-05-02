@@ -356,7 +356,12 @@ analysisAll <- function(R_lib)
   }
 }
 
-switch(choose.type, QC = {
+switch(choose.type,
+
+Download_SRA ={
+  downloadSRA(R_lib)
+},
+QC = {
   bamQC(R_lib)
 },
 Bam2Bw ={
