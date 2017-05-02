@@ -16,4 +16,4 @@ if (length(args)==0) {
 library(ChipSeq)
 library(ThreeUTR)
 
-ThreeUTR:::useFastqDump(sra.accession.number,output.dir)
+ThreeUTR:::useWget2Download(sra.accession.number,output.dir)

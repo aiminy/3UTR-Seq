@@ -138,6 +138,20 @@ parserreadfiles <- function(input.file.dir,input.file.type,sample.group=NULL,fil
 
 }
 
+useWget2Download <- function(sra.accession.number,output.dir){
+
+  cmd0 <- "wget -c -r -nd -np -L"
+  cmd1 <- "ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/"
+
+  file.path(substr(sra.accession.number,1,6),sra.accession.number)
+
+  cmd2 <- paste(cmd0,sra.accession.number,"-P",output.dir,sep=" ")
+
+  system(cmd2)
+
+}
+
+
 useFastqDump <- function(sra.accession.number,output.dir){
 
   cmd0 <- "fastq-dump -I --split-files"
