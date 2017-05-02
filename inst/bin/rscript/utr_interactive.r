@@ -69,7 +69,7 @@ if (row == 6)
 downloadSRA <- function(R_lib)
 {
   cat("You choose to download SRA files, please define the following setting parameters: \n",
-      "sra.accession.number (ex: )\n",
+      "sra.accession.number (ex: SRP058633 Use an example from DoGs paper)\n",
       "output.dir (ex:DoGsExample)\n")
 
   input <- file("stdin", "r")
