@@ -31,34 +31,70 @@ os <- get_os()
 cat("Your operating system is: ", os, "\n")
 
 cat("Choose analysis: \n")
-cat("\tAvaliable analysis: \t1. QC \t2. Bam2Bw \t3. Counts \t4. DE_analysis \t5. All\n")
+cat("\tAvaliable analysis: \t1. Download_SRA \t2. QC \t3. Bam2Bw \t4. Counts \t5. DE_analysis \t6. All\n")
 
 input <- file("stdin", "r")
 row <- readLines(input, n = 1)
 
 if (row == 1)
 {
-  choose.type <- "QC"
+  choose.type <- "Download_SRA"
 }
 
 if (row == 2)
 {
-  choose.type <- "Bam2Bw"
+  choose.type <- "QC"
 }
 
 if (row == 3)
 {
-  choose.type <- "Counts"
+  choose.type <- "Bam2Bw"
 }
 
 if (row == 4)
 {
-  choose.type <- "DE_analysis"
+  choose.type <- "Counts"
 }
 
 if (row == 5)
 {
+  choose.type <- "DE_analysis"
+}
+
+if (row == 6)
+{
   choose.type <- "All"
+}
+
+downloadSRA <- function(R_lib)
+{
+  cat("You choose to download SRA files, please define the following setting parameters: \n",
+      "sra.accession.number (ex: )\n",
+      "output.dir (ex:DoGsExample)\n")
+
+  input <- file("stdin", "r")
+  count.file.dir <- readLines(input, n = 2)
+
+  sra.accession.number <- count.file.dir[1]
+  output.dir <- count.file.dir[2]
+
+  library(ChipSeq)
+  library(ThreeUTR)
+
+
+  cmd1 = "bsub -P bbc -J \"downloadSRA\" -o %J.downloadSRA.log -e %J.downloadSRA.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/downloadSRA.r"),
+               sra.accession.number,output.dir,sep=" ")
+
+  cmd3 = paste(cmd1,cmd2,sep=" ")
+
+  print(cmd3)
+
+  system(cmd3,intern= TRUE)
+
+  cat("Finished downloadSRA\n")
+
 }
 
 bamQC <- function(R_lib)

@@ -138,6 +138,16 @@ parserreadfiles <- function(input.file.dir,input.file.type,sample.group=NULL,fil
 
 }
 
+useFastqDump <- function(sra.accession.number,output.dir){
+
+  cmd0 <- "fastq-dump -I --split-files"
+
+  cmd1 <- paste(cmd0,sra.accession.number,"-O",output.dir,sep=" ")
+
+  system(cmd1)
+
+}
+
 #infer_experiment.py
 useInferExperiment<-function(input.file.dir,ref.gene.bed.file,output.dir){
 
