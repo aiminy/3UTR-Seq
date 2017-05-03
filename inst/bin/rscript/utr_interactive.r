@@ -161,7 +161,7 @@ performAlignment <- function(R_lib)
 
   cmd1 = "bsub -P bbc -J \"alignment\" -o %J.alignment.log -e %J.alignment.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/sra2Fastq.r"),
+  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/alignment.r"),
                fastq.file.dir,output.dir,sep=" ")
 
   cmd3 = paste(cmd1,cmd2,sep=" ")
