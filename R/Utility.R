@@ -745,5 +745,36 @@ PDUI_cutoff=0.5\n
 Fold_change_cutoff=0.59\n"),file=file.path(output.dir,"config_test.txt"),sep="")
 }
 
+select3UTR <- function(genome,tablename) {
+  library(GenomicFeatures)
+  library(dplyr)
+  refSeq             <- makeTxDbFromUCSC(genome="hg19",tablename="knownGene")
+  threeUTRs          <- threeUTRsByTranscript(refSeq, use.names=TRUE)
+  length_threeUTRs   <- width(ranges(threeUTRs))
+  the_lengths        <- as.data.frame(length_threeUTRs)
+  the_lengths        <- the_lengths %>% group_by(group, group_name) %>% summarise(sum(value))
+  the_lengths        <- unique(the_lengths[,c("group_name", "sum(value)")])
+  colnames(the_lengths) <- c("RefSeq Transcript", "3' UTR Length")
 
+}
 
+useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index=NULL){
+
+  re <- parserreadfiles(input.wig.file.dir,'fastq')
+
+  res <- re$input
+
+  xx <-lapply(res,function(u){
+    p <- gregexpr(pattern ='_',u)
+    x <- substr(u,1,p)
+    x
+  })
+
+  xxx <- unique(unlist(xx))
+
+  print(xxx)
+
+  #  tophat -G ~/genes.gtf -p 4 -o "$sample_name"_tophat_out  ~/Mus_musculus/UCSC/mm10/Sequence/Bowtie2Index#/genome "$f"
+#  mv "$sample_name"_tophat_out/accepted_hits.bam "$sample_name".bam
+
+}

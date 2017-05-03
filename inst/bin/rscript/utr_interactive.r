@@ -34,11 +34,12 @@ cat("Choose analysis: \n")
 cat("\tAvaliable analysis: \n
     1. Download_SRA \n
     2. SRA2Fastq \n
-    3. QC \n
-    4. Bam2Bw \n
-    5. Counts \n
-    6. DE_analysis \n
-    7. All\n")
+    3. Alignment \n
+    4. QC \n
+    5. Bam2Bw \n
+    6. Counts \n
+    7. DE_analysis \n
+    8. All\n")
 
 input <- file("stdin", "r")
 row <- readLines(input, n = 1)
@@ -55,25 +56,30 @@ if (row == 2)
 
 if (row == 3)
 {
-  choose.type <- "QC"
+  choose.type <- "Alignment"
 }
 
 if (row == 4)
 {
-  choose.type <- "Bam2Bw"
+  choose.type <- "QC"
 }
 
 if (row == 5)
 {
-  choose.type <- "Counts"
+  choose.type <- "Bam2Bw"
 }
 
 if (row == 6)
 {
-  choose.type <- "DE_analysis"
+  choose.type <- "Counts"
 }
 
 if (row == 7)
+{
+  choose.type <- "DE_analysis"
+}
+
+if (row == 8)
 {
   choose.type <- "All"
 }
@@ -135,6 +141,36 @@ sra2Fastq <- function(R_lib)
   system(cmd3,intern= TRUE)
 
   cat("Finished sra2Fastq\n")
+
+}
+
+performAlignment <- function(R_lib)
+{
+  cat("You choose to perform alignment, please define the following setting parameters: \n",
+      "fastq.file.dir (ex: /nethome/axy148/DoGsExample)\n",
+      "output.dir (ex:DoGsFastq)\n")
+
+  input <- file("stdin", "r")
+  count.file.dir <- readLines(input, n = 2)
+
+  fastq.file.dir <- count.file.dir[1]
+  output.dir <- count.file.dir[2]
+
+  library(ChipSeq)
+  library(ThreeUTR)
+
+  cmd1 = "bsub -P bbc -J \"alignment\" -o %J.alignment.log -e %J.alignment.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/sra2Fastq.r"),
+               fastq.file.dir,output.dir,sep=" ")
+
+  cmd3 = paste(cmd1,cmd2,sep=" ")
+
+  print(cmd3)
+
+  system(cmd3,intern= TRUE)
+
+  cat("Finished alignment\n")
 
 }
 
@@ -404,6 +440,9 @@ Download_SRA ={
 },
 SRA2Fastq ={
   sra2Fastq(R_lib)
+},
+Alignment ={
+performAlignment(R_lib)
 },
 QC = {
   bamQC(R_lib)
