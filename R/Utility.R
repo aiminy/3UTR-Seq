@@ -760,7 +760,7 @@ select3UTR <- function(genome,tablename) {
 
 useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index=NULL){
 
-  re <- parserreadfiles(input.wig.file.dir,'fastq')
+  re <- parserreadfiles(input.fastq.files.dir,'fastq')
 
   res <- re$input
 
