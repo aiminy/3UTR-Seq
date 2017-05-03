@@ -765,8 +765,14 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
   res <- re$input
 
   xx <-lapply(res,function(u){
-    p <- gregexpr(pattern ='_',u)
-    x <- substr(u,1,p)
+
+    path_name = dirname(u)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    p <- gregexpr(pattern ='_',file_name)
+
+    x <- substr(file_name,1,p)
     x
   })
 
