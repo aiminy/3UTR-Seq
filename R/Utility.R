@@ -153,7 +153,6 @@ useWget2Download <- function(sra.accession.number,output.dir){
 
 }
 
-
 useFastqDump <- function(sra.accession.number,output.dir){
 
   cmd0 <- "fastq-dump -I --split-files"
@@ -161,6 +160,39 @@ useFastqDump <- function(sra.accession.number,output.dir){
   cmd1 <- paste(cmd0,sra.accession.number,"-O",output.dir,sep=" ")
 
   system(cmd1)
+
+}
+
+useFastqDumpConvertSra2Fastq <- function(sra.file.dir,output.dir){
+
+  cmd0 <- "fastq-dump --split-3"
+
+  re <- parserreadfiles(sra.file.dir,'sra')
+
+  res <- re$input
+
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir)
+  }
+
+  cmd.l <- lapply(res, function(u, output.dir)
+  {
+
+    path_name = dirname(u)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    cmd1 <- paste(cmd0,u,"-O",output.dir,sep=" ")
+
+    system(cmd1)
+
+    cmd1
+  }, output.dir)
+
+  re <- list(cmdl = cmd.l, output.dir = output.dir)
+
+  re
 
 }
 
