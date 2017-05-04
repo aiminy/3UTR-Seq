@@ -183,10 +183,10 @@ randomSamplingFastq <- function(R_lib)
 performAlignment <- function(R_lib)
 {
   cat("You choose to perform alignment, please define the following setting parameters: \n",
-      "fastq.file.dir (ex: /nethome/axy148/DoGsExample)\n",
+      "fastq.file.dir (ex:/scratch/projects/bbc/aiminy_project/DoGsFastq)\n",
       "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
       "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n",
-      "output.dir (ex:AlignmentBam)\n")
+      "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBam)\n")
 
   input <- file("stdin", "r")
   count.file.dir <- readLines(input, n = 4)
