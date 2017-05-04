@@ -772,9 +772,9 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
     p <- gregexpr(pattern ='_',file_name)
 
-    p <- p-1
+    pp <- as.integer(p)-1
 
-    x <- substr(file_name,1,p)
+    x <- substr(file_name,1,pp)
     x
   })
 
