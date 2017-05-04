@@ -782,7 +782,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
   cmd0 = "tophat -G"
   cmd1 = "-p 4 -o"
 
-  cmd2 = paste("mv",paste0(sample.name.out.dir,"accepted_hits.bam"),sep=" ")
+  cmd2 = "mv"
 
   for(i in 1:length(xxx)){
 
@@ -794,10 +794,10 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
       cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,sample.name.out.dir,y[1],y[2],sep=" ")
     }else
     {
-      cmd3= paste(cmd0,gene.model.file,genome.index,y[1],y[2],sep=" ")
+      cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,y[1],sep=" ")
     }
     system(cmd3)
-    cmd4=paste(cmd2,file.path(output.dir,paste0(xxx[i],".bam")),sep=" ")
+    cmd4=paste(cmd2,paste0(sample.name.out.dir,"accepted_hits.bam"),file.path(output.dir,paste0(xxx[i],".bam")),sep=" ")
     system(cmd4)
   }
 
