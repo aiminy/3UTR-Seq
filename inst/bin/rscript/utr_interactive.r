@@ -186,7 +186,7 @@ performAlignment <- function(R_lib)
       "fastq.file.dir (ex:/scratch/projects/bbc/aiminy_project/DoGsFastq)\n",
       "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBam)\n",
       "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
-      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n")
+      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index)\n")
 
   input <- file("stdin", "r")
   count.file.dir <- readLines(input, n = 4)
