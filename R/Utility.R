@@ -781,6 +781,8 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
   xxx <- unique(unlist(xx))
   res2 <- unlist(res)
 
+  tophat -G genes.gtf -p 4 -o "201348193-01"_tophat_out mm10_index_bt2/genome ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_1.txt" ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_2.txt"
+
   cmd0 = "tophat -G"
   cmd1 = "-p 4 -o"
 
@@ -793,17 +795,16 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
     y <- res2[grep(xxx[i],res2)]
 
     if(length(y)==2){
-      cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,y[1],y[2],sep=" ")
+      cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],y[2],sep=" ")
     }else
     {
-      cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,y[1],sep=" ")
+      cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],sep=" ")
     }
 
     system(cmd3)
 
-    cmd4=paste(cmd2,paste0(sample.name.out.dir,"accepted_hits.bam"),file.path(output.dir,paste0(xxx[i],".bam")),sep=" ")
-
-    system(cmd4)
+    #cmd4=paste(cmd2,paste0(sample.name.out.dir,"accepted_hits.bam"),file.path(output.dir,paste0(xxx[i],".bam")),sep=" ")
+    #system(cmd4)
   }
 
 }
