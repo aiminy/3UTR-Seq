@@ -793,7 +793,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
     y <- res2[grep(xxx[i],res2)]
 
     if(length(y)==2){
-      cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,sample.name.out.dir,y[1],y[2],sep=" ")
+      cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,y[1],y[2],sep=" ")
     }else
     {
       cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,y[1],sep=" ")
