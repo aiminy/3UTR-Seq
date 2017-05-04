@@ -18,5 +18,5 @@ if (length(args)==0) {
 library(ChipSeq)
 library(ThreeUTR)
 
-ThreeeUTR:::useTophat4Alignment(input.fastq.files.dir,output.dir,gene.model.file,genome.index)
+ThreeUTR:::useTophat4Alignment(input.fastq.files.dir,output.dir,gene.model.file,genome.index)
 
