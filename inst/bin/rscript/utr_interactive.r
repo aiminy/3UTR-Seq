@@ -184,17 +184,18 @@ performAlignment <- function(R_lib)
 {
   cat("You choose to perform alignment, please define the following setting parameters: \n",
       "fastq.file.dir (ex:/scratch/projects/bbc/aiminy_project/DoGsFastq)\n",
+      "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBam)\n",
       "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
-      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n",
-      "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBam)\n")
+      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n")
 
   input <- file("stdin", "r")
   count.file.dir <- readLines(input, n = 4)
 
   fastq.file.dir <- count.file.dir[1]
-  gene.model.file <- count.file.dir[2]
-  genome.index <- count.file.dir[3]
-  output.dir <- count.file.dir[4]
+  output.dir <- count.file.dir[2]
+  gene.model.file <- count.file.dir[3]
+  genome.index <- count.file.dir[4]
+
 
   library(ChipSeq)
   library(ThreeUTR)
@@ -202,7 +203,7 @@ performAlignment <- function(R_lib)
   cmd1 = "bsub -P bbc -J \"alignment\" -o %J.alignment.log -e %J.alignment.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
   cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/alignment.r"),
-               fastq.file.dir,gene.model.file,genome.index,output.dir,sep=" ")
+               fastq.file.dir,output.dir,gene.model.file,genome.index,sep=" ")
 
   cmd3 = paste(cmd1,cmd2,sep=" ")
 
