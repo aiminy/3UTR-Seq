@@ -781,7 +781,8 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
   xxx <- unique(unlist(xx))
   res2 <- unlist(res)
 
-  tophat -G genes.gtf -p 4 -o "201348193-01"_tophat_out mm10_index_bt2/genome ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_1.txt" ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_2.txt"
+#  tophat -G genes.gtf -p 4 -o "201348193-01"_tophat_out mm10_index_bt2/genome ~/RNAseqData/"nBishopric_Project1_201348193
+  #-01_S_1_1.txt" ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_2.txt"
 
   cmd0 = "tophat -G"
   cmd1 = "-p 4 -o"
