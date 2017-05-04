@@ -184,8 +184,8 @@ performAlignment <- function(R_lib)
 {
   cat("You choose to perform alignment, please define the following setting parameters: \n",
       "fastq.file.dir (ex: /nethome/axy148/DoGsExample)\n",
-      "gene.model.file(ex:)\n",
-      "genome.index(ex:)\n",
+      "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
+      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n",
       "output.dir (ex:AlignmentBam)\n")
 
   input <- file("stdin", "r")
