@@ -772,6 +772,8 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
     p <- gregexpr(pattern ='_',file_name)
 
+    p <- p-1
+
     x <- substr(file_name,1,p)
     x
   })
@@ -796,8 +798,11 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
     {
       cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,y[1],sep=" ")
     }
+
     system(cmd3)
+
     cmd4=paste(cmd2,paste0(sample.name.out.dir,"accepted_hits.bam"),file.path(output.dir,paste0(xxx[i],".bam")),sep=" ")
+
     system(cmd4)
   }
 
