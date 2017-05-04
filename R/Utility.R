@@ -777,10 +777,28 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
   })
 
   xxx <- unique(unlist(xx))
+  res2 <- unlist(res)
 
-  print(xxx)
+  cmd0 = "tophat -G"
+  cmd1 = "-p 4 -o"
 
-  #  tophat -G ~/genes.gtf -p 4 -o "$sample_name"_tophat_out  ~/Mus_musculus/UCSC/mm10/Sequence/Bowtie2Index#/genome "$f"
-#  mv "$sample_name"_tophat_out/accepted_hits.bam "$sample_name".bam
+  cmd2 = paste("mv",paste0(sample.name.out.dir,"accepted_hits.bam"),sep=" ")
+
+  for(i in 1:length(xxx)){
+
+    sample.name <- xxx[i]
+    sample.name.out.dir <-file.path(output.dir,sample.name)
+    y <- res2[grep(xxx[i],res2)]
+
+    if(length(y)==2){
+      cmd3= paste(cmd0,gene.model.file,cmd1,genome.index,sample.name.out.dir,y[1],y[2],sep=" ")
+    }else
+    {
+      cmd3= paste(cmd0,gene.model.file,genome.index,y[1],y[2],sep=" ")
+    }
+    system(cmd3)
+    cmd4=paste(cmd2,file.path(output.dir,paste0(xxx[i],".bam")),sep=" ")
+    system(cmd4)
+  }
 
 }
