@@ -869,7 +869,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
         if (!dir.exists(paste0(sample.name.out.dir,".",i)))
       {
-        dir.create(paste0(sample.name.out.dir,".",i))
+        dir.create(eval(parse(text = paste0(sample.name.out.dir,".",i))))
       }
 
       }
@@ -907,7 +907,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
         if (!dir.exists(paste0(sample.name.out.dir,".",i)))
         {
-          dir.create(paste0(sample.name.out.dir,".",i))
+          dir.create(eval(parse(text = paste0(sample.name.out.dir,".",i))))
         }
 
       }
