@@ -814,9 +814,8 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
     y <- res2[grep(xxx[i],res2)]
 
-
-    #print(y)
-    #print(length(y))
+    print(y)
+    print(length(y))
 
     if(length(y)==2){
       cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],y[2],sep=" ")
@@ -826,7 +825,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
     }
 
 
-    #print(cmd3)
+    print(cmd3)
     #system(cmd3)
 
     #cmd4=paste(cmd2,paste0(sample.name.out.dir,"accepted_hits.bam"),file.path(output.dir,paste0(xxx[i],".bam")),sep=" ")
