@@ -758,6 +758,38 @@ select3UTR <- function(genome,tablename) {
 
 }
 
+subsetFastq<-function(input.fastq.files.dir,output.dir,n){
+
+  re <- parserreadfiles(input.fastq.files.dir,'fastq')
+
+  res <- re$input
+
+  cmd0 = paste0("head -",n)
+  cmd1 = ">"
+
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir)
+  }
+
+  xx <-lapply(res,function(u,output.dir){
+
+    path_name = dirname(u)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    sample.name.out = file.path(output.dir,paste0(file_name,"_test_",n,".fastq"))
+
+    cmd3= paste(cmd0,u,cmd1,sample.name.out)
+
+    cmd3
+
+    system(cmd3)
+
+  },output.dir)
+
+}
+
 useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index=NULL){
 
   re <- parserreadfiles(input.fastq.files.dir,'fastq')

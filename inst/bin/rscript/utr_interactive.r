@@ -34,7 +34,7 @@ cat("Choose analysis: \n")
 cat("\tAvaliable analysis: \n
     1. Download_SRA \n
     2. SRA2Fastq \n
-    3. Random_sampling_paired_end_Fastq_file
+    3. subset_Fastq_file \n
     4. Alignment \n
     5. QC \n
     6. Bam2Bw \n
@@ -57,7 +57,7 @@ if (row == 2)
 
 if (row == 3)
 {
-  choose.type <- "Random_sampling_paired_end_Fastq_file"
+  choose.type <- "subset_Fastq_file"
 }
 
 if (row == 4)
@@ -150,17 +150,19 @@ sra2Fastq <- function(R_lib)
 
 }
 
-randomSamplingFastq <- function(R_lib)
+subsetFastqFile <- function(R_lib)
 {
   cat("You choose to sample Fastq files, please define the following setting parameters: \n",
       "fastq.file.dir (ex: /nethome/axy148/DoGsExample)\n",
-      "output.dir (ex:DoGsFastq)\n")
+      "output.dir (ex:DoGsFastq)\n",
+      "Number of short reads (it has to be 4n)\n")
 
   input <- file("stdin", "r")
-  count.file.dir <- readLines(input, n = 2)
+  count.file.dir <- readLines(input, n = 3)
 
   fastq.file.dir <- count.file.dir[1]
   output.dir <- count.file.dir[2]
+  num.read <- count.file.dir[3]
 
   library(ChipSeq)
   library(ThreeUTR)
@@ -168,7 +170,7 @@ randomSamplingFastq <- function(R_lib)
   cmd1 = "bsub -P bbc -J \"sra2Fastq\" -o %J.sra2Fastq.log -e %J.sra2Fastq.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
   cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/sampleFastq.r"),
-               fastq.file.dir,output.dir,sep=" ")
+               fastq.file.dir,output.dir,num.read,sep=" ")
 
   cmd3 = paste(cmd1,cmd2,sep=" ")
 
@@ -176,7 +178,7 @@ randomSamplingFastq <- function(R_lib)
 
   system(cmd3,intern= TRUE)
 
-  cat("Finished sample fastq\n")
+  cat("Finished subset fastq\n")
 
 }
 
