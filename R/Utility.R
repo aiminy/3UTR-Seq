@@ -758,7 +758,7 @@ select3UTR <- function(genome,tablename) {
 
 }
 
-subsetFastq<-function(input.fastq.files.dir,output.dir,n){
+subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.index){
 
   re <- parserreadfiles(input.fastq.files.dir,'fastq')
 
