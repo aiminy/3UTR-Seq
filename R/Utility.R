@@ -850,7 +850,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
       yy2 <- basename(y[2])
 
       p1 <- regexpr(pattern ='_',yy1)
-      pp1 <- p+1
+      pp1 <- p1+1
       x1 <- substr(yy1,pp1,pp1)
 
       p2 <- regexpr(pattern ='_',yy2)
