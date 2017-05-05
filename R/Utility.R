@@ -772,16 +772,11 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
     dir.create(output.dir)
   }
 
-  # cmd1="bsub -P bbc -J \"STAR-alignment\" -o %J.STAR-alignment.log -e %J.STAR-alignment.err -W"
-  # cmd2="72:00 -n 8 -q bigmem -R 'rusage[mem=36864] span[hosts=1]' -u aimin.yan@med.miami.edu"
-  #
-  # cmd3=paste("STAR",strand,"--genomeLoad NoSharedMemory --runThreadN",Ncores,"--sjdbGTFfile",collapse = " ")
-  # cmd4=paste(input.gtf.file,"--outFileNamePrefix",collapse = " ")
-  #
-  # cmd44=paste("--genomeDir",STAR.index.file,collapse = " ")
-  #
-  #
-  # cmd11="bsub -w \"done(\"STAR-alignment\")\" -P bbc -J \"samtools-sort\" -o %J.samtools-sort.log -e %J.samtools-sort.err -W"
+  cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+  cmd3 = "bsub -P bbc -J \"subSetFastq\" -o %J.subSetFastq.log -e %J.subSetFastq.err -W"
+
+  cmd4="bsub -w \"done(\"subSetFastq\")\" -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
 
   xx <-lapply(res,function(u,output.dir){
 
@@ -791,17 +786,15 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
     sample.name.out = file.path(output.dir,paste0(file_name,"-test-",n,".fastq"))
 
-    cmd3= paste(cmd0,u,cmd1,sample.name.out)
+    cmd= paste(cmd3,cmd2,cmd0,u,cmd1,sample.name.out,sep=" ")
 
-    cmd3
+    cmd
 
-    system(cmd3)
+    system(cmd)
 
   },output.dir)
 
-
   re <- parserreadfiles(output.dir,'fastq')
-
   res <- re$input
 
   xx <-lapply(res,function(u){
@@ -812,14 +805,14 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
     if(regexpr(pattern ='_',file_name)!=-1){
 
-      cat("match:",file_name,"\n")
+      #cat("match:",file_name,"\n")
 
       p <- regexpr(pattern ='_',file_name)
       pp <- p-1
       x <- substr(file_name,1,pp)
 
     }else{
-      cat("no match:",file_name,"\n")
+      #cat("no match:",file_name,"\n")
       x <- file_name
     }
 
@@ -827,20 +820,14 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
   })
 
 
-  print(xx)
-
   xxx <- unique(unlist(xx))
   res2 <- unlist(res)
 
-  print(xxx)
-  #print(res2)
-  #  tophat -G genes.gtf -p 4 -o "201348193-01"_tophat_out mm10_index_bt2/genome ~/RNAseqData/"nBishopric_Project1_201348193
-  #-01_S_1_1.txt" ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_2.txt"
-
-  cmd0 = "tophat -G"
-  cmd1 = "-p 4 -o"
-
-  cmd2 = "mv"
+  cmd5 = "tophat --library-type fr-unstranded -g 1 -G"
+  cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
+  cmd7 = "tophat --library-type fr-secondstrand -g 1 -G"
+  cmd8 = "-p 4 -o"
+  cmd9 = "mv"
 
   for(i in 1:length(xxx)){
 
@@ -854,14 +841,80 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
     y <- res2[grep(xxx[i],res2)]
 
-    print(y)
-    print(length(y))
+    #print(y)
+    #print(length(y))
 
     if(length(y)==2){
-      cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],y[2],sep=" ")
+
+      yy1 <- basename(y[1])
+      yy2 <- basename(y[2])
+
+      p1 <- regexpr(pattern ='_',yy1)
+      pp1 <- p+1
+      x1 <- substr(yy1,pp1,pp1)
+
+      p2 <- regexpr(pattern ='_',yy2)
+      pp2 <- p2+1
+      x2 <- substr(yy2,pp2,pp2)
+
+
+      sample.name.out.dir.1 = paste0(sample.name.out.dir,"Us",x1,x2)
+      sample.name.out.dir.2 = paste0(sample.name.out.dir,"Us",x2,x1)
+      sample.name.out.dir.3 = paste0(sample.name.out.dir,"Fs",x1,x2)
+      sample.name.out.dir.4 = paste0(sample.name.out.dir,"Fs",x2,x1)
+      sample.name.out.dir.5 = paste0(sample.name.out.dir,"Ss",x1,x2)
+      sample.name.out.dir.6 = paste0(sample.name.out.dir,"Ss",x2,x1)
+
+      for(i in 1:6){
+
+        if (!dir.exists(paste0(sample.name.out.dir,".",i)))
+      {
+        dir.create(paste0(sample.name.out.dir,".",i))
+      }
+
+      }
+
+      cmd10= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.1,genome.index,y[1],y[2],sep=" ")
+      cmd11= paste(cmd4,cmd2,cmd10)
+
+      cmd12= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.2,genome.index,y[2],y[1],sep=" ")
+      cmd13= paste(cmd4,cmd2,cmd12)
+
+      cmd14= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.3,genome.index,y[1],y[2],sep=" ")
+      cmd15= paste(cmd4,cmd2,cmd14)
+
+      cmd16= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.4,genome.index,y[2],y[1],sep=" ")
+      cmd17= paste(cmd4,cmd2,cmd16)
+
+      cmd18= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.5,genome.index,y[1],y[2],sep=" ")
+      cmd19= paste(cmd4,cmd2,cmd18)
+
+      cmd20= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.6,genome.index,y[2],y[1],sep=" ")
+      cmd21= paste(cmd4,cmd2,cmd20)
+
     }else
     {
-      cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],sep=" ")
+      sample.name.out.dir.7 = paste0(sample.name.out.dir,"Us")
+      sample.name.out.dir.8 = paste0(sample.name.out.dir,"Fs")
+      sample.name.out.dir.9 = paste0(sample.name.out.dir,"Ss")
+
+      for(i in 7:9){
+
+        if (!dir.exists(paste0(sample.name.out.dir,".",i)))
+        {
+          dir.create(paste0(sample.name.out.dir,".",i))
+        }
+
+      }
+
+      cmd22= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.7,genome.index,y[1],sep=" ")
+      cmd23= paste(cmd4,cmd2,cmd22)
+
+      cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
+      cmd25= paste(cmd4,cmd2,cmd24)
+
+      cmd26= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.9,genome.index,y[1],sep=" ")
+      cmd27= paste(cmd4,cmd2,cmd26)
     }
 
 
