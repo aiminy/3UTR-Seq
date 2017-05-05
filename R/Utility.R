@@ -764,7 +764,10 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
   res <- re$input
 
-  cmd0 = paste0("head -",n)
+  #cmd0 = paste0("head -",n)
+  cmd0 = "seqtk sample -s100"
+  #read1.fq 10000
+
   cmd1 = ">"
 
   if (!dir.exists(output.dir))
@@ -786,7 +789,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
     sample.name.out = file.path(output.dir,paste0(file_name,"-test-",n,".fastq"))
 
-    cmd= paste(cmd3,cmd2,cmd0,u,cmd1,sample.name.out,sep=" ")
+    cmd= paste(cmd3,cmd2,cmd0,u,n,cmd1,sample.name.out,sep=" ")
 
     cmd
 

@@ -157,7 +157,7 @@ subsetFastqFile <- function(R_lib)
       "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGsFastqTest)\n",
       "Number of short reads (ex: 20. it has to be 4n)\n",
       "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
-      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index)\n")
+      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n")
 
   input <- file("stdin", "r")
   count.file.dir <- readLines(input, n = 5)
