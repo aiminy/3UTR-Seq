@@ -169,7 +169,7 @@ subsetFastqFile <- function(R_lib)
 
   cmd1 = "bsub -P bbc -J \"sra2Fastq\" -o %J.sra2Fastq.log -e %J.sra2Fastq.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/sampleFastq.r"),
+  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/subsetFastq.r"),
                fastq.file.dir,output.dir,num.read,sep=" ")
 
   cmd3 = paste(cmd1,cmd2,sep=" ")
