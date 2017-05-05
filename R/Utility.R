@@ -858,12 +858,12 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
       x2 <- substr(yy2,pp2,pp2)
 
 
-      sample.name.out.dir.1 = paste0(sample.name.out.dir,"Us",x1,x2)
-      sample.name.out.dir.2 = paste0(sample.name.out.dir,"Us",x2,x1)
-      sample.name.out.dir.3 = paste0(sample.name.out.dir,"Fs",x1,x2)
-      sample.name.out.dir.4 = paste0(sample.name.out.dir,"Fs",x2,x1)
-      sample.name.out.dir.5 = paste0(sample.name.out.dir,"Ss",x1,x2)
-      sample.name.out.dir.6 = paste0(sample.name.out.dir,"Ss",x2,x1)
+      sample.name.out.dir.1 = file.path(sample.name.out.dir,paste0("Us",x1,x2))
+      sample.name.out.dir.2 = file.path(sample.name.out.dir,paste0("Us",x2,x1))
+      sample.name.out.dir.3 = file.path(sample.name.out.dir,paste0("Fs",x1,x2))
+      sample.name.out.dir.4 = file.path(sample.name.out.dir,paste0("Fs",x2,x1))
+      sample.name.out.dir.5 = file.path(sample.name.out.dir,paste0("Ss",x1,x2))
+      sample.name.out.dir.6 = file.path(sample.name.out.dir,paste0("Ss",x2,x1))
 
         if (!dir.exists(sample.name.out.dir.1))
       {
@@ -920,9 +920,9 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
       system(cmd21)
     }else
     {
-      sample.name.out.dir.7 = paste0(sample.name.out.dir,"Us")
-      sample.name.out.dir.8 = paste0(sample.name.out.dir,"Fs")
-      sample.name.out.dir.9 = paste0(sample.name.out.dir,"Ss")
+      sample.name.out.dir.7 = file.path(sample.name.out.dir,"Us")
+      sample.name.out.dir.8 = file.path(sample.name.out.dir,"Fs")
+      sample.name.out.dir.9 = file.path(sample.name.out.dir,"Ss")
 
       if (!dir.exists(sample.name.out.dir.7))
       {
