@@ -772,13 +772,24 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n){
     dir.create(output.dir)
   }
 
+  # cmd1="bsub -P bbc -J \"STAR-alignment\" -o %J.STAR-alignment.log -e %J.STAR-alignment.err -W"
+  # cmd2="72:00 -n 8 -q bigmem -R 'rusage[mem=36864] span[hosts=1]' -u aimin.yan@med.miami.edu"
+  #
+  # cmd3=paste("STAR",strand,"--genomeLoad NoSharedMemory --runThreadN",Ncores,"--sjdbGTFfile",collapse = " ")
+  # cmd4=paste(input.gtf.file,"--outFileNamePrefix",collapse = " ")
+  #
+  # cmd44=paste("--genomeDir",STAR.index.file,collapse = " ")
+  #
+  #
+  # cmd11="bsub -w \"done(\"STAR-alignment\")\" -P bbc -J \"samtools-sort\" -o %J.samtools-sort.log -e %J.samtools-sort.err -W"
+
   xx <-lapply(res,function(u,output.dir){
 
     path_name = dirname(u)
 
     file_name = file_path_sans_ext(basename(u))
 
-    sample.name.out = file.path(output.dir,paste0(file_name,"_test_",n,".fastq"))
+    sample.name.out = file.path(output.dir,paste0(file_name,"-test-",n,".fastq"))
 
     cmd3= paste(cmd0,u,cmd1,sample.name.out)
 
@@ -787,6 +798,77 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n){
     system(cmd3)
 
   },output.dir)
+
+
+  re <- parserreadfiles(output.dir,'fastq')
+
+  res <- re$input
+
+  xx <-lapply(res,function(u){
+
+    path_name = dirname(u)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    if(regexpr(pattern ='_',file_name)!=-1){
+
+      cat("match:",file_name,"\n")
+
+      p <- regexpr(pattern ='_',file_name)
+      pp <- p-1
+      x <- substr(file_name,1,pp)
+
+    }else{
+      cat("no match:",file_name,"\n")
+      x <- file_name
+    }
+
+    x
+  })
+
+
+  print(xx)
+
+  xxx <- unique(unlist(xx))
+  res2 <- unlist(res)
+
+  print(xxx)
+  #print(res2)
+  #  tophat -G genes.gtf -p 4 -o "201348193-01"_tophat_out mm10_index_bt2/genome ~/RNAseqData/"nBishopric_Project1_201348193
+  #-01_S_1_1.txt" ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_2.txt"
+
+  cmd0 = "tophat -G"
+  cmd1 = "-p 4 -o"
+
+  cmd2 = "mv"
+
+  for(i in 1:length(xxx)){
+
+    sample.name <- xxx[i]
+    sample.name.out.dir <-file.path(output.dir,sample.name)
+
+    if (!dir.exists(sample.name.out.dir))
+    {
+      dir.create(sample.name.out.dir)
+    }
+
+    y <- res2[grep(xxx[i],res2)]
+
+    print(y)
+    print(length(y))
+
+    if(length(y)==2){
+      cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],y[2],sep=" ")
+    }else
+    {
+      cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],sep=" ")
+    }
+
+
+    print(cmd3)
+
+    }
+
 
 }
 
