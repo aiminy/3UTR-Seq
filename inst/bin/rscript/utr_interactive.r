@@ -496,6 +496,9 @@ Download_SRA ={
 SRA2Fastq ={
   sra2Fastq(R_lib)
 },
+subset_Fastq_file ={
+  subsetFastqFile(R_lib)
+},
 Alignment ={
 performAlignment(R_lib)
 },
