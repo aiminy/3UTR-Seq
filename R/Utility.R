@@ -876,22 +876,27 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
       cmd10= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.1,genome.index,y[1],y[2],sep=" ")
       cmd11= paste(cmd4,cmd2,cmd10)
+      system(cmd11)
 
       cmd12= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.2,genome.index,y[2],y[1],sep=" ")
       cmd13= paste(cmd4,cmd2,cmd12)
+      system(cmd13)
 
       cmd14= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.3,genome.index,y[1],y[2],sep=" ")
       cmd15= paste(cmd4,cmd2,cmd14)
+      system(cmd15)
 
       cmd16= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.4,genome.index,y[2],y[1],sep=" ")
       cmd17= paste(cmd4,cmd2,cmd16)
+      system(cmd17)
 
       cmd18= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.5,genome.index,y[1],y[2],sep=" ")
       cmd19= paste(cmd4,cmd2,cmd18)
+      system(cmd19)
 
       cmd20= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.6,genome.index,y[2],y[1],sep=" ")
       cmd21= paste(cmd4,cmd2,cmd20)
-
+      system(cmd21)
     }else
     {
       sample.name.out.dir.7 = paste0(sample.name.out.dir,"Us")
@@ -909,16 +914,19 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
       cmd22= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.7,genome.index,y[1],sep=" ")
       cmd23= paste(cmd4,cmd2,cmd22)
+      system(cmd23)
 
       cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
       cmd25= paste(cmd4,cmd2,cmd24)
+      system(cmd25)
 
       cmd26= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.9,genome.index,y[1],sep=" ")
       cmd27= paste(cmd4,cmd2,cmd26)
+      system(cmd27)
     }
 
 
-    print(cmd3)
+    #print(cmd3)
 
     }
 
