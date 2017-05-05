@@ -793,6 +793,12 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
     sample.name <- xxx[i]
     sample.name.out.dir <-file.path(output.dir,sample.name)
+
+    if (!dir.exists(sample.name.out.dir))
+    {
+      dir.create(sample.name.out.dir)
+    }
+
     y <- res2[grep(xxx[i],res2)]
 
     if(length(y)==2){
