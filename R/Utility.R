@@ -773,12 +773,12 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
     if(regexpr(pattern ='_',file_name)!=-1){
       p <- regexpr(pattern ='_',file_name)
       pp <- p-1
+      x <- substr(file_name,1,pp)
     }else{
       p <- regexpr(pattern ='.',file_name)
       pp <- p-1
+      x <- substr(file_name,1,pp)
     }
-
-    x <- substr(file_name,1,pp)
     x
   })
 
