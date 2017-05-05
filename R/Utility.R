@@ -776,15 +776,13 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
       p <- regexpr(pattern ='_',file_name)
       pp <- p-1
+      x <- substr(file_name,1,pp)
 
     }else{
       cat("no match:",file_name,"\n")
-      p <- regexpr(pattern ='.',file_name)
-
-      pp <- p-1
-
+      x <- file_name
     }
-    x <- substr(file_name,1,pp)
+
     x
   })
 
@@ -794,7 +792,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
   xxx <- unique(unlist(xx))
   res2 <- unlist(res)
 
-  #print(xxx)
+  print(xxx)
   #print(res2)
 #  tophat -G genes.gtf -p 4 -o "201348193-01"_tophat_out mm10_index_bt2/genome ~/RNAseqData/"nBishopric_Project1_201348193
   #-01_S_1_1.txt" ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_2.txt"
