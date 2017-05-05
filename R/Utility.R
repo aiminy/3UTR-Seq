@@ -768,7 +768,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
   cmd0 = "seqtk sample -s100"
   #read1.fq 10000
 
-  cmd1 = ">"
+  cmd1 = "\>"
 
   if (!dir.exists(output.dir))
   {
@@ -795,7 +795,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
     cmd
 
-    #system(cmd,intern = TRUE)
+    system(cmd,intern = TRUE)
 
   },output.dir)
 
