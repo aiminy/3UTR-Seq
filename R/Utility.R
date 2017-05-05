@@ -785,6 +785,9 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
     x
   })
 
+
+  print(xx)
+
   xxx <- unique(unlist(xx))
   res2 <- unlist(res)
 
