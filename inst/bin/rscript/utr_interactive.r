@@ -153,16 +153,20 @@ sra2Fastq <- function(R_lib)
 subsetFastqFile <- function(R_lib)
 {
   cat("You choose to sample Fastq files, please define the following setting parameters: \n",
-      "fastq.file.dir (ex: /nethome/axy148/DoGsExample)\n",
-      "output.dir (ex:DoGsFastq)\n",
-      "Number of short reads (it has to be 4n)\n")
+      "fastq.file.dir (ex: /scratch/projects/bbc/aiminy_project/DoGsFastq)\n",
+      "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGsFastqTest)\n",
+      "Number of short reads (ex: 20. it has to be 4n)\n",
+      "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
+      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index)\n")
 
   input <- file("stdin", "r")
-  count.file.dir <- readLines(input, n = 3)
+  count.file.dir <- readLines(input, n = 5)
 
   fastq.file.dir <- count.file.dir[1]
   output.dir <- count.file.dir[2]
   num.read <- count.file.dir[3]
+  gene.model.file <- count.file.dir[4]
+  genome.index <- count.file.dir[5]
 
   library(ChipSeq)
   library(ThreeUTR)
@@ -170,7 +174,7 @@ subsetFastqFile <- function(R_lib)
   cmd1 = "bsub -P bbc -J \"sra2Fastq\" -o %J.sra2Fastq.log -e %J.sra2Fastq.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
   cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/subsetFastq.r"),
-               fastq.file.dir,output.dir,num.read,sep=" ")
+               fastq.file.dir,output.dir,num.read,gene.model.file,genome.index,sep=" ")
 
   cmd3 = paste(cmd1,cmd2,sep=" ")
 
