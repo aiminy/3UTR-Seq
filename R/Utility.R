@@ -799,168 +799,168 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
   },output.dir)
 
-  re <- parserreadfiles(output.dir,'fastq')
-  res <- re$input
-
-  xx <-lapply(res,function(u){
-
-    path_name = dirname(u)
-
-    file_name = file_path_sans_ext(basename(u))
-
-    if(regexpr(pattern ='_',file_name)!=-1){
-
-      #cat("match:",file_name,"\n")
-
-      p <- regexpr(pattern ='_',file_name)
-      pp <- p-1
-      x <- substr(file_name,1,pp)
-
-    }else{
-      #cat("no match:",file_name,"\n")
-      x <- file_name
-    }
-
-    x
-  })
-
-
-  xxx <- unique(unlist(xx))
-  res2 <- unlist(res)
-
-  cmd5 = "tophat --library-type fr-unstranded -g 1 -G"
-  cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
-  cmd7 = "tophat --library-type fr-secondstrand -g 1 -G"
-  cmd8 = "-p 4 -o"
-  cmd9 = "mv"
-
-  for(i in 1:length(xxx)){
-
-    sample.name <- xxx[i]
-    sample.name.out.dir <-file.path(output.dir,sample.name)
-
-    if (!dir.exists(sample.name.out.dir))
-    {
-      dir.create(sample.name.out.dir)
-    }
-
-    y <- res2[grep(xxx[i],res2)]
-
-    #print(y)
-    #print(length(y))
-
-    if(length(y)==2){
-
-      yy1 <- basename(y[1])
-      yy2 <- basename(y[2])
-
-      p1 <- regexpr(pattern ='_',yy1)
-      pp1 <- p1+1
-      x1 <- substr(yy1,pp1,pp1)
-
-      p2 <- regexpr(pattern ='_',yy2)
-      pp2 <- p2+1
-      x2 <- substr(yy2,pp2,pp2)
-
-
-      sample.name.out.dir.1 = file.path(sample.name.out.dir,paste0("Us",x1,x2))
-      sample.name.out.dir.2 = file.path(sample.name.out.dir,paste0("Us",x2,x1))
-      sample.name.out.dir.3 = file.path(sample.name.out.dir,paste0("Fs",x1,x2))
-      sample.name.out.dir.4 = file.path(sample.name.out.dir,paste0("Fs",x2,x1))
-      sample.name.out.dir.5 = file.path(sample.name.out.dir,paste0("Ss",x1,x2))
-      sample.name.out.dir.6 = file.path(sample.name.out.dir,paste0("Ss",x2,x1))
-
-        if (!dir.exists(sample.name.out.dir.1))
-      {
-        dir.create(sample.name.out.dir.1)
-      }
-
-      if (!dir.exists(sample.name.out.dir.2))
-      {
-        dir.create(sample.name.out.dir.2)
-      }
-
-      if (!dir.exists(sample.name.out.dir.3))
-      {
-        dir.create(sample.name.out.dir.3)
-      }
-
-      if (!dir.exists(sample.name.out.dir.4))
-      {
-        dir.create(sample.name.out.dir.4)
-      }
-
-      if (!dir.exists(sample.name.out.dir.5))
-      {
-        dir.create(sample.name.out.dir.5)
-      }
-
-      if (!dir.exists(sample.name.out.dir.6))
-      {
-        dir.create(sample.name.out.dir.6)
-      }
-
-      cmd10= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.1,genome.index,y[1],y[2],sep=" ")
-      cmd11= paste(cmd4,cmd2,cmd10)
-      system(cmd11)
-
-      cmd12= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.2,genome.index,y[2],y[1],sep=" ")
-      cmd13= paste(cmd4,cmd2,cmd12)
-      system(cmd13)
-
-      cmd14= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.3,genome.index,y[1],y[2],sep=" ")
-      cmd15= paste(cmd4,cmd2,cmd14)
-      system(cmd15)
-
-      cmd16= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.4,genome.index,y[2],y[1],sep=" ")
-      cmd17= paste(cmd4,cmd2,cmd16)
-      system(cmd17)
-
-      cmd18= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.5,genome.index,y[1],y[2],sep=" ")
-      cmd19= paste(cmd4,cmd2,cmd18)
-      system(cmd19)
-
-      cmd20= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.6,genome.index,y[2],y[1],sep=" ")
-      cmd21= paste(cmd4,cmd2,cmd20)
-      system(cmd21)
-    }else
-    {
-      sample.name.out.dir.7 = file.path(sample.name.out.dir,"Us")
-      sample.name.out.dir.8 = file.path(sample.name.out.dir,"Fs")
-      sample.name.out.dir.9 = file.path(sample.name.out.dir,"Ss")
-
-      if (!dir.exists(sample.name.out.dir.7))
-      {
-        dir.create(sample.name.out.dir.7)
-      }
-
-      if (!dir.exists(sample.name.out.dir.8))
-      {
-        dir.create(sample.name.out.dir.8)
-      }
-
-      if (!dir.exists(sample.name.out.dir.9))
-      {
-        dir.create(sample.name.out.dir.9)
-      }
-
-      cmd22= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.7,genome.index,y[1],sep=" ")
-      cmd23= paste(cmd4,cmd2,cmd22)
-      system(cmd23)
-
-      cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
-      cmd25= paste(cmd4,cmd2,cmd24)
-      system(cmd25)
-
-      cmd26= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.9,genome.index,y[1],sep=" ")
-      cmd27= paste(cmd4,cmd2,cmd26)
-      system(cmd27)
-    }
-
-
-    #print(cmd3)
-
-    }
+  # re <- parserreadfiles(output.dir,'fastq')
+  # res <- re$input
+  #
+  # xx <-lapply(res,function(u){
+  #
+  #   path_name = dirname(u)
+  #
+  #   file_name = file_path_sans_ext(basename(u))
+  #
+  #   if(regexpr(pattern ='_',file_name)!=-1){
+  #
+  #     #cat("match:",file_name,"\n")
+  #
+  #     p <- regexpr(pattern ='_',file_name)
+  #     pp <- p-1
+  #     x <- substr(file_name,1,pp)
+  #
+  #   }else{
+  #     #cat("no match:",file_name,"\n")
+  #     x <- file_name
+  #   }
+  #
+  #   x
+  # })
+  #
+  #
+  # xxx <- unique(unlist(xx))
+  # res2 <- unlist(res)
+  #
+  # cmd5 = "tophat --library-type fr-unstranded -g 1 -G"
+  # cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
+  # cmd7 = "tophat --library-type fr-secondstrand -g 1 -G"
+  # cmd8 = "-p 4 -o"
+  # cmd9 = "mv"
+  #
+  # for(i in 1:length(xxx)){
+  #
+  #   sample.name <- xxx[i]
+  #   sample.name.out.dir <-file.path(output.dir,sample.name)
+  #
+  #   if (!dir.exists(sample.name.out.dir))
+  #   {
+  #     dir.create(sample.name.out.dir)
+  #   }
+  #
+  #   y <- res2[grep(xxx[i],res2)]
+  #
+  #   #print(y)
+  #   #print(length(y))
+  #
+  #   if(length(y)==2){
+  #
+  #     yy1 <- basename(y[1])
+  #     yy2 <- basename(y[2])
+  #
+  #     p1 <- regexpr(pattern ='_',yy1)
+  #     pp1 <- p1+1
+  #     x1 <- substr(yy1,pp1,pp1)
+  #
+  #     p2 <- regexpr(pattern ='_',yy2)
+  #     pp2 <- p2+1
+  #     x2 <- substr(yy2,pp2,pp2)
+  #
+  #
+  #     sample.name.out.dir.1 = file.path(sample.name.out.dir,paste0("Us",x1,x2))
+  #     sample.name.out.dir.2 = file.path(sample.name.out.dir,paste0("Us",x2,x1))
+  #     sample.name.out.dir.3 = file.path(sample.name.out.dir,paste0("Fs",x1,x2))
+  #     sample.name.out.dir.4 = file.path(sample.name.out.dir,paste0("Fs",x2,x1))
+  #     sample.name.out.dir.5 = file.path(sample.name.out.dir,paste0("Ss",x1,x2))
+  #     sample.name.out.dir.6 = file.path(sample.name.out.dir,paste0("Ss",x2,x1))
+  #
+  #       if (!dir.exists(sample.name.out.dir.1))
+  #     {
+  #       dir.create(sample.name.out.dir.1)
+  #     }
+  #
+  #     if (!dir.exists(sample.name.out.dir.2))
+  #     {
+  #       dir.create(sample.name.out.dir.2)
+  #     }
+  #
+  #     if (!dir.exists(sample.name.out.dir.3))
+  #     {
+  #       dir.create(sample.name.out.dir.3)
+  #     }
+  #
+  #     if (!dir.exists(sample.name.out.dir.4))
+  #     {
+  #       dir.create(sample.name.out.dir.4)
+  #     }
+  #
+  #     if (!dir.exists(sample.name.out.dir.5))
+  #     {
+  #       dir.create(sample.name.out.dir.5)
+  #     }
+  #
+  #     if (!dir.exists(sample.name.out.dir.6))
+  #     {
+  #       dir.create(sample.name.out.dir.6)
+  #     }
+  #
+  #     cmd10= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.1,genome.index,y[1],y[2],sep=" ")
+  #     cmd11= paste(cmd4,cmd2,cmd10)
+  #     system(cmd11)
+  #
+  #     cmd12= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.2,genome.index,y[2],y[1],sep=" ")
+  #     cmd13= paste(cmd4,cmd2,cmd12)
+  #     system(cmd13)
+  #
+  #     cmd14= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.3,genome.index,y[1],y[2],sep=" ")
+  #     cmd15= paste(cmd4,cmd2,cmd14)
+  #     system(cmd15)
+  #
+  #     cmd16= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.4,genome.index,y[2],y[1],sep=" ")
+  #     cmd17= paste(cmd4,cmd2,cmd16)
+  #     system(cmd17)
+  #
+  #     cmd18= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.5,genome.index,y[1],y[2],sep=" ")
+  #     cmd19= paste(cmd4,cmd2,cmd18)
+  #     system(cmd19)
+  #
+  #     cmd20= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.6,genome.index,y[2],y[1],sep=" ")
+  #     cmd21= paste(cmd4,cmd2,cmd20)
+  #     system(cmd21)
+  #   }else
+  #   {
+  #     sample.name.out.dir.7 = file.path(sample.name.out.dir,"Us")
+  #     sample.name.out.dir.8 = file.path(sample.name.out.dir,"Fs")
+  #     sample.name.out.dir.9 = file.path(sample.name.out.dir,"Ss")
+  #
+  #     if (!dir.exists(sample.name.out.dir.7))
+  #     {
+  #       dir.create(sample.name.out.dir.7)
+  #     }
+  #
+  #     if (!dir.exists(sample.name.out.dir.8))
+  #     {
+  #       dir.create(sample.name.out.dir.8)
+  #     }
+  #
+  #     if (!dir.exists(sample.name.out.dir.9))
+  #     {
+  #       dir.create(sample.name.out.dir.9)
+  #     }
+  #
+  #     cmd22= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.7,genome.index,y[1],sep=" ")
+  #     cmd23= paste(cmd4,cmd2,cmd22)
+  #     system(cmd23)
+  #
+  #     cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
+  #     cmd25= paste(cmd4,cmd2,cmd24)
+  #     system(cmd25)
+  #
+  #     cmd26= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.9,genome.index,y[1],sep=" ")
+  #     cmd27= paste(cmd4,cmd2,cmd26)
+  #     system(cmd27)
+  #   }
+  #
+  #
+  #   #print(cmd3)
+  #
+  #   }
 
 
 }
