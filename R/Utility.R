@@ -791,9 +791,11 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
     cmd= paste(cmd3,cmd2,cmd0,u,n,cmd1,sample.name.out,sep=" ")
 
+    print(cmd)
+
     cmd
 
-    system(cmd,intern = TRUE)
+    #system(cmd,intern = TRUE)
 
   },output.dir)
 
