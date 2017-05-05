@@ -865,13 +865,34 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
       sample.name.out.dir.5 = paste0(sample.name.out.dir,"Ss",x1,x2)
       sample.name.out.dir.6 = paste0(sample.name.out.dir,"Ss",x2,x1)
 
-      for(i in 1:6){
-
-        if (!dir.exists(paste0(sample.name.out.dir,".",i)))
+        if (!dir.exists(sample.name.out.dir.1))
       {
-        dir.create(eval(parse(text = paste0(sample.name.out.dir,".",i))))
+        dir.create(sample.name.out.dir.1)
       }
 
+      if (!dir.exists(sample.name.out.dir.2))
+      {
+        dir.create(sample.name.out.dir.2)
+      }
+
+      if (!dir.exists(sample.name.out.dir.3))
+      {
+        dir.create(sample.name.out.dir.3)
+      }
+
+      if (!dir.exists(sample.name.out.dir.4))
+      {
+        dir.create(sample.name.out.dir.4)
+      }
+
+      if (!dir.exists(sample.name.out.dir.5))
+      {
+        dir.create(sample.name.out.dir.5)
+      }
+
+      if (!dir.exists(sample.name.out.dir.6))
+      {
+        dir.create(sample.name.out.dir.6)
       }
 
       cmd10= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.1,genome.index,y[1],y[2],sep=" ")
@@ -903,13 +924,19 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
       sample.name.out.dir.8 = paste0(sample.name.out.dir,"Fs")
       sample.name.out.dir.9 = paste0(sample.name.out.dir,"Ss")
 
-      for(i in 7:9){
+      if (!dir.exists(sample.name.out.dir.7))
+      {
+        dir.create(sample.name.out.dir.7)
+      }
 
-        if (!dir.exists(paste0(sample.name.out.dir,".",i)))
-        {
-          dir.create(eval(parse(text = paste0(sample.name.out.dir,".",i))))
-        }
+      if (!dir.exists(sample.name.out.dir.8))
+      {
+        dir.create(sample.name.out.dir.8)
+      }
 
+      if (!dir.exists(sample.name.out.dir.9))
+      {
+        dir.create(sample.name.out.dir.9)
       }
 
       cmd22= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.7,genome.index,y[1],sep=" ")
