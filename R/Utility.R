@@ -801,6 +801,11 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n){
 
 }
 
+checkStrand<-function(input.alignment.dir) {
+  re<-file.path(input.alignment.dir,dir(input.alignment.dir,pattern = "junctions.bed"))
+  return(re)
+}
+
 testAlignment <- function(output.dir, gene.model.file, genome.index) {
 
   cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
