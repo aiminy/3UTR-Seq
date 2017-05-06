@@ -998,9 +998,9 @@ testAlignment <- function(output.dir, gene.model.file, genome.index) {
 
 useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index,cmd.input){
 
-  if (!dir.exists(out.dir))
+  if (!dir.exists(output.dir))
   {
-    dir.create(out.dir)
+    dir.create(output.dir)
   }
 
   if(cmd.input == "General"){
