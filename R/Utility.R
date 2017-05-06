@@ -798,6 +798,9 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
   },output.dir)
 
+  system("wait")
+  cat("Finished subset fastq files ...\n")
+
   re <- parserreadfiles(output.dir,'fastq')
   res <- re$input
 
