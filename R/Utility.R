@@ -802,8 +802,19 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n){
 }
 
 checkStrand<-function(input.alignment.dir) {
-  re<-file.path(input.alignment.dir,dir(input.alignment.dir,pattern = "junctions.bed"))
-  return(re)
+  re<-file.path(input.alignment.dir,dir(input.alignment.dir,recursive=TRUE,pattern = "junctions.bed"))
+
+  cmd0 <- "wc -l"
+
+  cmdL <- lapply(re,function(u){
+
+    cmd <- paste(cmd0,u,sep=" ")
+
+    system(cmd,intern = TRUE)
+    cmd
+  })
+
+  return(cmdL)
 }
 
 testAlignment <- function(output.dir, gene.model.file, genome.index) {
