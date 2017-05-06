@@ -814,9 +814,14 @@ checkStrand<-function(input.alignment.dir) {
     cmd
   })
 
-  cmdL <- lapply(y,function(u){system(u)})
+  yyy <- lapply(y,function(u){
+    yy <- system(u,intern = TRUE)
+    yy
+    })
 
-  return(cmdL)
+  yyyy <- unlist(yyy)
+
+  return(yyyy)
 }
 
 testAlignment <- function(output.dir, gene.model.file, genome.index) {
@@ -991,11 +996,12 @@ testAlignment <- function(output.dir, gene.model.file, genome.index) {
   }
 }
 
+useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index){
 
-useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index=NULL){
+  cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+  cmd4="bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
 
   re <- parserreadfiles(input.fastq.files.dir,'fastq')
-
   res <- re$input
 
   xx <-lapply(res,function(u){
@@ -1006,35 +1012,26 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
     if(regexpr(pattern ='_',file_name)!=-1){
 
-      cat("match:",file_name,"\n")
+      #cat("match:",file_name,"\n")
 
       p <- regexpr(pattern ='_',file_name)
       pp <- p-1
       x <- substr(file_name,1,pp)
 
     }else{
-      cat("no match:",file_name,"\n")
+      #cat("no match:",file_name,"\n")
       x <- file_name
     }
 
     x
   })
 
-
-  print(xx)
-
   xxx <- unique(unlist(xx))
   res2 <- unlist(res)
 
-  print(xxx)
-  #print(res2)
-#  tophat -G genes.gtf -p 4 -o "201348193-01"_tophat_out mm10_index_bt2/genome ~/RNAseqData/"nBishopric_Project1_201348193
-  #-01_S_1_1.txt" ~/RNAseqData/"nBishopric_Project1_201348193-01_S_1_2.txt"
-
-  cmd0 = "tophat -G"
-  cmd1 = "-p 4 -o"
-
-  cmd2 = "mv"
+  cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
+  cmd8 = "-p 4 -o"
+  cmd9 = "mv"
 
   for(i in 1:length(xxx)){
 
@@ -1048,22 +1045,48 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
     y <- res2[grep(xxx[i],res2)]
 
-    print(y)
-    print(length(y))
+    #print(y)
+    #print(length(y))
 
     if(length(y)==2){
-      cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],y[2],sep=" ")
+
+      yy1 <- basename(y[1])
+      yy2 <- basename(y[2])
+
+      p1 <- regexpr(pattern ='_',yy1)
+      pp1 <- p1+1
+      x1 <- substr(yy1,pp1,pp1)
+
+      p2 <- regexpr(pattern ='_',yy2)
+      pp2 <- p2+1
+      x2 <- substr(yy2,pp2,pp2)
+
+
+      sample.name.out.dir.3 = file.path(sample.name.out.dir,paste0("Fs",x1,x2))
+
+
+      if (!dir.exists(sample.name.out.dir.3))
+      {
+        dir.create(sample.name.out.dir.3)
+      }
+
+      cmd14= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.3,genome.index,y[1],y[2],sep=" ")
+      cmd15= paste(cmd4,cmd2,cmd14)
+      system(cmd15)
+
     }else
     {
-      cmd3= paste(cmd0,gene.model.file,cmd1,sample.name.out.dir,genome.index,y[1],sep=" ")
+      sample.name.out.dir.8 = file.path(sample.name.out.dir,"Fs")
+
+      if (!dir.exists(sample.name.out.dir.8))
+      {
+        dir.create(sample.name.out.dir.8)
+      }
+      cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
+      cmd25= paste(cmd4,cmd2,cmd24)
+      system(cmd25)
     }
 
-
-    print(cmd3)
-    #system(cmd3)
-
-    #cmd4=paste(cmd2,paste0(sample.name.out.dir,"accepted_hits.bam"),file.path(output.dir,paste0(xxx[i],".bam")),sep=" ")
-    #system(cmd4)
   }
 
 }
