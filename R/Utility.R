@@ -758,7 +758,7 @@ select3UTR <- function(genome,tablename) {
 
 }
 
-subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.index){
+subsetFastq<-function(input.fastq.files.dir,output.dir,n){
 
   re <- parserreadfiles(input.fastq.files.dir,'fastq')
   res <- re$input
@@ -805,7 +805,7 @@ testAlignment <- function(output.dir, gene.model.file, genome.index) {
 
   cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd4="bsub -w \"done(\"subSetFastq\")\" -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
+  cmd4="bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
 
   re <- parserreadfiles(output.dir,'fastq')
   res <- re$input

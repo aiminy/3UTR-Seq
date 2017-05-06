@@ -35,12 +35,13 @@ cat("\tAvaliable analysis: \n
     1. Download_SRA \n
     2. SRA2Fastq \n
     3. subset_Fastq_file \n
-    4. Alignment \n
-    5. QC \n
-    6. Bam2Bw \n
-    7. Counts \n
-    8. DE_analysis \n
-    9. All\n")
+    4. testAlignment \n
+    5. Alignment \n
+    6. QC \n
+    7. Bam2Bw \n
+    8. Counts \n
+    9. DE_analysis \n
+    10. All\n")
 
 input <- file("stdin", "r")
 row <- readLines(input, n = 1)
@@ -62,30 +63,35 @@ if (row == 3)
 
 if (row == 4)
 {
-  choose.type <- "Alignment"
+  choose.type <- "testAlignment"
 }
 
 if (row == 5)
 {
-  choose.type <- "QC"
+  choose.type <- "Alignment"
 }
 
 if (row == 6)
 {
-  choose.type <- "Bam2Bw"
+  choose.type <- "QC"
 }
 
 if (row == 7)
 {
-  choose.type <- "Counts"
+  choose.type <- "Bam2Bw"
 }
 
 if (row == 8)
 {
-  choose.type <- "DE_analysis"
+  choose.type <- "Counts"
 }
 
 if (row == 9)
+{
+  choose.type <- "DE_analysis"
+}
+
+if (row == 10)
 {
   choose.type <- "All"
 }
@@ -155,9 +161,7 @@ subsetFastqFile <- function(R_lib)
   cat("You choose to sample Fastq files, please define the following setting parameters: \n",
       "fastq.file.dir (ex: /scratch/projects/bbc/aiminy_project/DoGsFastq)\n",
       "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGsFastqTest)\n",
-      "Number of short reads (ex: 20. it has to be 4n)\n",
-      "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
-      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n")
+      "Number of short reads (ex: 20. it has to be 4n)\n")
 
   input <- file("stdin", "r")
   count.file.dir <- readLines(input, n = 5)
@@ -165,40 +169,48 @@ subsetFastqFile <- function(R_lib)
   fastq.file.dir <- count.file.dir[1]
   output.dir <- count.file.dir[2]
   num.read <- count.file.dir[3]
-  gene.model.file <- count.file.dir[4]
-  genome.index <- count.file.dir[5]
 
   library(ChipSeq)
   library(ThreeUTR)
 
   # cmd1 = "bsub -P bbc -J \"sra2Fastq\" -o %J.sra2Fastq.log -e %J.sra2Fastq.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd1 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+  #cmd1 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd2 = "bsub -P bbc -J \"subSetFastqAll\" -o %J.subSetFastqAll.log -e %J.subSetFastqAll.err -W"
+  #cmd2 = "bsub -P bbc -J \"subSetFastqAll\" -o %J.subSetFastqAll.log -e %J.subSetFastqAll.err -W"
 
   cmd3 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/subsetFastq.r"),
-               fastq.file.dir,output.dir,num.read,gene.model.file,genome.index,sep=" ")
+               fastq.file.dir,output.dir,num.read,sep=" ")
 
-  cmd4 = paste(cmd2,cmd1,cmd3,sep=" ")
+  #cmd4 = paste(cmd2,cmd1,cmd3,sep=" ")
 
-  print(cmd4)
+  #print(cmd4)
 
-  system(cmd4,intern= TRUE,wait = TRUE)
+  system(cmd3,intern= TRUE,wait = TRUE)
 
   cat("Finished subset fastq\n")
 
-  cmd5="bsub -w \"done(\"subSetFastqAll\")\" -P bbc -J \"tophatALL\" -o %J.tophatALL.log -e %J.tophatALL.err -W"
+}
+
+testAlignment <- function(R_lib) {
+
+  cat("You choose to sample Fastq files, please define the following setting parameters: \n",
+      "fastq.file.dir (ex: /scratch/projects/bbc/aiminy_project/DoGsFastq)\n",
+      "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGsFastqTest)\n",
+      "Number of short reads (ex: 20. it has to be 4n)\n",
+      "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
+      "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n")
+
+  #cmd5="bsub -w \"done(\"subSetFastqAll\")\" -P bbc -J \"tophatALL\" -o %J.tophatALL.log -e %J.tophatALL.err -W"
 
   cmd6 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/testAlignment.r"),
                output.dir,gene.model.file,genome.index,sep=" ")
 
-  cmd7 = paste(cmd5,cmd1,cmd6,sep=" ")
+  #cmd7 = paste(cmd5,cmd1,cmd6,sep=" ")
 
-  system(cmd7,intern= TRUE)
+  system(cmd6,intern= TRUE)
 
   cat("Finished testAlignment fastq\n")
-
 }
 
 performAlignment <- function(R_lib)
@@ -517,6 +529,9 @@ SRA2Fastq ={
 },
 subset_Fastq_file ={
   subsetFastqFile(R_lib)
+},
+testAlignment ={
+  testAlignment(R_lib)
 },
 Alignment ={
 performAlignment(R_lib)

@@ -10,8 +10,6 @@ if (length(args)==0) {
   input.fastq.files.dir=args[1]
   output.dir=args[2]
   n=args[3]
-  gene.model.file=args[4]
-  genome.index=args[5]
 }
 
 #cat(input.bamfile.dir,"\t",output.bedfile.dir,"\n")
@@ -19,4 +17,4 @@ if (length(args)==0) {
 library(ChipSeq)
 library(ThreeUTR)
 
-ThreeUTR:::subsetFastq(input.fastq.files.dir,output.dir,n,gene.model.file,genome.index)
+ThreeUTR:::subsetFastq(input.fastq.files.dir,output.dir,n)
