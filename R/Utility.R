@@ -806,13 +806,15 @@ checkStrand<-function(input.alignment.dir) {
 
   cmd0 <- "wc -l"
 
-  cmdL <- lapply(re,function(u){
+  y <- lapply(re,function(u){
 
     cmd <- paste(cmd0,u,sep=" ")
 
-    system(cmd,intern = TRUE)
+    #system(cmd,intern = TRUE)
     cmd
   })
+
+  cmdL <- lapply(y,function(u){system(u)})
 
   return(cmdL)
 }
