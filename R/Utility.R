@@ -998,8 +998,15 @@ testAlignment <- function(output.dir, gene.model.file, genome.index) {
 
 useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index,cmd.input){
 
-  #cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-  #cmd4="bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
+
+  if(cmd.input == "General"){
+  cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+  cmd4="bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
+  }else{
+
+
+
+  }
 
   re <- parserreadfiles(input.fastq.files.dir,'fastq')
   res <- re$input
@@ -1071,7 +1078,10 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
       }
 
       cmd14= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.3,genome.index,y[1],y[2],sep=" ")
-      cmd15= paste(cmd.input,cmd14)
+      #cmd15= paste(cmd.input,cmd14)
+
+      cmd15= paste(cmd4,cmd2,cmd14)
+
       system(cmd15)
 
     }else
@@ -1083,7 +1093,8 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
         dir.create(sample.name.out.dir.8)
       }
       cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
-      cmd25= paste(cmd.input,cmd24)
+      #cmd25= paste(cmd.input,cmd24)
+      cmd25= paste(cmd4,cmd2,cmd24)
       system(cmd25)
     }
 

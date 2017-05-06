@@ -243,14 +243,18 @@ performAlignment <- function(R_lib)
   general.or.bigmem <- readLines(input, n = 1)
 
 
+
   if(toupper(general.or.bigmem) == "YES")
   {
-    cmd1 = "bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W 72:00 -n 16 -q bigmem -R 'rusage[mem=36864] span[ptile=8]' -u aimin.yan@med.miami.edu"
+#    cmd1 = "bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W 72:00 -n 16 -q bigmem -R 'rusage[mem=36864] span[ptile=8]' -u aimin.yan@med.miami.edu"
+    cmd1 <- "BigMEM"
   }else
   {
-    cmd1 = "bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+#    cmd1 = "bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd1 = "General"
   }
 
+  #cmd4="bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
 
   library(ChipSeq)
   library(ThreeUTR)
