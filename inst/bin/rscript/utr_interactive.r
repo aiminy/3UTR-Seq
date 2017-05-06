@@ -173,18 +173,31 @@ subsetFastqFile <- function(R_lib)
 
   # cmd1 = "bsub -P bbc -J \"sra2Fastq\" -o %J.sra2Fastq.log -e %J.sra2Fastq.err -W 72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/subsetFastq.r"),
+  cmd1 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+  cmd2 = "bsub -P bbc -J \"subSetFastq\" -o %J.subSetFastq.log -e %J.subSetFastq.err -W"
+
+  cmd3 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/subsetFastq.r"),
                fastq.file.dir,output.dir,num.read,gene.model.file,genome.index,sep=" ")
 
-  #cmd3 = paste(cmd1,cmd2,sep=" ")
+  cmd4 = paste(cmd2,cmd1,cmd3,sep=" ")
 
-  cmd3= cmd2
+  print(cmd4)
 
-  print(cmd3)
-
-  system(cmd3,intern= TRUE)
+  system(cmd4,intern= TRUE)
 
   cat("Finished subset fastq\n")
+
+  cmd5="bsub -w \"done(\"subSetFastq\")\" -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
+
+  cmd6 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/testAlignment.r"),
+               output.dir,gene.model.file,genome.index,sep=" ")
+
+  cmd7 = paste(cmd5,cmd1,cmd6,sep=" ")
+
+  system(cmd4,intern= TRUE)
+
+  cat("Finished testAlignment fastq\n")
 
 }
 

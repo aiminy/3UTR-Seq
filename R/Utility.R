@@ -767,18 +767,19 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
   cmd0 = "seqtk sample -s100"
   #read1.fq 10000
 
-  cmd1 = "\\>"
+  #cmd1 = "\\>"
+  cmd1 = ">"
 
   if (!dir.exists(output.dir))
   {
     dir.create(output.dir)
   }
 
-  cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+  #cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd3 = "bsub -P bbc -J \"subSetFastq\" -o %J.subSetFastq.log -e %J.subSetFastq.err -W"
+  #cmd3 = "bsub -P bbc -J \"subSetFastq\" -o %J.subSetFastq.log -e %J.subSetFastq.err -W"
 
-  cmd4="bsub -w \"done(\"subSetFastq\")\" -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
+  #cmd4="bsub -w \"done(\"subSetFastq\")\" -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
 
   xx <-lapply(res,function(u,output.dir){
 
@@ -788,7 +789,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
     sample.name.out = file.path(output.dir,paste0(file_name,"-test-",n,".fastq"))
 
-    cmd= paste(cmd3,cmd2,cmd0,u,n,cmd1,sample.name.out,sep=" ")
+    cmd= paste(cmd0,u,n,cmd1,sample.name.out,sep=" ")
 
     print(cmd)
 
@@ -798,8 +799,13 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
   },output.dir)
 
-  system("wait")
-  cat("Finished subset fastq files ...\n")
+}
+
+testAlignment <- function(output.dir, gene.model.file, genome.index) {
+
+  #cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+  #cmd4="bsub -w \"done(\"subSetFastq\")\" -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
 
   re <- parserreadfiles(output.dir,'fastq')
   res <- re$input
@@ -872,7 +878,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
       sample.name.out.dir.5 = file.path(sample.name.out.dir,paste0("Ss",x1,x2))
       sample.name.out.dir.6 = file.path(sample.name.out.dir,paste0("Ss",x2,x1))
 
-        if (!dir.exists(sample.name.out.dir.1))
+      if (!dir.exists(sample.name.out.dir.1))
       {
         dir.create(sample.name.out.dir.1)
       }
@@ -903,31 +909,31 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
       }
 
       cmd10= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.1,genome.index,y[1],y[2],sep=" ")
-      cmd11= paste(cmd4,cmd2,cmd10)
-      print(cmd11)
+      #cmd11= paste(cmd4,cmd2,cmd10)
+      print(cmd10)
 
 
-      system(cmd11)
+      system(cmd10)
 
       cmd12= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.2,genome.index,y[2],y[1],sep=" ")
-      cmd13= paste(cmd4,cmd2,cmd12)
-      system(cmd13)
+      #cmd13= paste(cmd4,cmd2,cmd12)
+      system(cmd12)
 
       cmd14= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.3,genome.index,y[1],y[2],sep=" ")
-      cmd15= paste(cmd4,cmd2,cmd14)
-      system(cmd15)
+      #cmd15= paste(cmd4,cmd2,cmd14)
+      system(cmd14)
 
       cmd16= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.4,genome.index,y[2],y[1],sep=" ")
-      cmd17= paste(cmd4,cmd2,cmd16)
-      system(cmd17)
+      #cmd17= paste(cmd4,cmd2,cmd16)
+      system(cmd16)
 
       cmd18= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.5,genome.index,y[1],y[2],sep=" ")
-      cmd19= paste(cmd4,cmd2,cmd18)
-      system(cmd19)
+      #cmd19= paste(cmd4,cmd2,cmd18)
+      system(cmd18)
 
       cmd20= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.6,genome.index,y[2],y[1],sep=" ")
-      cmd21= paste(cmd4,cmd2,cmd20)
-      system(cmd21)
+      #cmd21= paste(cmd4,cmd2,cmd20)
+      system(cmd20)
     }else
     {
       sample.name.out.dir.7 = file.path(sample.name.out.dir,"Us")
@@ -950,27 +956,23 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
       }
 
       cmd22= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.7,genome.index,y[1],sep=" ")
-      cmd23= paste(cmd4,cmd2,cmd22)
-      print(cmd23)
+      #cmd23= paste(cmd4,cmd2,cmd22)
+      #print(cmd23)
 
-      system(cmd23)
+      system(cmd22)
 
       cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
-      cmd25= paste(cmd4,cmd2,cmd24)
-      system(cmd25)
+      #cmd25= paste(cmd4,cmd2,cmd24)
+      system(cmd24)
 
       cmd26= paste(cmd7,gene.model.file,cmd8,sample.name.out.dir.9,genome.index,y[1],sep=" ")
-      cmd27= paste(cmd4,cmd2,cmd26)
-      system(cmd27)
+      #cmd27= paste(cmd4,cmd2,cmd26)
+      system(cmd26)
     }
 
-
-    #print(cmd3)
-
-    }
-
-
+  }
 }
+
 
 useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index=NULL){
 
