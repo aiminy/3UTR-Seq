@@ -195,7 +195,7 @@ subsetFastqFile <- function(R_lib)
 
   cmd7 = paste(cmd5,cmd1,cmd6,sep=" ")
 
-  system(cmd4,intern= TRUE)
+  system(cmd7,intern= TRUE)
 
   cat("Finished testAlignment fastq\n")
 
