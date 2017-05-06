@@ -761,7 +761,6 @@ select3UTR <- function(genome,tablename) {
 subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.index){
 
   re <- parserreadfiles(input.fastq.files.dir,'fastq')
-
   res <- re$input
 
   #cmd0 = paste0("head -",n)
@@ -902,6 +901,9 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
       cmd10= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.1,genome.index,y[1],y[2],sep=" ")
       cmd11= paste(cmd4,cmd2,cmd10)
+      print(cmd11)
+
+
       system(cmd11)
 
       cmd12= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.2,genome.index,y[2],y[1],sep=" ")
@@ -946,6 +948,8 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n,gene.model.file,genome.
 
       cmd22= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.7,genome.index,y[1],sep=" ")
       cmd23= paste(cmd4,cmd2,cmd22)
+      print(cmd23)
+
       system(cmd23)
 
       cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
