@@ -184,7 +184,7 @@ subsetFastqFile <- function(R_lib)
 
   print(cmd4)
 
-  system(cmd4,intern= TRUE)
+  system(cmd4,intern= TRUE,wait = TRUE)
 
   cat("Finished subset fastq\n")
 
