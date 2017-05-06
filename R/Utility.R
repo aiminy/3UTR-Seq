@@ -996,7 +996,7 @@ testAlignment <- function(output.dir, gene.model.file, genome.index) {
   }
 }
 
-useTophat4Alignment<-function(cmd.input,input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index){
+useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=NULL,genome.index,cmd.input){
 
   #cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
   #cmd4="bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"

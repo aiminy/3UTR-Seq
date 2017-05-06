@@ -256,11 +256,13 @@ performAlignment <- function(R_lib)
   library(ThreeUTR)
 
   cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/alignment.r"),
-               fastq.file.dir,output.dir,gene.model.file,genome.index,sep=" ")
+               fastq.file.dir,output.dir,gene.model.file,genome.index,cmd1,sep=" ")
 
-  cmd3 = paste(cmd1,cmd2,sep=" ")
+  #cmd3 = paste(cmd1,cmd2,sep=" ")
 
-  print(cmd3)
+  #print(cmd3)
+
+  cmd3 =cmd2
 
   system(cmd3,intern= TRUE)
 

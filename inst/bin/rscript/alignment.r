@@ -11,6 +11,7 @@ if (length(args)==0) {
   output.dir=args[2]
   gene.model.file=args[3]
   genome.index=args[4]
+  cmd.input=args[5]
 }
 
 #cat(input.bamfile.dir,"\t",output.bedfile.dir,"\n")
@@ -18,5 +19,5 @@ if (length(args)==0) {
 library(ChipSeq)
 library(ThreeUTR)
 
-ThreeUTR:::useTophat4Alignment(input.fastq.files.dir,output.dir,gene.model.file,genome.index)
+ThreeUTR:::useTophat4Alignment(input.fastq.files.dir,output.dir,gene.model.file,genome.index,cmd.input)
 
