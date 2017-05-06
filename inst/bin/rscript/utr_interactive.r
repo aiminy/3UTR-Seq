@@ -164,7 +164,7 @@ subsetFastqFile <- function(R_lib)
       "Number of short reads (ex: 20. it has to be 4n)\n")
 
   input <- file("stdin", "r")
-  count.file.dir <- readLines(input, n = 5)
+  count.file.dir <- readLines(input, n = 3)
 
   fastq.file.dir <- count.file.dir[1]
   output.dir <- count.file.dir[2]
@@ -194,17 +194,25 @@ subsetFastqFile <- function(R_lib)
 
 testAlignment <- function(R_lib) {
 
-  cat("You choose to sample Fastq files, please define the following setting parameters: \n",
+  cat("You choose to test Alignment, please define the following setting parameters: \n",
       "fastq.file.dir (ex: /scratch/projects/bbc/aiminy_project/DoGsFastq)\n",
-      "output.dir (ex:/scratch/projects/bbc/aiminy_project/DoGsFastqTest)\n",
-      "Number of short reads (ex: 20. it has to be 4n)\n",
       "gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf)\n",
       "genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)\n")
 
   #cmd5="bsub -w \"done(\"subSetFastqAll\")\" -P bbc -J \"tophatALL\" -o %J.tophatALL.log -e %J.tophatALL.err -W"
 
+  library(ChipSeq)
+  library(ThreeUTR)
+
+  input <- file("stdin", "r")
+  count.file.dir <- readLines(input, n = 3)
+
+  fastq.file.dir <- count.file.dir[1]
+  gene.model.file <- count.file.dir[2]
+  genome.index <- count.file.dir[3]
+
   cmd6 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/testAlignment.r"),
-               output.dir,gene.model.file,genome.index,sep=" ")
+               fastq.file.dir,gene.model.file,genome.index,sep=" ")
 
   #cmd7 = paste(cmd5,cmd1,cmd6,sep=" ")
 
