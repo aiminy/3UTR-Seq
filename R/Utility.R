@@ -701,6 +701,264 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
 }
 
+#' @examples
+#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/nethome/axy148/hg19.genome","/scratch/projects/bbc/aiminy_project/DoGs/BW2")'
+#'
+convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,output.bw.file.dir){
+
+  re <- parserreadfiles(input.bam.file.dir,'bam')
+
+  res <- re$input
+
+  m.id <- grep("login",system("hostname",intern=TRUE))
+
+  if(m.id == 1){
+    cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd1 = "bsub -P bbc -J \"bamSort\" -o %J.bamSort.log -e %J.bamSort.err -W"
+    cmd2 = "samtools sort"
+    cmd3 = paste(cmd1,cmd0,cmd2,sep=" ")
+  }else
+  {
+    cmd3 = "samtools sort"
+  }
+
+  if (!dir.exists(output.bw.file.dir))
+  {
+    dir.create(output.bw.file.dir,recursive = TRUE)
+  }
+
+  cmd.l <- lapply(res, function(u,cmd3,output.bw.file.dir)
+  {
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
+
+    cmd <- paste(cmd3,u,file.path(output.bw.file.dir, paste0(file_name,"_sorted")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  }, cmd3,output.bw.file.dir)
+
+
+  if(m.id == 1){
+    cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd1 = "bsub -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
+    cmd4 = "samtools index"
+    cmd5 = paste(cmd1,cmd0,cmd4,sep=" ")
+  }else
+  {
+    cmd5 = "samtools index"
+  }
+
+  cmd.l <- lapply(res, function(u,cmd5,output.bw.file.dir)
+  {
+
+    path_name = dirname(u)
+    path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    file_name <- paste0(path_name2,"-",file_name)
+
+    cmd <- paste(cmd5,file.path(output.bw.file.dir, paste0(file_name,"_sorted.bam")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  },cmd5,output.bw.file.dir)
+
+  path_name <- dirname(input.chromosome.size.file)
+  path_name2 <- basename(path_name)
+  file_name <- file_path_sans_ext(basename(input.chromosome.size.file))
+  file_name <- paste0(path_name2,"-",file_name,".txt")
+
+  if(m.id == 1){
+    cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd1 = "bsub -P bbc -J \"Chrosome\" -o %J.Chrosome.log -e %J.Chrosome.err -W"
+    cmd6 <- "tail -n +2"
+    cmd7 <- paste(cmd1,cmd0,cmd6,sep=" ")
+    cmd8 <- paste(cmd7,input.chromosome.size.file,"\\>",file.path(path_name,file_name), sep = " ")
+  }else
+  {
+    cmd7 <- "tail -n +2"
+    cmd8 <- paste(cmd7,input.chromosome.size.file,">",file.path(path_name,file_name), sep = " ")
+  }
+
+  system(cmd8)
+
+  cmd11="bsub -w \"done(\"STAR-alignment\")\" -P bbc -J \"samtools-sort\" -o %J.samtools-sort.log -e %J.samtools-sort.err -W"
+
+  if(m.id == 1){
+    cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd1 = "bsub -w \"done(\"bamSort\") && done(\"bamIndex\") && done(\"Chrosome\") -P bbc -J \"Bdg\" -o %J.Bdg.log -e %J.Bdg.err -W"
+    cmd9 = "genomeCoverageBed -split -strand + -ibam"
+    cmd10 = "genomeCoverageBed -split -strand - -ibam"
+    cmd11 = paste(cmd1,cmd0,cmd9,sep = " ")
+    cmd12 = paste(cmd1,cmd0,cmd10,sep = " ")
+    cmd13 <- "\\>"
+  }else
+  {
+    cmd11 = "genomeCoverageBed -split -strand + -ibam"
+    cmd12 = "genomeCoverageBed -split -strand - -ibam"
+    cmd13 <- ">"
+  }
+
+  cmd14 <- "-bg -g"
+
+  cmd.l <- lapply(res, function(u,cmd11,cmd12,cmd13,cmd14,output.bw.file.dir)
+  {
+    #path_name = dirname(u)
+    #path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    #file_name <- paste0(path_name2,"-",file_name)
+
+    x = file.path(output.bw.file.dir, paste0(file_name,"_sorted.bam"))
+
+    cmd.x <- paste(cmd11,x,cmd14,input.chromosome.size.file,
+                 cmd13,file.path(output.bw.file.dir, paste0(file_name,"_plus.bdg")), sep = " ")
+
+    cmd.y <- paste(cmd12,x,cmd14,input.chromosome.size.file,
+                 cmd13,file.path(output.bw.file.dir, paste0(file_name,"_minus.bdg")), sep = " ")
+
+    system(cmd.x)
+    system(cmd.y)
+
+    cmd <- list(cmd.x = cmd.x,cmd.y = cmd.y)
+    cmd
+
+  }, cmd11,cmd12,cmd13,cmd14,output.bw.file.dir)
+
+
+  #re <- list(cmdl = cmd.l, output.dir = output.dir)
+
+  #input.bdg.file.dir <- re$output.dir
+
+
+  if(m.id == 1){
+    cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd1 = "bsub -w \"done(\"Bdg\") -P bbc -J \"sortBdg\" -o %J.sortBdg.log -e %J.sortBdg.err -W"
+
+    cmd15 <- "LC_COLLATE=C sort -k1,1 -k2,2n"
+    cmd16 <- paste(cmd1,cmd0,cmd15,sep=" ")
+    cmd17 <- "\\>"
+  }else
+  {
+    cmd16 <- "LC_COLLATE=C sort -k1,1 -k2,2n"
+    cmd17 <- ">"
+  }
+
+
+  #re <- parserreadfiles(input.bdg.file.dir,'bdg')
+
+  #res <- re$input
+
+  cmd.l <- lapply(res, function(u,cmd16,cmd17,output.bw.file.dir)
+  {
+    #path_name = dirname(u)
+    #path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    #file_name <- paste0(path_name2,"-",file_name)
+
+    x = file.path(output.bw.file.dir, paste0(file_name,"_plus.bdg"))
+    y = file.path(output.bw.file.dir, paste0(file_name,"_minus.bdg"))
+
+    cmd.x <- paste(cmd16,x,cmd17,file.path(output.bw.file.dir, paste0(file_name,"_plus.sorted_bdg")), sep = " ")
+    cmd.y <- paste(cmd16,y,cmd17,file.path(output.bw.file.dir, paste0(file_name,"_minus.sorted_bdg")), sep = " ")
+
+    system(cmd.x)
+    system(cmd.y)
+
+    cmd <-list(cmd.x=cmd.x,cmd.y=cmd.y)
+    cmd
+  }, cmd16,cmd17,output.bw.file.dir)
+
+
+  if(m.id == 1){
+    cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd1 = "bsub -w \"done(\"sortBdg\") -P bbc -J \"BigWig\" -o %J.BigWig.log -e %J.BigWig.err -W"
+    cmd18 = "bedGraphToBigWig"
+    cmd19 <- paste(cmd1,cmd0,cmd18,sep=" ")
+    cmd17 <- "\\>"
+  }else
+  {
+    cmd19 <- "bedGraphToBigWig"
+  }
+
+  input.chromosome.size.file.m <- file.path(path_name,file_name)
+
+  #re <- parserreadfiles(input.bdg.file.dir,'.sorted_bdg')
+
+  #res <- re$input
+
+  cmd.l <- lapply(res, function(u,cmd19,input.chromosome.size.file.m,output.bw.file.dir)
+  {
+    #path_name = dirname(u)
+    #path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    #file_name <- paste0(path_name2,"-",file_name)
+
+    x = file.path(output.bw.file.dir,paste0(file_name,"_plus.sorted_bdg"))
+    y = file.path(output.bw.file.dir,paste0(file_name,"_minus.sorted_bdg"))
+
+    cmd.x <- paste(cmd19,x,input.chromosome.size.file.m,file.path(output.bw.file.dir,paste0(file_name,"_plus.bw")), sep = " ")
+
+    cmd.y <- paste(cmd19,x,input.chromosome.size.file.m,file.path(output.bw.file.dir,paste0(file_name,"_minus.bw")), sep = " ")
+
+
+    system(cmd.x)
+    system(cmd.y)
+
+    cmd <- list(cmd.x = cmd.x,cmd.y =cmd.y )
+    cmd
+  },cmd19,input.chromosome.size.file.m,output.bw.file.dir)
+
+
+  if(m.id == 1){
+    cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+    cmd1 = "bsub -w \"done(\"BigWig\") -P bbc -J \"Wig\" -o %J.Wig.log -e %J.Wig.err -W"
+    cmd20 = "bigWigToWig"
+    cmd21 <- paste(cmd1,cmd0,cmd20,sep=" ")
+    cmd17 <- "\\>"
+  }else
+  {
+    cmd21 <- "bigWigToWig"
+  }
+
+  cmd.l <- lapply(res, function(u,cmd21,output.bw.file.dir)
+  {
+    #  path_name = dirname(u)
+    #  path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    #  file_name <- paste0(path_name2,"-",file_name)
+
+    x = file.path(output.bw.file.dir,paste0(file_name,"_plus.bw"))
+    y = file.path(output.bw.file.dir,paste0(file_name,"_minus.bw"))
+
+    cmd.x <- paste(cmd21,x,file.path(output.bw.file.dir,paste0(file_name,"_plus.wig")), sep = " ")
+
+    cmd.y <- paste(cmd21,y,file.path(output.bw.file.dir,paste0(file_name,"_plus.wig")), sep = " ")
+
+    system(cmd.x)
+    system(cmd.y)
+
+    cmd <- list(cmd.x = cmd.x,cmd.y=cmd.y)
+    cmd
+    },cmd21,output.bw.file.dir)
+
+}
+
 prepareDaPars<-function(input.wig.file.dir,sample.group=c("Dox","WT"),output.dir){
 
   re <- parserreadfiles(input.wig.file.dir,'wig')
