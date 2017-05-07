@@ -746,7 +746,7 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
   if(m.id == 1){
     cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-    cmd1 = "bsub -w \"done(\"bamIndex\")\" -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
+    cmd1 = "bsub -w \"done(\"bamSort\")\" -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
     cmd4 = "samtools index"
     cmd5 = paste(cmd1,cmd0,cmd4,sep=" ")
   }else
