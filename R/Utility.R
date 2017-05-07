@@ -824,6 +824,9 @@ checkStrand<-function(input.alignment.dir) {
   return(yyyy)
 }
 
+#' @examples
+#' R -e 'library(ThreeUTR);processBamFiles("/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/scratch/projects/bbc/aiminy_project/DoGs/BAM")'
+#'
 processBamFiles<-function(input.alignment.dir,ouput.dir) {
 
   re<-file.path(input.alignment.dir,dir(input.alignment.dir,recursive=TRUE,pattern = "accepted_hits.bam"))
@@ -836,9 +839,20 @@ processBamFiles<-function(input.alignment.dir,ouput.dir) {
 
   y <- lapply(re,function(u){
 
-    cmd <- paste(cmd1,cmd0,cmd2,u,ouput.dir,sep=" ")
+    /SRR2038198/Fs12/accepted_hits.bam
 
-    #system(cmd,intern = TRUE)
+    dir.name.0 <- dirname(u)
+    dir.name.1<- dirname(dir.name)
+
+    x <- basename(dir.name.0)
+    y <- basename(dir.name.1)
+    file.name <- basename(u)
+
+    sample.name <- paste(y,x,file.name,sep="-")
+
+    cmd <- paste(cmd1,cmd0,cmd2,u,file.path(ouput.dir,sample.name),sep=" ")
+
+    #system(cmd,intern = TRUE
     cmd
   })
 
