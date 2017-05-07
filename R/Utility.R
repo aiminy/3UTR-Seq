@@ -825,9 +825,14 @@ checkStrand<-function(input.alignment.dir) {
 }
 
 #' @examples
-#' R -e 'library(ThreeUTR);processBamFiles("/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/scratch/projects/bbc/aiminy_project/DoGs/BAM")'
+#' R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles("/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/scratch/projects/bbc/aiminy_project/DoGs/BAM")'
 #'
 processBamFiles<-function(input.alignment.dir,ouput.dir) {
+
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir)
+  }
 
   re<-file.path(input.alignment.dir,dir(input.alignment.dir,recursive=TRUE,pattern = "accepted_hits.bam"))
 
@@ -858,14 +863,14 @@ processBamFiles<-function(input.alignment.dir,ouput.dir) {
 
   print(y)
 
- ## yyy <- lapply(y,function(u){
-##    yy <- system(u,intern = TRUE)
-##    yy
-##  })
+  yyy <- lapply(y,function(u){
+    yy <- system(u,intern = TRUE)
+    yy
+  })
 
-##  yyyy <- unlist(yyy)
+  yyyy <- unlist(yyy)
 
-##  return(yyyy)
+  return(yyyy)
 }
 
 testAlignment <- function(output.dir, gene.model.file, genome.index) {
