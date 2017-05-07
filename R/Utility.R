@@ -829,9 +829,11 @@ checkStrand<-function(input.alignment.dir) {
 #'
 processBamFiles<-function(input.alignment.dir,ouput.dir) {
 
-  if (!dir.exists(output.dir))
+  x <- output.dir
+
+  if(!dir.exists(x))
   {
-    dir.create(output.dir)
+    dir.create(x,recursive = TRUE)
   }
 
   re<-file.path(input.alignment.dir,dir(input.alignment.dir,recursive=TRUE,pattern = "accepted_hits.bam"))
@@ -855,7 +857,7 @@ processBamFiles<-function(input.alignment.dir,ouput.dir) {
 
     sample.name <- paste(y,x,file.name,sep="-")
 
-    cmd <- paste(cmd1,cmd0,cmd2,u,file.path(ouput.dir,sample.name),sep=" ")
+    cmd <- paste(cmd1,cmd0,cmd2,u,file.path(xx,sample.name),sep=" ")
 
     #system(cmd,intern = TRUE
     cmd
