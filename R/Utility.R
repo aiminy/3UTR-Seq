@@ -608,12 +608,12 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   cmd.l <- lapply(res, function(u, output.bw.file.dir)
   {
-    path_name = dirname(u)
-    path_name2 <- basename(path_name)
+    #path_name = dirname(u)
+    #path_name2 <- basename(path_name)
 
     file_name = file_path_sans_ext(basename(u))
 
-    file_name <- paste0(path_name2,"-",file_name)
+    #file_name <- paste0(path_name2,"-",file_name)
 
     x = file.path(output.bw.file.dir, paste0(file_name,"_sorted.bam"))
 
@@ -637,12 +637,12 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   cmd.l <- lapply(res, function(u, output.bw.file.dir)
   {
-    path_name = dirname(u)
-    path_name2 <- basename(path_name)
+    #path_name = dirname(u)
+    #path_name2 <- basename(path_name)
 
     file_name = file_path_sans_ext(basename(u))
 
-    file_name <- paste0(path_name2,"-",file_name)
+    #file_name <- paste0(path_name2,"-",file_name)
 
     x = file.path(output.bw.file.dir, paste0(file_name,".bdg"))
 
@@ -663,12 +663,12 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   cmd.l <- lapply(res, function(u,input.chromosome.size.file.m,output.bw.file.dir)
   {
-    path_name = dirname(u)
-    path_name2 <- basename(path_name)
+    #path_name = dirname(u)
+    #path_name2 <- basename(path_name)
 
     file_name = file_path_sans_ext(basename(u))
 
-    file_name <- paste0(path_name2,"-",file_name)
+    #file_name <- paste0(path_name2,"-",file_name)
 
     x = file.path(output.bw.file.dir,paste0(file_name,".sorted_bdg"))
 
@@ -683,12 +683,12 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   cmd.l <- lapply(res, function(u,output.bw.file.dir)
   {
-    path_name = dirname(u)
-    path_name2 <- basename(path_name)
+  #  path_name = dirname(u)
+  #  path_name2 <- basename(path_name)
 
     file_name = file_path_sans_ext(basename(u))
 
-    file_name <- paste0(path_name2,"-",file_name)
+  #  file_name <- paste0(path_name2,"-",file_name)
 
     x = file.path(output.bw.file.dir,paste0(file_name,".bw"))
 
