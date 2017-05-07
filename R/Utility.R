@@ -824,6 +824,36 @@ checkStrand<-function(input.alignment.dir) {
   return(yyyy)
 }
 
+processBamFiles<-function(input.alignment.dir,ouput.dir) {
+
+  re<-file.path(input.alignment.dir,dir(input.alignment.dir,recursive=TRUE,pattern = "accepted_hits.bam"))
+
+  cmd0 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+  cmd1="bsub -P bbc -J \"bamProcess\" -o %J.bamProcess.log -e %J.bamProcess.err -W"
+
+  cmd2 <- "mv"
+
+  y <- lapply(re,function(u){
+
+    cmd <- paste(cmd1,cmd0,cmd2,u,ouput.dir,sep=" ")
+
+    #system(cmd,intern = TRUE)
+    cmd
+  })
+
+  print(y)
+
+ ## yyy <- lapply(y,function(u){
+##    yy <- system(u,intern = TRUE)
+##    yy
+##  })
+
+##  yyyy <- unlist(yyy)
+
+##  return(yyyy)
+}
+
 testAlignment <- function(output.dir, gene.model.file, genome.index) {
 
   cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"

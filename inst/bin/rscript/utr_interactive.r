@@ -256,8 +256,8 @@ performAlignment <- function(R_lib)
 
   #cmd4="bsub -P bbc -J \"tophat\" -o %J.tophat.log -e %J.tophat.err -W"
 
-  library(ChipSeq)
-  library(ThreeUTR)
+  #library(ChipSeq)
+  #library(ThreeUTR)
 
   cmd2 = paste("Rscript",paste0(R_lib,"/ThreeUTR/bin/rscript/alignment.r"),
                fastq.file.dir,output.dir,gene.model.file,genome.index,cmd1,sep=" ")
