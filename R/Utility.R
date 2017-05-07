@@ -827,7 +827,7 @@ checkStrand<-function(input.alignment.dir) {
 #' @examples
 #' R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles("/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/scratch/projects/bbc/aiminy_project/DoGs/BAM")'
 #'
-processBamFiles<-function(input.alignment.dir,ouput.dir) {
+processBamFiles<-function(input.alignment.dir,output.dir) {
 
   x <- output.dir
 
