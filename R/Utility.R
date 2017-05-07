@@ -839,7 +839,7 @@ processBamFiles<-function(input.alignment.dir,ouput.dir) {
 
   y <- lapply(re,function(u){
 
-    /SRR2038198/Fs12/accepted_hits.bam
+   # /SRR2038198/Fs12/accepted_hits.bam
 
     dir.name.0 <- dirname(u)
     dir.name.1<- dirname(dir.name)
