@@ -211,7 +211,7 @@ useInferExperiment<-function(input.file.dir,ref.gene.bed.file,output.dir){
 
   if (!dir.exists(output.dir))
   {
-    dir.create(output.dir)
+    dir.create(output.dir,recursive = TRUE)
   }
 
   cmd.l <- lapply(res, function(u, output.dir)
@@ -265,7 +265,7 @@ convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
 
     if (!dir.exists(output.bedfile.dir))
     {
-        dir.create(output.bedfile.dir)
+        dir.create(output.bedfile.dir,recursive = TRUE)
     }
 
     cmd.l <- lapply(res, function(u, output.bedfile.dir)
@@ -334,7 +334,7 @@ matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld, rd, 
 
     if (!dir.exists(output.bedfile.dir))
     {
-        dir.create(output.bedfile.dir)
+        dir.create(output.bedfile.dir,recursive = TRUE)
     }
 
     cmd.l <- lapply(res, function(u, output.bedfile.dir)
@@ -411,7 +411,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir,output.count.file.dir,filt
 
     if (!dir.exists(output.count.file.dir))
     {
-        dir.create(output.count.file.dir)
+        dir.create(output.count.file.dir,recursive = TRUE)
     }
 
     counteachcase <- function(res, cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand, location, output.count.file.dir) {
@@ -435,7 +435,6 @@ getcountsfromMatchedbed <- function(input.bedfile.dir,output.count.file.dir,filt
      return(cmd.l)
 
     }
-
 
     cmdtempres2 <- apply(cmdtemp,1,function(u,cmd0,cmd3,output.count.file.dir){
      x <- as.data.frame(t(u))
@@ -552,7 +551,7 @@ convertBam2Bw <- function(input.bam.file.dir,input.chromosome.size.file,output.b
 
   if (!dir.exists(output.bw.file.dir))
   {
-    dir.create(output.bw.file.dir)
+    dir.create(output.bw.file.dir,recursive = TRUE)
   }
 
   cmd.l <- lapply(res, function(u, output.bw.file.dir)
@@ -772,7 +771,7 @@ subsetFastq<-function(input.fastq.files.dir,output.dir,n){
 
   if (!dir.exists(output.dir))
   {
-    dir.create(output.dir)
+    dir.create(output.dir,recursive = TRUE)
   }
 
   cmd2 ="72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
@@ -921,7 +920,7 @@ testAlignment <- function(output.dir, gene.model.file, genome.index) {
 
     if (!dir.exists(sample.name.out.dir))
     {
-      dir.create(sample.name.out.dir)
+      dir.create(sample.name.out.dir,recursive = TRUE)
     }
 
     y <- res2[grep(xxx[i],res2)]
@@ -952,32 +951,32 @@ testAlignment <- function(output.dir, gene.model.file, genome.index) {
 
       if (!dir.exists(sample.name.out.dir.1))
       {
-        dir.create(sample.name.out.dir.1)
+        dir.create(sample.name.out.dir.1,recursive = TRUE)
       }
 
       if (!dir.exists(sample.name.out.dir.2))
       {
-        dir.create(sample.name.out.dir.2)
+        dir.create(sample.name.out.dir.2,recursive = TRUE)
       }
 
       if (!dir.exists(sample.name.out.dir.3))
       {
-        dir.create(sample.name.out.dir.3)
+        dir.create(sample.name.out.dir.3,recursive = TRUE)
       }
 
       if (!dir.exists(sample.name.out.dir.4))
       {
-        dir.create(sample.name.out.dir.4)
+        dir.create(sample.name.out.dir.4,recursive = TRUE)
       }
 
       if (!dir.exists(sample.name.out.dir.5))
       {
-        dir.create(sample.name.out.dir.5)
+        dir.create(sample.name.out.dir.5,recursive = TRUE)
       }
 
       if (!dir.exists(sample.name.out.dir.6))
       {
-        dir.create(sample.name.out.dir.6)
+        dir.create(sample.name.out.dir.6,recursive = TRUE)
       }
 
       cmd10= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.1,genome.index,y[1],y[2],sep=" ")
@@ -1014,17 +1013,17 @@ testAlignment <- function(output.dir, gene.model.file, genome.index) {
 
       if (!dir.exists(sample.name.out.dir.7))
       {
-        dir.create(sample.name.out.dir.7)
+        dir.create(sample.name.out.dir.7,recursive = TRUE)
       }
 
       if (!dir.exists(sample.name.out.dir.8))
       {
-        dir.create(sample.name.out.dir.8)
+        dir.create(sample.name.out.dir.8,recursive = TRUE)
       }
 
       if (!dir.exists(sample.name.out.dir.9))
       {
-        dir.create(sample.name.out.dir.9)
+        dir.create(sample.name.out.dir.9,recursive = TRUE)
       }
 
       cmd22= paste(cmd5,gene.model.file,cmd8,sample.name.out.dir.7,genome.index,y[1],sep=" ")
@@ -1049,7 +1048,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
   if (!dir.exists(output.dir))
   {
-    dir.create(output.dir)
+    dir.create(output.dir,recursive = TRUE)
   }
 
   if(cmd.input == "General"){
@@ -1099,7 +1098,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
     if (!dir.exists(sample.name.out.dir))
     {
-      dir.create(sample.name.out.dir)
+      dir.create(sample.name.out.dir,recursive = TRUE)
     }
 
     y <- res2[grep(xxx[i],res2)]
@@ -1126,7 +1125,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
       if (!dir.exists(sample.name.out.dir.3))
       {
-        dir.create(sample.name.out.dir.3)
+        dir.create(sample.name.out.dir.3,recursive = TRUE)
       }
 
       cmd14= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.3,genome.index,y[1],y[2],sep=" ")
@@ -1142,7 +1141,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 
       if (!dir.exists(sample.name.out.dir.8))
       {
-        dir.create(sample.name.out.dir.8)
+        dir.create(sample.name.out.dir.8,recursive = TRUE)
       }
       cmd24= paste(cmd6,gene.model.file,cmd8,sample.name.out.dir.8,genome.index,y[1],sep=" ")
       #cmd25= paste(cmd.input,cmd24)
