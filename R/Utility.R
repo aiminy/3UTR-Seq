@@ -842,7 +842,7 @@ processBamFiles<-function(input.alignment.dir,ouput.dir) {
    # /SRR2038198/Fs12/accepted_hits.bam
 
     dir.name.0 <- dirname(u)
-    dir.name.1<- dirname(dir.name)
+    dir.name.1<- dirname(dir.name.0)
 
     x <- basename(dir.name.0)
     y <- basename(dir.name.1)
