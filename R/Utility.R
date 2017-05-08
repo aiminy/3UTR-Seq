@@ -759,7 +759,7 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
       job.name=paste0("bamIndex[",u,"]")
-      cmd1 = paste0("bsub -w \"done(\"bamSort[*]\")\"",
+      cmd1 = paste0("bsub -w \"done(bamSort[*])\"",
         " bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
 
       #cmd1 = "bsub -w \"done(\"bamSort\")\" -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
@@ -967,7 +967,7 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
     cmd <- list(cmd.x = cmd.x,cmd.y=cmd.y)
     cmd
-    },mi.id,res,output.bw.file.dir)
+    },m.id,res,output.bw.file.dir)
 
 }
 
