@@ -738,7 +738,7 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
       cmd3 = "samtools sort"
     }
 
-    cmd <- paste(cmd3,u,file.path(output.bw.file.dir, paste0(file_name,"_sorted")), sep = " ")
+    cmd <- paste(cmd3,res[[u]],file.path(output.bw.file.dir, paste0(file_name,"_sorted")), sep = " ")
 
     system(cmd)
 
@@ -762,7 +762,7 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
       cmd1 = paste0("bsub -w \"done(\"bamSort[*]\")\"",
         " bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
 
-      cmd1 = "bsub -w \"done(\"bamSort\")\" -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
+      #cmd1 = "bsub -w \"done(\"bamSort\")\" -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
       cmd4 = "samtools index"
       cmd5 = paste(cmd1,cmd0,cmd4,sep=" ")
     }else
