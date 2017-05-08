@@ -852,7 +852,7 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
   #res <- re$input
 
-  cmd.l <- lapply(1:length(res), function(u,m.id,res,cmd16,cmd17,output.bw.file.dir)
+  cmd.l <- lapply(1:length(res), function(u,m.id,res,output.bw.file.dir)
   {
     #path_name = dirname(u)
     #path_name2 <- basename(path_name)
