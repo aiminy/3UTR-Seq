@@ -772,7 +772,7 @@ u=1
       job.name=paste0("bamIndex.",u)
       wait.job.name=paste0("bamSort.",u)
       cmd1 = paste0("bsub -w \"done(\"",wait.job.name,"\")\"",
-                    "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+                    " -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
 
       #cmd1 = "bsub -w \"done(\"bamSort\")\" -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
       cmd4 = "samtools index"
