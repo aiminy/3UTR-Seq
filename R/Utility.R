@@ -927,7 +927,7 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
       job.name=paste0("BigWig.",u)
-      wait.job.name=paste0("sortedBdg.",u)
+      wait.job.name=paste0("sortBdg.",u)
       cmd1 = paste0("bsub -w \"done(\"",wait.job.name,"\")\"",
                     " -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
       cmd18 = "bedGraphToBigWig"
