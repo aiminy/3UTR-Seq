@@ -722,17 +722,26 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
   cmd.l <- lapply(1:length(res), function(u,m.id,res,output.bw.file.dir)
   {
 
-    path_name = dirname(res[[u]])
-    path_name2 <- basename(path_name)
+    #path_name = dirname(res[[u]])
+    #path_name2 <- basename(path_name)
 
     file_name = file_path_sans_ext(basename(res[[u]]))
 
-    file_name <- paste0(path_name2,"-",file_name)
+    #file_name <- paste0(path_name2,"-",file_name)
 
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-      job.name=paste0("bamSort[",length(res),"]")
-      cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.log "),paste0("-e %J.err -W"))
+      job.name=paste0("bamSort.",file_name)
+      cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+
+      # job.name=paste0("bamSort[",length(res),"]")
+      # cmd1 = paste0("bsub -w \"done(\"bamSort[*]\")\"",
+      #               "bsub -P bbc -J \"",job.name,paste0("\" -o %J.log "),paste0("-e %J.err -W"))
+      #
+      # job.name=paste0("Bdg[",u,"]")
+      # cmd1 = paste0("bsub -w \"done(\"bamIndex[*]\") && done(\"Chrosome\")\"",
+      #               "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+
       cmd2 = "samtools sort"
       cmd3 = paste(cmd1,cmd0,cmd2,sep=" ")
     }else
@@ -750,20 +759,20 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
   cmd.l <- lapply(1:length(res), function(u,m.id,res,output.bw.file.dir)
   {
 
-    path_name = dirname(res[[u]])
-    path_name2 <- basename(path_name)
+    #path_name = dirname(res[[u]])
+    #path_name2 <- basename(path_name)
 
     file_name = file_path_sans_ext(basename(res[[u]]))
 
-    file_name <- paste0(path_name2,"-",file_name)
+    #file_name <- paste0(path_name2,"-",file_name)
 
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-#u=1
 
-      job.name=paste0("bamIndex[",length(res),"]")
-      cmd1 = paste0("bsub -w \"done(\"bamSort[*]\")\"",
-        "bsub -P bbc -J \"",job.name,paste0("\" -o %J.log "),paste0("-e %J.err -W"))
+      job.name=paste0("bamIndex.",file_name)
+      wait.job.name=paste0("bamSort.",file_name)
+      cmd1 = paste0("bsub -w \"done(\"",wait.job.name,"\")\"",
+                    "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
 
       #cmd1 = "bsub -w \"done(\"bamSort\")\" -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
       cmd4 = "samtools index"
@@ -814,9 +823,11 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-      job.name=paste0("Bdg[",u,"]")
-      cmd1 = paste0("bsub -w \"done(\"bamIndex[*]\") && done(\"Chrosome\")\"",
-                    "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+
+      job.name=paste0("Bdg.",file_name)
+      wait.job.name=paste(paste0("bamIndex.",file_name),"&& done(\"Chrosome\")\"",sep=" ")
+      cmd1 = paste0("bsub -w \"done(\"",wait.job.name,"\")\"",
+                    "bsub -P bbc -J \"",job.name,paste0("\" -o %J.log "),paste0("-e %J.err -W"))
       cmd9 = "genomeCoverageBed -split -strand + -ibam"
       cmd10 = "genomeCoverageBed -split -strand - -ibam"
       cmd11 = paste(cmd1,cmd0,cmd9,sep = " ")
@@ -869,9 +880,11 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-      job.name=paste0("sortBdg[",u,"]")
-      cmd1 = paste0("bsub -w \"done(\"Bdg[*]\") && done(\"Chrosome\")\"",
+      job.name=paste0("sortBdg.",file_name)
+      wait.job.name=paste(paste0("Bdg.",file_name),"&& done(\"Chrosome\")\"",sep=" ")
+      cmd1 = paste0("bsub -w \"done(\"",wait.job.name,"\")\"",
                     "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+
       cmd15 <- "LC_COLLATE=C sort -k1,1 -k2,2n"
       cmd16 <- paste(cmd1,cmd0,cmd15,sep=" ")
       cmd17 <- "\\>"
@@ -912,8 +925,11 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-      job.name=paste0("BigWig[",u,"]")
-      cmd1 = paste0("bsub -w \"done(\"sortBdg[*]\")\"",
+
+      job.name=paste0("BigWig.",file_name)
+      wait.job.name=paste0("sortedBdg.",file_name)
+
+      cmd1 = paste0("bsub -w \"done(\"",wait.job.name,"\")\"",
                     "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
       cmd18 = "bedGraphToBigWig"
       cmd19 <- paste(cmd1,cmd0,cmd18,sep=" ")
@@ -950,8 +966,11 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-      job.name=paste0("Wig[",u,"]")
-      cmd1 = paste0("bsub -w \"done(\"BigWig[*]\")\"",
+
+
+      job.name=paste0("Wig.",file_name)
+      wait.job.name=paste0("BdgWig.",file_name)
+      cmd1 = paste0("bsub -w \"done(\"",wait.job.name,"\")\"",
                     "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
       cmd20 = "bigWigToWig"
       cmd21 <- paste(cmd1,cmd0,cmd20,sep=" ")
