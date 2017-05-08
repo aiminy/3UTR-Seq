@@ -757,7 +757,7 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-u=1
+#u=1
 
       job.name=paste0("bamIndex[",u,"]")
       cmd1 = paste0("bsub -w \"done(\"bamSort[*]\")\"",
