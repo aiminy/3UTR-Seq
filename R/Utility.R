@@ -717,6 +717,8 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
     dir.create(output.bw.file.dir,recursive = TRUE)
   }
 
+  #job.name=paste0("bamSort[",length(res),"]")
+
   cmd.l <- lapply(1:length(res), function(u,m.id,res,output.bw.file.dir)
   {
 
@@ -729,8 +731,8 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-      job.name=paste0("bamSort[",u,"]")
-      cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+      job.name=paste0("bamSort[",length(res),"]")
+      cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.log "),paste0("-e %J.err -W"))
       cmd2 = "samtools sort"
       cmd3 = paste(cmd1,cmd0,cmd2,sep=" ")
     }else
@@ -759,9 +761,9 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 #u=1
 
-      job.name=paste0("bamIndex[",u,"]")
-      cmd1 = paste0("bsub -w \"done(\"bamSort[",u,"]\")\"",
-        "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+      job.name=paste0("bamIndex[",length(res),"]")
+      cmd1 = paste0("bsub -w \"done(\"bamSort[*]\")\"",
+        "bsub -P bbc -J \"",job.name,paste0("\" -o %J.log "),paste0("-e %J.err -W"))
 
       #cmd1 = "bsub -w \"done(\"bamSort\")\" -P bbc -J \"bamIndex\" -o %J.bamIndex.log -e %J.bamIndex.err -W"
       cmd4 = "samtools index"
