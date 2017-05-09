@@ -992,6 +992,59 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
 }
 
+convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
+
+  re <- parserreadfiles(input.bam.file.dir,'bam')
+
+  res <- re$input
+
+  m.id <- grep("login",system("hostname",intern=TRUE))
+
+  if (!dir.exists(output.bw.file.dir))
+  {
+    dir.create(output.bw.file.dir,recursive = TRUE)
+  }
+
+  #job.name=paste0("bamSort[",length(res),"]")
+
+  cmd.l <- lapply(1:length(res), function(u,m.id,res,output.bw.file.dir)
+  {
+
+    #path_name = dirname(res[[u]])
+    #path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    #file_name <- paste0(path_name2,"-",file_name)
+
+    if(m.id == 1){
+      cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+      job.name=paste0("bam2wig.",u)
+      cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+
+      # job.name=paste0("bamSort[",length(res),"]")
+      # cmd1 = paste0("bsub -w \"done(\"bamSort[*]\")\"",
+      #               "bsub -P bbc -J \"",job.name,paste0("\" -o %J.log "),paste0("-e %J.err -W"))
+      #
+      # job.name=paste0("Bdg[",u,"]")
+      # cmd1 = paste0("bsub -w \"done(\"bamIndex[*]\") && done(\"Chrosome\")\"",
+      #               "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+      cmd2 = paste("bam2wig.pl -pe --pos span --strand --bw --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
+      cmd3 = paste(cmd1,cmd0,cmd2,sep=" ")
+    }else
+    {
+      cmd3 = paste("bam2wig.pl -pe --pos span --strand --bw --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
+    }
+
+    cmd <- paste(cmd3,res[[u]],file.path(output.bw.file.dir, paste0(file_name,"_sorted")), sep = " ")
+
+    system(cmd)
+
+    cmd
+  },m.id,res,output.bw.file.dir)
+
+}
+
 prepareDaPars<-function(input.wig.file.dir,sample.group=c("Dox","WT"),output.dir){
 
   re <- parserreadfiles(input.wig.file.dir,'wig')
