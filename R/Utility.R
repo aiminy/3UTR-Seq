@@ -1032,17 +1032,17 @@ convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
       # cmd1 = paste0("bsub -w \"done(\"bamIndex[*]\") && done(\"Chrosome\")\"",
       #               "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
       if (u<=6){
-      cmd2 = paste("bam2wig.pl -pe --pos span --strand --bw --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
+      cmd2 = paste("bam2wig.pl -pe --pos span --strand --bw  --bwapp $HOME/kentUtils/bin/wigToBigWig --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
       }else{
-      cmd2 = paste("bam2wig.pl --pos span --strand --bw --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
+      cmd2 = paste("bam2wig.pl --pos span --strand --bw --bwapp $HOME/kentUtils/bin/wigToBigWig --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
       }
       cmd3 = paste(cmd1,cmd0,cmd2,sep=" ")
     }else
     {
       if (u<=6){
-        cmd3 = paste("bam2wig.pl -pe --pos span --strand --bw --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
+        cmd3 = paste("bam2wig.pl -pe --pos span --strand --bw --bwapp $HOME/kentUtils/bin/wigToBigWig --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
       }else{
-        cmd3 = paste("bam2wig.pl --pos span --strand --bw --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
+        cmd3 = paste("bam2wig.pl --pos span --strand --bw --bwapp $HOME/kentUtils/bin/wigToBigWig --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
       }
     }
 
