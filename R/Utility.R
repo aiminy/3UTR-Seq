@@ -992,6 +992,8 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
 }
 
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/BAM",/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl")'
+#'
 convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
 
   re <- parserreadfiles(input.bam.file.dir,'bam')
@@ -1036,7 +1038,7 @@ convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
       cmd3 = paste("bam2wig.pl -pe --pos span --strand --bw --out",file.path(output.bw.file.dir,paste0(file_name,"_2.bw")), "--in",res[[u]],sep=" ")
     }
 
-    cmd <- paste(cmd3,res[[u]],file.path(output.bw.file.dir, paste0(file_name,"_sorted")), sep = " ")
+    cmd <- cmd3
 
     system(cmd)
 
