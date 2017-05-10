@@ -1022,7 +1022,7 @@ splitBam <- function(input.bam.file.dir,output.bw.file.dir){
     u<-3
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
-      job.name=paste0("bam2wig.",u)
+      job.name=paste0("bamSplit.",u)
       cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
 
       # job.name=paste0("bamSort[",length(res),"]")
