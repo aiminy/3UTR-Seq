@@ -1570,3 +1570,49 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
   }
 
 }
+
+#' @examples
+#' R -e 'library(ThreeUTR);ThreeUTR:::subsetBam("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/SRR2038198-Fs12-accepted_hits_split.100_200.bam","$HOME/1833_common_gene.bed","/scratch/projects/bbc/aiminy_project/DoGs/BAM",BigMem=TRUE)'
+#'
+subsetBam <- function(input.bam.file.dir,region.bed.file,output.bw.file.dir,BigMem=FALSE){
+
+  re <- parserreadfiles(input.bam.file.dir,'bam')
+
+  res <- re$input
+
+  m.id <- grep("login",system("hostname",intern=TRUE))
+
+  if (!dir.exists(output.bw.file.dir))
+  {
+    dir.create(output.bw.file.dir,recursive = TRUE)
+  }
+
+  cmd.l <- lapply(1:length(res), function(u,m.id,res,region.bed,BigMem,output.bw.file.dir)
+  {
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    if(m.id == 1){
+
+      if(BigMem == TRUE)
+      {
+      cmd0 = "72:00 -n 16 -q bigmem -R 'rusage[mem=36864] span[ptile=8]' -u aimin.yan@med.miami.edu"
+      }else{
+      cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+      }
+
+      job.name=paste0("subsetBam.",u)
+      cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+      cmd2 = paste("samtools view -b -L",region.bed.file,res[[u]],"\\>",file.path(output.bw.file.dir,paste0(file_name,"_subset.bam")),sep=" ")
+
+      cmd3 = paste(cmd1,cmd0,cmd2,sep=" ")
+    }else
+    {
+      cmd3 = paste("samtools view -b -L",region.bed.file,res[[u]],">",file.path(output.bw.file.dir,paste0(file_name,"_subset.bam")),sep=" ")
+     }
+
+    cmd <- cmd3
+    system(cmd)
+    cmd
+  },m.id,res,region.bed,BigMem,output.bw.file.dir)
+
+}
