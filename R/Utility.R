@@ -1056,9 +1056,9 @@ splitBam <- function(input.bam.file.dir,output.bw.file.dir){
 
 }
 
-#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/BAM",/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl")'
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/BAM",/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl_bg",BigMem=TRUE,cores=16)'
 #'
-convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
+convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir,BigMem=FALSE,cores=8,Memory=36864,Wall.time="72:00", span.ptile=8){
 
   re <- parserreadfiles(input.bam.file.dir,'bam')
 
@@ -1073,7 +1073,7 @@ convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
 
   #job.name=paste0("bamSort[",length(res),"]")
 
-  cmd.l <- lapply(1:length(res), function(u,m.id,res,output.bw.file.dir)
+  cmd.l <- lapply(1:length(res), function(u,m.id,Wall.time,cores,Memory,span.ptile,res,output.bw.file.dir)
   {
 
     #path_name = dirname(res[[u]])
@@ -1084,7 +1084,14 @@ convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
     #file_name <- paste0(path_name2,"-",file_name)
 u<-3
     if(m.id == 1){
-      cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+      if(BigMem == TRUE)
+      {
+        cmd0 = paste(Wall.time,"-n",cores,"-q bigmem -R 'rusage[mem=",Memory,"] span[ptile=",span.ptile,"]' -u aimin.yan@med.miami.edu",sep = " ")
+      }else{
+        cmd0 = paste(Wall.time,"-n",cores,"-q general -u aimin.yan@med.miami.edu",sep=" ")
+      }
+
       job.name=paste0("bam2wig.",u)
       cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
 
@@ -1115,7 +1122,7 @@ u<-3
     system(cmd)
 
     cmd
-  },m.id,res,output.bw.file.dir)
+  },m.id,Wall.time,cores,Memory,span.ptile,res,output.bw.file.dir)
 
 }
 
