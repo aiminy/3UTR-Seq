@@ -992,6 +992,70 @@ convertBam2StrandBw <- function(input.bam.file.dir,input.chromosome.size.file,ou
 
 }
 
+#HCI-Scripts/BamFile/split_bam_by_isize.pl
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::splitBam("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/scratch/projects/bbc/aiminy_project/DoGs/Bam_split")'
+#'
+splitBam <- function(input.bam.file.dir,output.bw.file.dir){
+
+  re <- parserreadfiles(input.bam.file.dir,'bam')
+
+  res <- re$input
+
+  m.id <- grep("login",system("hostname",intern=TRUE))
+
+  if (!dir.exists(output.bw.file.dir))
+  {
+    dir.create(output.bw.file.dir,recursive = TRUE)
+  }
+
+  #job.name=paste0("bamSort[",length(res),"]")
+
+  cmd.l <- lapply(1:length(res), function(u,m.id,res,output.bw.file.dir)
+  {
+
+    #path_name = dirname(res[[u]])
+    #path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    #file_name <- paste0(path_name2,"-",file_name)
+    u<-3
+    if(m.id == 1){
+      cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+      job.name=paste0("bam2wig.",u)
+      cmd1 = paste0("bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+
+      # job.name=paste0("bamSort[",length(res),"]")
+      # cmd1 = paste0("bsub -w \"done(\"bamSort[*]\")\"",
+      #               "bsub -P bbc -J \"",job.name,paste0("\" -o %J.log "),paste0("-e %J.err -W"))
+      #
+      # job.name=paste0("Bdg[",u,"]")
+      # cmd1 = paste0("bsub -w \"done(\"bamIndex[*]\") && done(\"Chrosome\")\"",
+      #               "bsub -P bbc -J \"",job.name,paste0("\" -o %J.",job.name,".log "),paste0("-e %J.",job.name,".err -W"))
+      if (u<=6){
+        cmd2 = paste("$HOME/HCI-Scripts/BamFile/split_bam_by_isize.pl --out",file.path(output.bw.file.dir,paste0(file_name,"_split")), "--in",res[[u]],sep=" ")
+      }else{
+        cmd2 = paste("$HOME/HCI-Scripts/BamFile/split_bam_by_isize.pl --out",file.path(output.bw.file.dir,paste0(file_name,"_split")), "--in",res[[u]],sep=" ")
+      }
+      cmd3 = paste(cmd1,cmd0,cmd2,sep=" ")
+    }else
+    {
+      if (u<=6){
+        cmd3 = paste("$HOME/HCI-Scripts/BamFile/split_bam_by_isize.pl --out",file.path(output.bw.file.dir,paste0(file_name,"_split")), "--in",res[[u]],sep=" ")
+      }else{
+        cmd3 = paste("$HOME/HCI-Scripts/BamFile/split_bam_by_isize.pl --out",file.path(output.bw.file.dir,paste0(file_name,"_split")), "--in",res[[u]],sep=" ")
+      }
+    }
+
+    cmd <- cmd3
+
+    system(cmd)
+
+    cmd
+  },m.id,res,output.bw.file.dir)
+
+}
+
 #'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/BAM",/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl")'
 #'
 convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
@@ -1018,7 +1082,7 @@ convertBam2StrandBw2 <- function(input.bam.file.dir,output.bw.file.dir){
     file_name = file_path_sans_ext(basename(res[[u]]))
 
     #file_name <- paste0(path_name2,"-",file_name)
-
+u<-3
     if(m.id == 1){
       cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
       job.name=paste0("bam2wig.",u)
