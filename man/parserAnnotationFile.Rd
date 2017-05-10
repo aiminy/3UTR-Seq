@@ -11,7 +11,7 @@ parserAnnotationFile
 }
 \examples{
 
-input.annotation.file <- "/Volumes/Bioinformatics$/Aimin_project/UTR/3UTR_GFF2.txt"
+input.annotation.file <- '/Volumes/Bioinformatics$/Aimin_project/UTR/3UTR_GFF2.txt'
 
 y <- parserAnnotationFile(input.annotation.file)
 
