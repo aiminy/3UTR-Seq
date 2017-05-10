@@ -1572,7 +1572,7 @@ useTophat4Alignment<-function(input.fastq.files.dir,output.dir,gene.model.file=N
 }
 
 #' @examples
-#' R -e 'library(ThreeUTR);ThreeUTR:::subsetBam("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/SRR2038198-Fs12-accepted_hits_split.100_200.bam","$HOME/1833_common_gene.bed","/scratch/projects/bbc/aiminy_project/DoGs/BAM",BigMem=TRUE)'
+#' R -e 'library(ThreeUTR);ThreeUTR:::subsetBam("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/","$HOME/1833_common_gene.bed","/scratch/projects/bbc/aiminy_project/DoGs/BAMSubSet",BigMem=TRUE)'
 #'
 subsetBam <- function(input.bam.file.dir,region.bed.file,output.bw.file.dir,BigMem=FALSE){
 
