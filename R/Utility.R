@@ -1107,7 +1107,7 @@ convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir, BigMem 
         file_name = file_path_sans_ext(basename(res[[u]]))
 
         # file_name <- paste0(path_name2,'-',file_name)
-        u <- 3
+        #u <- 3
         if (m.id == 1)
         {
             if (BigMem == TRUE)
