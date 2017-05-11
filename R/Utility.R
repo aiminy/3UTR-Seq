@@ -1081,8 +1081,10 @@ splitBam <- function(input.bam.file.dir, output.bw.file.dir)
 
 }
 
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split","/scratch/projects/bbc/aiminy_project/DoGs/BW_split_2")'
+
 #'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl_bg',BigMem=TRUE,cores=16)'
-#'
+
 convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir, BigMem = FALSE,
     cores = 15, Memory = 25000, Wall.time = "72:00", span.ptile = 8)
     {
