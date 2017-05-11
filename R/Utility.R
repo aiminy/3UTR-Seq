@@ -1084,7 +1084,7 @@ splitBam <- function(input.bam.file.dir, output.bw.file.dir)
 #'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl_bg',BigMem=TRUE,cores=16)'
 #'
 convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir, BigMem = FALSE,
-    cores = 8, Memory = 36864, Wall.time = "72:00", span.ptile = 8)
+    cores = 15, Memory = 25000, Wall.time = "72:00", span.ptile = 8)
     {
     re <- parserreadfiles(input.bam.file.dir, "bam")
 
@@ -1117,7 +1117,8 @@ convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir, BigMem 
                   sep = " ")
             } else
             {
-                cmd0 = paste(Wall.time, "-n", cores, "-q general -u aimin.yan@med.miami.edu",
+                cmd0 = paste(Wall.time, "-n", cores, "-q general -R 'rusage[mem=",
+                  Memory, "] span[ptile=", span.ptile, "]' aimin.yan@med.miami.edu",
                   sep = " ")
             }
 
