@@ -1,19 +1,24 @@
-# 3UTR-Seq
-An R package for processing and analyzing 3UTR,DOGs and 5UTR data
+**An pipeline for processing and analyzing DOGs data**
 
-#### To Install
+**Abstract**
 
-##### In R console
+Vilborg et al. discovered a new class of long chromatin-associated RNAs, named as a ‘downstream of gene’-containing transcript (DoG). They found that that DoGs is upregulated in response to osmotic stress. Their bioinformatic analysis identified KCl-induced DoGs downstream of more than 10% of all human protein-coding genes. However there is a lack of streamlined bioinforamtics pipleline for processing and analyzing this type of RNA sequence data. This paper aims to develep a pipeline to fill in these gaps for further research on DoGs. 
+
+**Method**
+
++ To Install
+
+In R console
 
 library(devtools)
 
 install_github("aiminy/3UTR-Seq",ref = '3UTR')
 
-##### In pegasus terminal 
+In pegasus terminal 
 
 R -e 'library(devtools);install_github("aiminy/3UTR-Seq",ref = "3UTR")'
 
-##### To start analysis
+To start analysis
 ```{r}
 Rscript ~/R/lib64/R/library/ThreeUTR/bin/rscript/utr_interactive.r
 ```
@@ -74,4 +79,5 @@ R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scrat
 ```
 After this, you can load strand-specific BigWig to IGV to visualize DoGs. The following is an example to show DoGs
 ![Image of DoGs](inst/extdata/DoGs.png)
+The above Figure shows two samples under two conditions(KCl-treated and untreated). It is clear that we can observe a DoG in the downstream of CXXC4 gene in KCl-treated sample(labeled by red arrow).
 
