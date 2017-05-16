@@ -35,8 +35,6 @@ parsersample <- function()
     colData
 }
 
-
-
 #' parserreadfiles
 #'
 #' @param input.file.dir
@@ -1081,15 +1079,11 @@ splitBam <- function(input.bam.file.dir, output.bw.file.dir)
 
 }
 
-#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split","/scratch/projects/bbc/aiminy_project/DoGs/BW_split_2")'
-
-#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl_bg',BigMem=TRUE,cores=16)'
-
-#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl_bg')'
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/","/scratch/projects/bbc/aiminy_project/DoGs/BW_split")'
 #'
 
 convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir)
-    {
+{
     re <- parserreadfiles(input.bam.file.dir, "bam")
 
     res <- re$input
@@ -1101,43 +1095,18 @@ convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir)
         dir.create(output.bw.file.dir, recursive = TRUE)
     }
 
-    # job.name=paste0('bamSort[',length(res),']')
-
     cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
         span.ptile, res, output.bw.file.dir)
         {
-        # path_name = dirname(res[[u]]) path_name2 <- basename(path_name)
 
         file_name = file_path_sans_ext(basename(res[[u]]))
 
-        # file_name <- paste0(path_name2,'-',file_name)
-        #u <- 3
         if (m.id == 1)
         {
-            # if (BigMem == TRUE)
-            # {
-            #     cmd0 = paste(Wall.time, "-n", cores, "-q bigmem -R 'rusage[mem=",
-            #       Memory, "] span[ptile=", span.ptile, "]' -u aimin.yan@med.miami.edu",
-            #       sep = " ")
-            # } else
-            # {
-            #     cmd0 = paste(Wall.time, "-n", cores, "-q general -R 'rusage[mem=",
-            #       Memory, "] span[ptile=", span.ptile, "]' aimin.yan@med.miami.edu",
-            #       sep = " ")
-            # }
-
             job.name = paste0("bam2wig.", u)
-            cmd1 <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 16000,span.ptile = 16,job.name)
+            cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+                Memory = 16000, span.ptile = 16, job.name)
 
-            #cmd1 = paste0("bsub -P bbc -J \"", job.name, paste0("\" -o %J.",
-            #    job.name, ".log "), paste0("-e %J.", job.name, ".err -W"))
-
-            # job.name=paste0('bamSort[',length(res),']') cmd1 = paste0('bsub -w
-            # \'done(\'bamSort[*]\')\'', 'bsub -P bbc -J \'',job.name,paste0('\'
-            # -o %J.log '),paste0('-e %J.err -W')) job.name=paste0('Bdg[',u,']') cmd1 =
-            # paste0('bsub -w \'done(\'bamIndex[*]\') && done(\'Chrosome\')\'',
-            # 'bsub -P bbc -J \'',job.name,paste0('\' -o %J.',job.name,'.log
-            # '),paste0('-e %J.',job.name,'.err -W'))
             if (u <= 6)
             {
                 cmd2 = paste("bam2wig.pl -pe --pos span --strand --bw  --bwapp $HOME/kentUtils/bin/wigToBigWig --out",
@@ -1149,7 +1118,7 @@ convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir)
                   file.path(output.bw.file.dir, paste0(file_name, "_2.bw")),
                   "--in", res[[u]], sep = " ")
             }
-            cmd3 = paste(cmd1,cmd2, sep = " ")
+            cmd3 = paste(cmd1, cmd2, sep = " ")
         } else
         {
             if (u <= 6)
