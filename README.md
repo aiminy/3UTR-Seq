@@ -63,3 +63,15 @@ You choose to perform alignment, please define the following setting parameters:
  gene.model.file(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf or /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/refGene.txt
  genome.index(ex:/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome)
 ```
+You choose 7, you will see the following:
+```
+# You choose to process bam files
+# Firstly, we remove reads for which the insert size is < 100 or > 200 by using the follwoing procedure
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::splitBam('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/Bam_split')'
+
+#Secondly, we convert bam files to strand-specific BigWig files by using the following procedure
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/","/scratch/projects/bbc/aiminy_project/DoGs/BW_split")'
+```
+After this, you can load strand-specific BigWig to IGV to visualize DoGs. The following is an example to show DoGs
+![Image of DoGs](inst/extdata/DoGs.png)
+
