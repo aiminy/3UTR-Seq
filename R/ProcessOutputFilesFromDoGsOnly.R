@@ -250,8 +250,8 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
 
   }
 
-   re.BR <- ProcessEachCorner(re.8.samples, 2)  #BR
-   re.TR <- ProcessEachCorner(re.8.samples, 3)  #TR
+   re.BR <- ProcessEachCorner(re.8.samples, 2,sample.infor)  #BR
+   re.TR <- ProcessEachCorner(re.8.samples, 3,sample.infor)  #TR
 
 
   #  re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
