@@ -15,7 +15,7 @@ print(row)
 
 if (row == "Yes") {
 
-  cat("please define the input Bam file directory:\n")
+  cat("please define the input Bam file directory:(Ex:/scratch/projects/bbc/aiminy_project/DoGs/BAM/) \n")
 
   input <- file("stdin", "r")
   input.bamfile.dir <- readLines(file("stdin", "r"), n = 1)
@@ -25,7 +25,7 @@ if (row == "Yes") {
   input <- file("stdin", "r")
   output.count.file.dir <- readLines(input, n = 1)
 
-  cat("please define the annotation file:\n")
+  cat("please define the annotation file:(Ex:/projects/ctsi/bbc/aimin/annotation/hg19_DoGs_2.bed\n")
 
   input <- file("stdin", "r")
   annotation.bed.file <- readLines(input, n = 1)
