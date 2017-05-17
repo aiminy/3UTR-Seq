@@ -474,7 +474,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
 
             cat(cmd4, "\n")
 
-            system(cmd4)
+            system(cmd4,intern = TRUE)
 
             cmd4
 
