@@ -56,7 +56,7 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
   file.name.3 <- lapply(file.name.2, function(u)
   {
     if (!file.size(u) == 0){
-      re = file.size(u)
+      re = u
     }else{
       re= NULL
     }
