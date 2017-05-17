@@ -334,9 +334,7 @@ matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld,
 
     res <- res$input
 
-    cmd0 <- paste("bedtools window -a", annotation.bed.file, "-b", sep = " ")
-
-    cmd1 <- paste("-l", ld, "-r", rd, "-sw", ">", sep = " ")
+    m.id <- grep("login", system("hostname", intern = TRUE))
 
     output.bedfile.dir <- file.path(output.matched.bed.file.dir, "MatchedBedFile")
 
@@ -345,20 +343,39 @@ matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld,
         dir.create(output.bedfile.dir, recursive = TRUE)
     }
 
-    cmd.l <- lapply(res, function(u, output.bedfile.dir)
+    cmd.l <- lapply(1:length(res), function(u,res,m.id,ld,rd,annotation.bed.file,output.bedfile.dir)
     {
         # cat(u,'\n') cmd9 <- 'grep' cmd10 <- '~/PathwaySplice/inst/extdata/' cmd11
         # <- '/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt' cmd12 <- '>' cmd13
         # <- paste0('/Counts.',n,'.genes.txt') xxx <- gsub(';','',xx)
-        file_name = file_path_sans_ext(basename(u))
+        file_name = file_path_sans_ext(basename(res[[u]]))
 
-        cmd2 <- paste(cmd0, u, cmd1, file.path(output.bedfile.dir, paste0(file_name,
-            "_matched.bed")), sep = " ")
+        if (m.id == 1)
+        {
+          job.name <- paste0("bedMannot.",u)
+          wait.job.name <- paste0("bam2bed.",u)
+          cmd.p <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name,wait.job.name)
+
+          #cmd1 <- "bedtools bamtobed -i"
+          #cmd2 <- "\\>"
+
+          cmd0 <- paste("bedtools window -a", annotation.bed.file, "-b", sep = " ")
+          cmd1 <- paste("-l", ld, "-r", rd, "-sw", "\\>", sep = " ")
+          cmd2 <- paste(cmd.p,cmd0, res[[u]], cmd1, file.path(output.bedfile.dir, paste0(file_name,
+                                                                            "_matched.bed")), sep = " ")
+
+        }else
+        {
+          cmd0 <- paste("bedtools window -a", annotation.bed.file, "-b", sep = " ")
+          cmd1 <- paste("-l", ld, "-r", rd, "-sw", ">", sep = " ")
+          cmd2 <- paste(cmd.p,cmd0, res[[u]], cmd1, file.path(output.bedfile.dir, paste0(file_name,
+                                                                                         "_matched.bed")), sep= " ")
+        }
 
         system(cmd2)
 
         cmd2
-    }, output.bedfile.dir)
+    }, m.id,ld,rd,annotation.bed.file,output.bedfile.dir)
 
     re <- list(cmdl = cmd.l, output.bedfile.dir = output.bedfile.dir)
 
@@ -389,6 +406,7 @@ matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld,
 getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
     filter.sample)
     {
+
     res <- parserreadfiles(input.bedfile.dir, "bed", filter.sample = filter.sample)
 
     res <- res$input
@@ -428,20 +446,38 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
     counteachcase <- function(res, cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
         location, output.count.file.dir)
         {
-        cmd.l <- lapply(res, function(u, output.count.file.dir)
+        cmd.l <- lapply(1:length(res), function(u,res,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
+                                      location,output.count.file.dir)
         {
-            file_name = file_path_sans_ext(basename(u))
+            file_name = file_path_sans_ext(basename(res[[u]]))
 
-            cmd4 <- paste(cmd0, cmd1, u, cmd2, cmd3, file.path(output.count.file.dir,
+            if (m.id == 1)
+            {
+              job.name <- paste0("count.",u)
+              wait.job.name <- paste0("bedMannot.",u)
+
+              cmd.p <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name,wait.job.name)
+              cmd3 <- "\\>"
+
+            cmd4 <- paste(cmd.p,cmd0, cmd1, res[[u]], cmd2, cmd3, file.path(output.count.file.dir,
                 paste0(file_name, ".", gene.strand, ".gene.", read.strand, ".read.",
                   location, ".count.txt")), sep = " ")
+
+            }else
+            {
+              cmd4 <- paste(cmd0, cmd1, res[[u]], cmd2, cmd3, file.path(output.count.file.dir,                                                  paste0(file_name, ".", gene.strand, ".gene.", read.strand, ".read.",
+                   location, ".count.txt")), sep = " ")
+
+            }
+
             cat(cmd4, "\n")
 
             system(cmd4)
 
             cmd4
 
-        }, output.count.file.dir)
+        },res,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
+        location,output.count.file.dir)
 
         return(cmd.l)
 
@@ -487,7 +523,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
 #'
 #' getcounts()
 #'
-#'
+#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getcounts("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/projects/ctsi/bbc/aimin/annotation/hg19_DoGs_2.bed",0,0,"/scratch/projects/bbc/aiminy_project/DoGs")'
 #'
 getcounts <- function(input.bamfile.dir, annotation.bed.file, ld, rd, output.count.file.dir,
     filter.sample)
