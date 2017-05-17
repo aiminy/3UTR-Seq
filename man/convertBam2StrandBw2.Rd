@@ -2,11 +2,10 @@
 % Please edit documentation in R/Utility.R
 \name{convertBam2StrandBw2}
 \alias{convertBam2StrandBw2}
-\title{R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl_bg',BigMem=TRUE,cores=16)'}
+\title{R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/","/scratch/projects/bbc/aiminy_project/DoGs/BW_split")'}
 \usage{
-convertBam2StrandBw2(input.bam.file.dir, output.bw.file.dir, BigMem = FALSE,
-  cores = 8, Memory = 36864, Wall.time = "72:00", span.ptile = 8)
+convertBam2StrandBw2(input.bam.file.dir, output.bw.file.dir)
 }
 \description{
-R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BW_Perl_bg',BigMem=TRUE,cores=16)'
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/","/scratch/projects/bbc/aiminy_project/DoGs/BW_split")'
 }

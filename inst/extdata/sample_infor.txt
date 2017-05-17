@@ -1,0 +1,9 @@
+Sample  Condition
+SRR2038198  Untreated
+SRR2038259  Untreated
+SRR2038310  Untreated
+SRR2038322  Treated
+SRR2038440  Treated
+SRR2038441  Treated
+SRR2038504  CapSeq
+SRR2039089  CapSeq

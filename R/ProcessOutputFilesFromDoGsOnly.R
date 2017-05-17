@@ -42,9 +42,9 @@ DEAnalysis <- function(countData,wt.index,dox.index)
 #' dir.name <- "/Volumes/Bioinformatics$/Aimin_project/UTR/NewCounts"
 #' input.file.pattern <- "count.txt"
 #'
-#' res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern)
+#' res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"))
 #'
-getutrcount <- function(dir.name, input.file.pattern)
+getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
 {
   file.name = file.path(dir.name, dir(dir.name, recursive = TRUE,
                                       pattern = input.file.pattern))
@@ -52,16 +52,64 @@ getutrcount <- function(dir.name, input.file.pattern)
 
   names(file.name.2) = basename(file.name)
 
-  re.out <- lapply(file.name.2, function(u)
+
+  file.name.3 <- lapply(file.name.2, function(u)
   {
     if (!file.size(u) == 0){
-    re = read.table(u, header = F)
-    colnames(re) = c("Count", "GeneName")
+      re = file.size(u)
+    }else{
+      re= NULL
+    }
     re
+  })
+
+  filterByRmNull <- function(re.peaks.only.bed) {
+    re.peaks.only.bed.2<-re.peaks.only.bed[lapply(re.peaks.only.bed,length) > 0]
+
+    names(re.peaks.only.bed.2)=unlist(lapply(1:length(re.peaks.only.bed.2),function(u,re.peaks.only.bed.2){
+      tmp=re.peaks.only.bed.2
+      x=tmp[[u]]
+      path_name=dirname(x)
+      file_name=basename(x)
+      file_name
+    },re.peaks.only.bed.2))
+    return(re.peaks.only.bed.2)
+  }
+
+  file.name.4 <- filterByRmNull(file.name.3)
+
+  sample.infor <- read.table(sample.infor.file,header = TRUE)
+
+  names(file.name.4)=unlist(lapply(1:length(file.name.4),function(u,file.name.4,sample.infor){
+
+    tmp=file.name.4
+    x=tmp[[u]]
+    path_name=dirname(x)
+    file_name=basename(x)
+    pos = gregexpr('-', file_name)
+    a = pos[[1]][1]+1
+    b = pos[[1]][2]-1
+    c = substr(file_name,a,b)
+    con = sample.infor[match(c,sample.infor$Sample),]$Condition
+    file_name_con = paste0(con,"-",file_name)
+
+    file_name_con
+
+
+  },file.name.4,sample.infor))
+
+  re.out <- lapply(file.name.4, function(u)
+  {
+    if (!file.size(u) == 0){
+      re = read.table(u, header = F)
+      colnames(re) = c("Count", "GeneName")
+      re
     }
   })
 
-  temp.name <- strsplit(names(file.name.2), split = "\\.")
+  names(re.out)=names(file.name.4)
+
+  temp.name <- strsplit(names(file.name.4), split = "\\.")
   temp.name.2 <- trimws(do.call("rbind", lapply(temp.name,
                                                 "[[", 1)))
 
@@ -146,7 +194,7 @@ getutrcount <- function(dir.name, input.file.pattern)
     YY
   }, txs.name.count, re.out)
 
-  ProcessEachCorner <- function(re.8.samples, i)
+  ProcessEachCorner <- function(re.8.samples, i,sample.infor)
   {
 
     gene <- apply(do.call("cbind", lapply(re.8.samples, "[",
@@ -164,9 +212,11 @@ getutrcount <- function(dir.name, input.file.pattern)
     rownames(dff) <- dff$gene
     dff <- dff[, -1]
 
-    wt.index <- grep("WT",toupper(colnames(dff)))
+    X <- toupper(unique(as.character(sample.infor$Condition)))
 
-    dox.index <- grep("DOX",toupper(colnames(dff)))
+    wt.index <- grep(X[1],toupper(colnames(dff)))
+
+    dox.index <- grep(X[2],toupper(colnames(dff)))
 
     real.index <- c(dox.index,wt.index)
 

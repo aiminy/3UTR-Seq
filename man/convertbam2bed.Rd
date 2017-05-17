@@ -19,4 +19,7 @@ output.bedfile.dir <- '/Volumes/Bioinformatics$/Aimin_project'
 
 res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
 
+
+R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/scratch/projects/bbc/aiminy_project/DoGs")'
+
 }
