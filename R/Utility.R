@@ -414,7 +414,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
     # system('awk -F '\\t' '$6==\'+\' && $12==\'-\''
     # ~/MatchedBedFile/R1_Dox_matched.bed | awk '$8<$2&&$9>=$2' | awk '{print
     # $4}' | sort | uniq -c | sort -nr | head')
-
+    m.id <- grep("login", system("hostname", intern = TRUE))
     cmd0 <- "awk -F '\\t'"
 
     cmd1 <- "'$6==\"+\" && $12==\"-\"'"
@@ -443,10 +443,10 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
         dir.create(output.count.file.dir, recursive = TRUE)
     }
 
-    counteachcase <- function(res, cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
+    counteachcase <- function(res, m.id,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
         location, output.count.file.dir)
         {
-        cmd.l <- lapply(1:length(res), function(u,res,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
+        cmd.l <- lapply(1:length(res), function(u,m.id,res,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
                                       location,output.count.file.dir)
         {
             file_name = file_path_sans_ext(basename(res[[u]]))
@@ -476,14 +476,14 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
 
             cmd4
 
-        },res,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
+        },m.id,res,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
         location,output.count.file.dir)
 
         return(cmd.l)
 
     }
 
-    cmdtempres2 <- apply(cmdtemp, 1, function(u, cmd0, cmd3, output.count.file.dir)
+    cmdtempres2 <- apply(cmdtemp, 1, function(u,res,m.id, cmd0, cmd3, output.count.file.dir)
     {
         x <- as.data.frame(t(u))
 
@@ -495,12 +495,12 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
 
         location <- x[, 5]
 
-        cmdtempres <- counteachcase(res, cmd0, cmd1, cmd2, cmd3, gene.strand,
+        cmdtempres <- counteachcase(res, m.id,cmd0, cmd1, cmd2, cmd3, gene.strand,
             read.strand, location, output.count.file.dir)
 
         cmdtempres
 
-    }, cmd0, cmd3, output.count.file.dir)
+    }, res,m.id,cmd0, cmd3, output.count.file.dir)
 
     re <- list(cmdl = cmdtempres2, output.count.file.dir = output.count.file.dir)
 
