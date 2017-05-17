@@ -1200,6 +1200,54 @@ convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir)
 
 }
 
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2bed2("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/scratch/projects/bbc/aiminy_project/DoGs/BED2")'
+#'
+
+convertBam2bed2 <- function(input.bam.file.dir, output.bed.file.dir)
+{
+  re <- parserreadfiles(input.bam.file.dir, "bam")
+
+  res <- re$input
+
+  m.id <- grep("login", system("hostname", intern = TRUE))
+
+  if (!dir.exists(output.bed.file.dir))
+  {
+    dir.create(output.bed.file.dir, recursive = TRUE)
+  }
+
+  cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
+                                          span.ptile, res, output.bed.file.dir)
+  {
+
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    if (m.id == 1)
+    {
+      job.name = paste0("bam2bed.", u)
+      cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+                                   Memory = 16000, span.ptile = 16, job.name)
+
+      cmd2 = paste("bam2gff_bed.pl -pe --bed --out",
+                     file.path(output.bw.file.dir, paste0(file_name, ".bed")),
+                     "--in", res[[u]], sep = " ")
+      cmd3 = paste(cmd1, cmd2, sep = " ")
+      } else
+      {
+        cmd3 = paste("bam2gff_bed.pl -pe --bed --out",
+                     file.path(output.bw.file.dir, paste0(file_name, ".bed")),
+                     "--in", res[[u]], sep = " ")
+      }
+
+    cmd <- cmd3
+
+    system(cmd)
+
+    cmd
+  }, m.id, Wall.time, cores, Memory, span.ptile, res, output.bed.file.dir)
+
+}
+
 prepareDaPars <- function(input.wig.file.dir, sample.group = c("Dox", "WT"),
     output.dir)
     {
