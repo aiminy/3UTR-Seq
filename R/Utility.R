@@ -459,7 +459,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
               job.name <- paste0("count.",u)
               wait.job.name <- paste0("bedMannot.",u)
 
-              cmd.p <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name,wait.job.name)
+              cmd.p <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name)
               cmd3 <- "\\>"
 
             cmd4 <- paste(cmd.p,cmd0, cmd1, res[[u]], cmd2, cmd3, file.path(output.count.file.dir,
