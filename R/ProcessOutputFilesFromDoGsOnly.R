@@ -66,13 +66,13 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
   filterByRmNull <- function(re.peaks.only.bed) {
     re.peaks.only.bed.2<-re.peaks.only.bed[lapply(re.peaks.only.bed,length) > 0]
 
-    names(re.peaks.only.bed.2)=unlist(lapply(1:length(re.peaks.only.bed.2),function(u,re.peaks.only.bed.2){
-      tmp=re.peaks.only.bed.2
-      x=tmp[[u]]
-      path_name=dirname(x)
-      file_name=basename(x)
-      file_name
-    },re.peaks.only.bed.2))
+    # names(re.peaks.only.bed.2)=unlist(lapply(1:length(re.peaks.only.bed.2),function(u,re.peaks.only.bed.2){
+    #   tmp=re.peaks.only.bed.2
+    #   x=tmp[[u]]
+    #   path_name=dirname(x)
+    #   file_name=basename(x)
+    #   file_name
+    # },re.peaks.only.bed.2))
     return(re.peaks.only.bed.2)
   }
 
