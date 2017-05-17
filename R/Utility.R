@@ -407,6 +407,9 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
     filter.sample)
     {
 
+
+  #bsub -P bbc -J "count.8" -o %J.count.8.log -e %J.count.8.err -W 72:00 -n 32 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 16 ]' -u aimin.yan@med.miami.edu "awk -F '\t' '\$6==\"-\" && \$12==\"-\"' /scratch/projects/bbc/aiminy_project/DoGs/MatchedBedFile/BAM-SRR2039089-Fs-accepted_hits_matched.bed | awk '\$8 <= \$3 && \$9 > \$3' | awk '{print \$4}' | sort | uniq -c | sort -nr > /scratch/projects/bbc/aiminy_project/DoGs/Counts/BAM-SRR2039089-Fs-accepted_hits_matched.minus.gene.minus.read.below.DoGs.count.txt"
+
     res <- parserreadfiles(input.bedfile.dir, "bed", filter.sample = filter.sample)
 
     res <- res$input
@@ -417,14 +420,14 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
     m.id <- grep("login", system("hostname", intern = TRUE))
     cmd0 <- "awk -F '\\t'"
 
-    cmd1 <- "'$6==\"+\" && $12==\"-\"'"
-    cmd11 <- "'$6==\"+\" && $12==\"+\"'"
-    cmd12 <- "'$6==\"-\" && $12==\"+\"'"
-    cmd13 <- "'$6==\"-\" && $12==\"-\"'"
+    cmd1 <- "'\$6==\"+\" && \$12==\"-\"'"
+    cmd11 <- "'\$6==\"+\" && \$12==\"+\"'"
+    cmd12 <- "'\$6==\"-\" && \$12==\"+\"'"
+    cmd13 <- "'\$6==\"-\" && \$12==\"-\"'"
 
-    cmd2 <- "| awk '$8 < $2 && $9 >= $2' | awk '{print $4}' | sort | uniq -c | sort -nr"  #below
-    cmd21 <- "| awk '$8 >= $2 && $9 <= $3' | awk '{print $4}' | sort | uniq -c | sort -nr"  #DoGs
-    cmd22 <- "| awk '$8 <= $3 && $9 > $3' | awk '{print $4}' | sort | uniq -c | sort -nr"  #over
+    cmd2 <- "| awk '\$8 < \$2 && \$9 >= \$2' | awk '{print \$4}' | sort | uniq -c | sort -nr"  #below
+    cmd21 <- "| awk '\$8 >= \$2 && \$9 <= $3' | awk '{print \$4}' | sort | uniq -c | sort -nr"  #DoGs
+    cmd22 <- "| awk '\$8 <= \$3 && \$9 > \$3' | awk '{print \$4}' | sort | uniq -c | sort -nr"  #over
 
     cmd3 <- ">"
 
