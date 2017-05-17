@@ -242,14 +242,21 @@ useInferExperiment <- function(input.file.dir, ref.gene.bed.file, output.dir)
 #'
 #' res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
 #'
+#'
+#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/scratch/projects/bbc/aiminy_project/DoGs")'
+#'
 convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
 {
     res <- parserreadfiles(input.bamfile.dir, "bam")
 
     res <- res$input
 
-    cmd0 <- "bedtools bamtobed -i"
-    cmd1 <- ">"
+    m.id <- grep("login", system("hostname", intern = TRUE))
+
+    #if (!dir.exists(output.bedfile.dir))
+    #{
+    #  dir.create(output.bedfile.dir, recursive = TRUE)
+    #}
 
     output.bedfile.dir <- file.path(output.bedfile.dir, "BedFileFromBam")
 
@@ -258,26 +265,38 @@ convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
         dir.create(output.bedfile.dir, recursive = TRUE)
     }
 
-    cmd.l <- lapply(res, function(u, output.bedfile.dir)
+    cmd.l <- lapply(1:length(res), function(u, m.id,res,output.bedfile.dir)
     {
         # cat(u,'\n') cmd9 <- 'grep' cmd10 <- '~/PathwaySplice/inst/extdata/' cmd11
         # <- '/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt' cmd12 <- '>' cmd13
         # <- paste0('/Counts.',n,'.genes.txt') xxx <- gsub(';','',xx)
 
-        path_name = dirname(u)
+        path_name = dirname(res[[u]])
         path_name2 <- basename(path_name)
 
-        file_name = file_path_sans_ext(basename(u))
+        file_name = file_path_sans_ext(basename(res[[u]]))
 
         file_name <- paste0(path_name2, "-", file_name)
+        if (m.id == 1)
+        {
+        job.name <- paste0("bam2bed.",u)
+        cmd0 <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name)
 
-        cmd2 <- paste(cmd0, u, cmd1, file.path(output.bedfile.dir, paste0(file_name,
+        cmd1 <- "bedtools bamtobed -i"
+        cmd2 <- "\\>"
+
+        cmd3 <- paste(cmd0,cmd1, res[[u]], cmd2, file.path(output.bedfile.dir, paste0(file_name,
             ".bed")), sep = " ")
+        }else
+        {
+        cmd3 <- paste(cmd1, res[[u]], cmd2, file.path(output.bedfile.dir, paste0(file_name,
+                                                                                 ".bed")), sep = " ")
+        }
 
-        system(cmd2)
+        system(cmd3)
 
-        cmd2
-    }, output.bedfile.dir)
+        cmd3
+    }, m.id,res,output.bedfile.dir)
 
     re <- list(cmdl = cmd.l, output.bedfile.dir = output.bedfile.dir)
 
