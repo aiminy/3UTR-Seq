@@ -44,7 +44,7 @@ DEAnalysis <- function(countData,wt.index,dox.index)
 #'
 #' res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"))
 #'
-getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
+getutrcount <- function(dir.name, input.file.pattern,sample.infor.file,group.comparision=c(1,2))
 {
   file.name = file.path(dir.name, dir(dir.name, recursive = TRUE,
                                       pattern = input.file.pattern))
@@ -194,7 +194,7 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
     YY
   }, txs.name.count, re.out)
 
-  ProcessEachCorner <- function(re.8.samples, i,sample.infor)
+  ProcessEachCorner <- function(re.8.samples, i,sample.infor,group.comparision)
   {
 
     gene <- apply(do.call("cbind", lapply(re.8.samples, "[",
@@ -214,9 +214,9 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
 
      X <- toupper(unique(as.character(sample.infor$Condition)))
 
-     wt.index <- grep(X[3],toupper(colnames(dff)))
+     wt.index <- grep(X[group.comparision[1]],toupper(colnames(dff)))
 
-     dox.index <- grep(X[3],toupper(colnames(dff)))
+     dox.index <- grep(X[group.comparision[2]],toupper(colnames(dff)))
 
      real.index <- c(dox.index,wt.index)
 
