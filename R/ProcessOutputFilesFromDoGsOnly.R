@@ -205,49 +205,48 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
     colnames(count.gene.plus.read.8.samples) = c("gene",
                                                  names(re.8.samples))
 
-    df <- count.gene.plus.read.8.samples
-    # df <- apply(df[, -1], 2, as.numeric)
-    # index <- rowSums(df[, -1]) > 0
-    # dff <- count.gene.plus.read.8.samples[index, ]
-    # rownames(dff) <- dff$gene
-    # dff <- dff[, -1]
-    #
-    # X <- toupper(unique(as.character(sample.infor$Condition)))
-    #
-    # wt.index <- grep(X[1],toupper(colnames(dff)))
-    #
-    # dox.index <- grep(X[2],toupper(colnames(dff)))
-    #
-    # real.index <- c(dox.index,wt.index)
-    #
-    # n.sample <- length(real.index)
-    #
-    # permutation.index <- real.index
-    #
-    # countData <- apply(dff[, permutation.index], 2, as.numeric)
-    #
-    # rownames(countData) <- rownames(dff)
-    #
-    # # txs.gene <- ReformatTxsGene()
-    # #
-    # # xx <- txs.gene$txs_genes_DF_2
-    # #
-    # # mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
-    # #
-    # # results <- getBM(attributes = c("ucsc","ensembl_transcript_id"),
-    # #                  filters = "ensembl_transcript_id", values = xx,
-    # #                  mart = mart)
-    # #
-    # # xxx <- results[-which(results$ucsc==""),]
-    # #
-    # # rownames(xxx) <- xxx$ucsc
-    # #
-    # # re.FC <- merge(countData,xxx, by = 0)
-    #
-    # re.FC <- countData
+     df <- count.gene.plus.read.8.samples
+     df <- apply(df[, -1], 2, as.numeric)
+     index <- rowSums(df) > 0
+     dff <- count.gene.plus.read.8.samples[index, ]
+     rownames(dff) <- dff$gene
+     dff <- dff[, -1]
 
-    #return(re.FC)
-    return( df )
+     X <- toupper(unique(as.character(sample.infor$Condition)))
+
+     wt.index <- grep(X[1],toupper(colnames(dff)))
+
+     dox.index <- grep(X[2],toupper(colnames(dff)))
+
+     real.index <- c(dox.index,wt.index)
+
+     n.sample <- length(real.index)
+
+     permutation.index <- real.index
+
+     countData <- apply(dff[, permutation.index], 2, as.numeric)
+
+     rownames(countData) <- rownames(dff)
+
+     txs.gene <- ReformatTxsGene()
+
+     xx <- txs.gene$txs_genes_DF_2
+
+     mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+
+     results <- getBM(attributes = c("ucsc","ensembl_transcript_id"),
+                     filters = "ensembl_transcript_id", values = xx,
+                     mart = mart)
+
+     xxx <- results[-which(results$ucsc==""),]
+
+     rownames(xxx) <- xxx$ucsc
+
+     re.FC <- merge(countData,xxx, by = 0)
+
+     re.FC <- countData
+
+     return(re.FC)
 
   }
 
