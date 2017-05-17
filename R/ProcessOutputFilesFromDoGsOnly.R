@@ -194,64 +194,65 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
     YY
   }, txs.name.count, re.out)
 
-  # ProcessEachCorner <- function(re.8.samples, i,sample.infor)
-  # {
-  #
-  #   gene <- apply(do.call("cbind", lapply(re.8.samples, "[",
-  #                                         1)), 1, unique)
-  #   count.gene.plus.read.8.samples <- cbind(gene, do.call("cbind",
-  #                                                         lapply(re.8.samples, "[", i)))
-  #
-  #   colnames(count.gene.plus.read.8.samples) = c("gene",
-  #                                                names(re.8.samples))
-  #
-  #   df <- count.gene.plus.read.8.samples
-  #   df <- apply(df[, -1], 2, as.numeric)
-  #   index <- rowSums(df[, -1]) > 0
-  #   dff <- count.gene.plus.read.8.samples[index, ]
-  #   rownames(dff) <- dff$gene
-  #   dff <- dff[, -1]
-  #
-  #   X <- toupper(unique(as.character(sample.infor$Condition)))
-  #
-  #   wt.index <- grep(X[1],toupper(colnames(dff)))
-  #
-  #   dox.index <- grep(X[2],toupper(colnames(dff)))
-  #
-  #   real.index <- c(dox.index,wt.index)
-  #
-  #   n.sample <- length(real.index)
-  #
-  #   permutation.index <- real.index
-  #
-  #   countData <- apply(dff[, permutation.index], 2, as.numeric)
-  #
-  #   rownames(countData) <- rownames(dff)
-  #
-  #   # txs.gene <- ReformatTxsGene()
-  #   #
-  #   # xx <- txs.gene$txs_genes_DF_2
-  #   #
-  #   # mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
-  #   #
-  #   # results <- getBM(attributes = c("ucsc","ensembl_transcript_id"),
-  #   #                  filters = "ensembl_transcript_id", values = xx,
-  #   #                  mart = mart)
-  #   #
-  #   # xxx <- results[-which(results$ucsc==""),]
-  #   #
-  #   # rownames(xxx) <- xxx$ucsc
-  #   #
-  #   # re.FC <- merge(countData,xxx, by = 0)
-  #
-  #   re.FC <- countData
-  #
-  #   return(re.FC)
-  #
-  # }
-  #
-  #  re.BR <- ProcessEachCorner(re.8.samples, 2)  #BR
-  #  re.TR <- ProcessEachCorner(re.8.samples, 3)  #TR
+  ProcessEachCorner <- function(re.8.samples, i,sample.infor)
+  {
+
+    gene <- apply(do.call("cbind", lapply(re.8.samples, "[",
+                                          1)), 1, unique)
+    count.gene.plus.read.8.samples <- cbind(gene, do.call("cbind",
+                                                          lapply(re.8.samples, "[", i)))
+
+    colnames(count.gene.plus.read.8.samples) = c("gene",
+                                                 names(re.8.samples))
+
+    df <- count.gene.plus.read.8.samples
+    # df <- apply(df[, -1], 2, as.numeric)
+    # index <- rowSums(df[, -1]) > 0
+    # dff <- count.gene.plus.read.8.samples[index, ]
+    # rownames(dff) <- dff$gene
+    # dff <- dff[, -1]
+    #
+    # X <- toupper(unique(as.character(sample.infor$Condition)))
+    #
+    # wt.index <- grep(X[1],toupper(colnames(dff)))
+    #
+    # dox.index <- grep(X[2],toupper(colnames(dff)))
+    #
+    # real.index <- c(dox.index,wt.index)
+    #
+    # n.sample <- length(real.index)
+    #
+    # permutation.index <- real.index
+    #
+    # countData <- apply(dff[, permutation.index], 2, as.numeric)
+    #
+    # rownames(countData) <- rownames(dff)
+    #
+    # # txs.gene <- ReformatTxsGene()
+    # #
+    # # xx <- txs.gene$txs_genes_DF_2
+    # #
+    # # mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+    # #
+    # # results <- getBM(attributes = c("ucsc","ensembl_transcript_id"),
+    # #                  filters = "ensembl_transcript_id", values = xx,
+    # #                  mart = mart)
+    # #
+    # # xxx <- results[-which(results$ucsc==""),]
+    # #
+    # # rownames(xxx) <- xxx$ucsc
+    # #
+    # # re.FC <- merge(countData,xxx, by = 0)
+    #
+    # re.FC <- countData
+
+    #return(re.FC)
+    return( df )
+
+  }
+
+   re.BR <- ProcessEachCorner(re.8.samples, 2)  #BR
+   re.TR <- ProcessEachCorner(re.8.samples, 3)  #TR
 
 
   #  re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
@@ -269,10 +270,10 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
   #             DoGs.4.minus.Gene=DoGs.4.minus.Gene,
   #             DoGs.4.plus.minus.Gene=DoGs.4.plus.minus.Gene)
 
-   #res <- list(reBR=re.BR,reTR=re.TR,re.8.samples=re.8.samples)
+   res <- list(reBR=re.BR,reTR=re.TR,re.8.samples=re.8.samples)
 
 
-  return(re.8.samples)
+  return(res)
 
 }
 
