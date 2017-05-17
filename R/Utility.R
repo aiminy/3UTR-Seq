@@ -461,9 +461,9 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
               cmd.p <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name)
               cmd3 <- "\\>"
 
-            cmd4 <- paste(cmd.p,paste0('\\"',cmd0), cmd1, res[[u]], cmd2, cmd3, file.path(output.count.file.dir,
+            cmd4 <- paste(cmd.p,paste0('\"',cmd0), cmd1, res[[u]], cmd2, cmd3, file.path(output.count.file.dir,
                 paste0(file_name, ".", gene.strand, ".gene.", read.strand, ".read.",
-                  location, ".count.txt",'\\"')),sep = " ")
+                  location, ".count.txt",'\"')),sep = " ")
 
             }else
             {
