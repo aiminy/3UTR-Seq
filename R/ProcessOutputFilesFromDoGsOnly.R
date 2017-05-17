@@ -214,9 +214,9 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file)
 
      X <- toupper(unique(as.character(sample.infor$Condition)))
 
-     wt.index <- grep(X[1],toupper(colnames(dff)))
+     wt.index <- grep(X[3],toupper(colnames(dff)))
 
-     dox.index <- grep(X[2],toupper(colnames(dff)))
+     dox.index <- grep(X[3],toupper(colnames(dff)))
 
      real.index <- c(dox.index,wt.index)
 
