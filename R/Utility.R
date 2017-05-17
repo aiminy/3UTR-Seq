@@ -375,7 +375,7 @@ matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld,
         system(cmd2)
 
         cmd2
-    }, m.id,ld,rd,annotation.bed.file,output.bedfile.dir)
+    },res,m.id,ld,rd,annotation.bed.file,output.bedfile.dir)
 
     re <- list(cmdl = cmd.l, output.bedfile.dir = output.bedfile.dir)
 
