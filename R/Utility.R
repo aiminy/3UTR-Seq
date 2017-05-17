@@ -1229,13 +1229,13 @@ convertBam2bed2 <- function(input.bam.file.dir, output.bed.file.dir)
                                    Memory = 16000, span.ptile = 16, job.name)
 
       cmd2 = paste("bam2gff_bed.pl -pe --bed --out",
-                     file.path(output.bw.file.dir, paste0(file_name, ".bed")),
+                     file.path(output.bed.file.dir, paste0(file_name, ".bed")),
                      "--in", res[[u]], sep = " ")
       cmd3 = paste(cmd1, cmd2, sep = " ")
       } else
       {
         cmd3 = paste("bam2gff_bed.pl -pe --bed --out",
-                     file.path(output.bw.file.dir, paste0(file_name, ".bed")),
+                     file.path(output.bed.file.dir, paste0(file_name, ".bed")),
                      "--in", res[[u]], sep = " ")
       }
 
