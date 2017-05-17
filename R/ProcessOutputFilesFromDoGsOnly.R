@@ -54,9 +54,11 @@ getutrcount <- function(dir.name, input.file.pattern)
 
   re.out <- lapply(file.name.2, function(u)
   {
+    if (!file.size(u) == 0){
     re = read.table(u, header = F)
     colnames(re) = c("Count", "GeneName")
     re
+    }
   })
 
   temp.name <- strsplit(names(file.name.2), split = "\\.")
