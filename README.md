@@ -14,6 +14,12 @@ library(devtools)
 
 install_github("aiminy/3UTR-Seq",ref = '3UTR')
 
+Install update ThreeUTR without restarting R
+
+detach("package:ThreeUTR", unload=TRUE)
+
+library(ThreeUTR)
+
 In pegasus terminal 
 
 R -e 'library(devtools);install_github("aiminy/3UTR-Seq",ref = "3UTR")'
