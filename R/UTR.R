@@ -3688,7 +3688,10 @@ convertBam2bed2 <- function(input.bam.file.dir, output.bed.file.dir)
 
 #'bedtools intersect -v -a 'Results/''Aligned'.bed -b /media/H_driver/2016/Ramin_azhang/Annotation/exons.bed /media/H_driver/2016/Ramin_azhang/Annotation/intron.bed
 
-#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron('/scratch/projects/bbc/aiminy_project/DoGs/BED2','/projects/ctsi/bbc/aimin/annotation/',/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron')'
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/scratch/projects/bbc/aiminy_project/DoGs/BED2","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron")'
+#'
+#'
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/scratch/projects/bbc/aiminy_project/DoGs/BedFileFromBam","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron")'
 #'
 removeReadsOnExonIntron <- function(input.bed.file.dir, annotation.bed.file.dir,
     output.bed.file.dir)
@@ -3739,6 +3742,61 @@ removeReadsOnExonIntron <- function(input.bed.file.dir, annotation.bed.file.dir,
     }, m.id, Wall.time, cores, Memory, span.ptile, res, annotationBed, output.bed.file.dir)
 
 }
+
+#'bedtools window -a /media/H_driver/2016/Ramin_azhang/Annotation/hg19_gene.bed -b "/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/""2016-02-10-emp1_WT".rm.exon.intron.hg19.bed -l 0 -r 4500 -sw   >
+
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::getCount4Downstream(""/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/Counts45KB")'
+#'
+getCount4Downstream <- function(input.bed.file.dir, annotation.bed.file.dir,
+                                      output.count.file.dir)
+  {
+    re <- parserreadfiles(input.bed.file.dir, "bed")
+
+    res <- re$input
+
+    annotationBed <- parserreadfiles(annotation.bed.file.dir,"bed",sample.group=c("hg19_gene.bed"))
+
+    m.id <- grep("login", system("hostname", intern = TRUE))
+
+    if (!dir.exists(output.count.file.dir))
+    {
+      dir.create(output.count.file.dir, recursive = TRUE)
+    }
+
+    cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
+                                            span.ptile, res, annotationBed, output.count.file.dir)
+    {
+
+      file_name = file_path_sans_ext(basename(res[[u]]))
+
+      if (m.id == 1)
+      {
+        job.name = paste0("bed2count.", u)
+        cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+                                     Memory = 16000, span.ptile = 16, job.name)
+        exon.intron <- paste(unlist(annotationBed$input),collapse=" ")
+        cmd2 = paste("bedtools window -a",exon.intron,"-b",res[[u]],"-l 0 -r 45000 -sw -c",
+                     "\\>", file.path(output.count.file.dir, paste0(file_name, "_downstream_count.txt")),
+                     sep = " ")
+        cmd3 = paste(cmd1, cmd2, sep = " ")
+      } else
+      {
+        cmd3 = paste("bedtools window -a",exon.intron,"-b",res[[u]],"-l 0 -r 45000 -sw -c",
+                             ">", file.path(output.count.file.dir, paste0(file_name, "_downstream_count.txt")),
+                             sep = " ")
+      }
+
+      cmd <- cmd3
+
+      cat(cmd, "\n\n")
+
+      system(cmd)
+
+      cmd
+    }, m.id, Wall.time, cores, Memory, span.ptile, res, annotationBed, output.count.file.dir)
+
+  }
+
 
 prepareDaPars <- function(input.wig.file.dir, sample.group = c("Dox", "WT"),
     output.dir)
