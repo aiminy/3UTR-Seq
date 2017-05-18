@@ -1248,6 +1248,57 @@ convertBam2bed2 <- function(input.bam.file.dir, output.bed.file.dir)
 
 }
 
+#'bedtools intersect -v -a "Results/""Aligned".bed -b /media/H_driver/2016/Ramin_azhang/Annotation/exons.bed /media/H_driver/2016/Ramin_azhang/Annotation/intron.bed
+
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/scratch/projects/bbc/aiminy_project/DoGs/BED2","/projects/ctsi/bbc/aimin/annotation/",/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron")'
+#'
+removeReadsOnExonIntron <- function(input.bed.file.dir,annotation.bed.file.dir,output.bed.file.dir)
+{
+  re <- parserreadfiles(input.bed.file.dir, "bed")
+
+  res <- re$input
+
+  annotationBed <- unlist(parserreadfiles(annotation.bed.file.dir, "bed"))
+
+  m.id <- grep("login", system("hostname", intern = TRUE))
+
+  if (!dir.exists(output.bed.file.dir))
+  {
+    dir.create(output.bed.file.dir, recursive = TRUE)
+  }
+
+  cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
+                                          span.ptile, res,annotationBed,output.bed.file.dir)
+  {
+
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    if (m.id == 1)
+    {
+      job.name = paste0("bedRmExonIntron.", u)
+      cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+                                   Memory = 16000, span.ptile = 16, job.name)
+      exon <-
+      intron <-
+
+      cmd2 = paste("bedtools intersect -v -a",res[[u]],"-b",exon,intron,"\\>",
+                   file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),sep = " ")
+      cmd3 = paste(cmd1, cmd2, sep = " ")
+    } else
+    {
+      cmd3 = paste("bedtools intersect -v -a",res[[u]],"-b",exon,intron,"\\>",
+                   file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),sep = " ")
+    }
+
+    cmd <- cmd3
+
+    system(cmd)
+
+    cmd
+  }, m.id, Wall.time, cores, Memory, span.ptile, res,annotationBed,output.bed.file.dir)
+
+}
+
 prepareDaPars <- function(input.wig.file.dir, sample.group = c("Dox", "WT"),
     output.dir)
     {
