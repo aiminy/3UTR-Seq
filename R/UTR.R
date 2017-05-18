@@ -7,239 +7,203 @@
 #'
 #' @examples
 #'
-#' dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
+#' dir.name='/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/'
 #'
-#' re.3UTR<-AdjustBatch(re.rMAT.com.total.test.2,dir.name,"By_P","By_Gene","Interested_gene_only","Interested_gene_only_sig")
+#' re.3UTR<-AdjustBatch(re.rMAT.com.total.test.2,dir.name,'By_P','By_Gene','Interested_gene_only','Interested_gene_only_sig')
 #'
-#' re.3UTR.one.side<-AdjustBatch(re.rMAT.com.total.test.2,dir.name,"By_P_one_side","By_Gene_one_side",
-#' "Interested_gene_only_one_side","Interested_gene_only_sig_one_side")
+#' re.3UTR.one.side<-AdjustBatch(re.rMAT.com.total.test.2,dir.name,'By_P_one_side','By_Gene_one_side',
+#' 'Interested_gene_only_one_side','Interested_gene_only_sig_one_side')
 #'
 #'
-#' re.3UTR.one.side.norm<-AdjustBatch(re.rMAT.com.total.test.2,DE.norm.with.rpkm.norm.2,dir.name,"By_P_one_side_norm_2","By_Gene_one_side_norm_2",
-#' "Interested_gene_only_one_side_norm_2","Interested_gene_only_sig_one_side_norm_2")
+#' re.3UTR.one.side.norm<-AdjustBatch(re.rMAT.com.total.test.2,DE.norm.with.rpkm.norm.2,dir.name,'By_P_one_side_norm_2','By_Gene_one_side_norm_2',
+#' 'Interested_gene_only_one_side_norm_2','Interested_gene_only_sig_one_side_norm_2')
 #'
-AdjustBatch <- function(re.rMAT.com.total.test.2,DE.norm.with.rpkm.norm.2,dir.name,out_by_p,out_by_gene,out_gene_interested,out_gene_interested_sig) {
+AdjustBatch <- function(re.rMAT.com.total.test.2, DE.norm.with.rpkm.norm.2,
+    dir.name, out_by_p, out_by_gene, out_gene_interested, out_gene_interested_sig)
+    {
 
-  #names(re.rMAT.com.total.test.2)
+    # names(re.rMAT.com.total.test.2)
 
-  df.NT<-counts(re.rMAT.com.total.test.2$dds)
-  colData<-colData(re.rMAT.com.total.test.2$dds)
+    df.NT <- counts(re.rMAT.com.total.test.2$dds)
+    colData <- colData(re.rMAT.com.total.test.2$dds)
 
-  cell<-factor(rep(c('emp','hela'),c(2,2)))
-  cell=rep(cell,2)
+    cell <- factor(rep(c("emp", "hela"), c(2, 2)))
+    cell = rep(cell, 2)
 
-  colData.1 <- data.frame(condition=factor(rep(c('Dox', 'WT'),c(4, 4))),cell=cell)
+    colData.1 <- data.frame(condition = factor(rep(c("Dox", "WT"), c(4, 4))),
+        cell = cell)
 
-  #Use original design, not adjusted by any batch factor
-  dds <- DESeqDataSetFromMatrix(df.NT,colData.1,formula(~condition))
-  colData(dds)
+    # Use original design, not adjusted by any batch factor
+    dds <- DESeqDataSetFromMatrix(df.NT, colData.1, formula(~condition))
+    colData(dds)
 
-  print(design(dds))
-  dds <- DESeq(dds)
-  res.dds<- results(dds)
-  head(res.dds)
-  print(sizeFactors(estimateSizeFactors(dds)))
-  print(head(counts(dds,normalized = TRUE)))
+    print(design(dds))
+    dds <- DESeq(dds)
+    res.dds <- results(dds)
+    head(res.dds)
+    print(sizeFactors(estimateSizeFactors(dds)))
+    print(head(counts(dds, normalized = TRUE)))
 
-  #Check hidden batch effects
-  #dds <- estimateSizeFactors(dds)
-  dds <- DESeqDataSetFromMatrix(df.NT, colData.1, formula(~condition))
-  dat <- counts(dds)
+    # Check hidden batch effects dds <- estimateSizeFactors(dds)
+    dds <- DESeqDataSetFromMatrix(df.NT, colData.1, formula(~condition))
+    dat <- counts(dds)
 
-  #idx <- rowMeans(dat) > 1
-  #dat <- dat[idx,]
+    # idx <- rowMeans(dat) > 1 dat <- dat[idx,]
 
-  mod <- model.matrix(~condition,colData(dds))
-  mod0 <- model.matrix(~1,colData(dds))
-  svseq.NT <- svaseq(dat, mod, mod0)
+    mod <- model.matrix(~condition, colData(dds))
+    mod0 <- model.matrix(~1, colData(dds))
+    svseq.NT <- svaseq(dat, mod, mod0)
 
-  par(mfrow=c(2,1),mar=c(3,5,3,1))
-  stripchart(svseq.NT$sv[,1] ~ dds$cell,vertical=TRUE,main="SV1")
-  abline(h=0)
-  stripchart(svseq.NT$sv[,2] ~ dds$cell,vertical=TRUE,main="SV2")
-  abline(h=0)
+    par(mfrow = c(2, 1), mar = c(3, 5, 3, 1))
+    stripchart(svseq.NT$sv[, 1] ~ dds$cell, vertical = TRUE, main = "SV1")
+    abline(h = 0)
+    stripchart(svseq.NT$sv[, 2] ~ dds$cell, vertical = TRUE, main = "SV2")
+    abline(h = 0)
 
-  #Adjust by surrogate variables 1 and 2
-  ddssva <- dds
-  ddssva$SV1 <- svseq.NT$sv[,1]
-  ddssva$SV2 <- svseq.NT$sv[,2]
-  design(ddssva) <- ~ SV1 + SV2 + condition
-  ddssva <- DESeq(ddssva)
-  print(sizeFactors(estimateSizeFactors(ddssva)))
-  print(head(counts(ddssva,normalized = TRUE)))
-  res.ddssva.2.sva.adjusted <- results(ddssva)
-  head(res.ddssva.2.sva.adjusted)
-  summary(res.ddssva.2.sva.adjusted)
+    # Adjust by surrogate variables 1 and 2
+    ddssva <- dds
+    ddssva$SV1 <- svseq.NT$sv[, 1]
+    ddssva$SV2 <- svseq.NT$sv[, 2]
+    design(ddssva) <- ~SV1 + SV2 + condition
+    ddssva <- DESeq(ddssva)
+    print(sizeFactors(estimateSizeFactors(ddssva)))
+    print(head(counts(ddssva, normalized = TRUE)))
+    res.ddssva.2.sva.adjusted <- results(ddssva)
+    head(res.ddssva.2.sva.adjusted)
+    summary(res.ddssva.2.sva.adjusted)
 
-  #Adjusted by cell type
+    # Adjusted by cell type
 
-  dds.cell <- DESeqDataSetFromMatrix(df.NT,colData.1,design=~ cell+condition)
+    dds.cell <- DESeqDataSetFromMatrix(df.NT, colData.1, design = ~cell + condition)
 
-  #design(dds.cell) <- ~ cell + condition
-  print(design(dds.cell))
+    # design(dds.cell) <- ~ cell + condition
+    print(design(dds.cell))
 
-  dds.cell <- DESeq(dds.cell)
-  res.dds.cell<- results(dds.cell)
+    dds.cell <- DESeq(dds.cell)
+    res.dds.cell <- results(dds.cell)
 
-  re.condition<-results(dds.cell, contrast=c("condition", "WT", "Dox"))
-  head(re.condition)
-  summary(re.condition)
+    re.condition <- results(dds.cell, contrast = c("condition", "WT", "Dox"))
+    head(re.condition)
+    summary(re.condition)
 
-  re.cell<-results(dds.cell, contrast=c("cell", "emp", "hela"))
-  summary(re.cell)
+    re.cell <- results(dds.cell, contrast = c("cell", "emp", "hela"))
+    summary(re.cell)
 
-  head(res.dds.cell)
-  print(sizeFactors(estimateSizeFactors(dds.cell)))
-  print(head(counts(dds.cell,normalized = TRUE)))
+    head(res.dds.cell)
+    print(sizeFactors(estimateSizeFactors(dds.cell)))
+    print(head(counts(dds.cell, normalized = TRUE)))
 
-  # dds.cell.2 <- DESeq(dds.cell.2)
-  # res.dds.cell.2<- results(dds.cell.2)
-  # head(res.dds.cell.2)
-  #
-  # summary(res.dds.cell.2)
-  # summary(res.dds.cell)
-  #
-  #
-  # #Use limma based method
-  # #dat.adjusted<-cbind(dat[,c(3,4,7,8)]*(2^re.cell$log2FoldChange),dat[,c(3,4,7,8)])
-  # dds.ad <- DESeqDataSetFromMatrix(df.NT,colData.1,design=~ cell+condition)
-  # dds.ad <- estimateSizeFactors(dds.ad)
-  # norm.counts <- counts(dds.ad, normalized=TRUE)
-  # log.norm.counts <- log2(norm.counts + 1)
-  # y<-log.norm.counts
-  # batch <- c("emp","emp","hela","hela","emp","emp","hela","hela")
-  #
-  # y2<-removeBatchEffect(y, batch)
-  # #par(mfrow=c(1,2))
-  # boxplot(as.data.frame(y),main="Original")
-  # boxplot(as.data.frame(y2),main="Batch corrected")
-  #
-  # f.st134.frma <-factor(colData.1$condition)
-  # design.st134.frma <- model.matrix(~0+f.st134.frma)
-  # colnames(design.st134.frma) <- levels(f.st134.frma)
-  #
-  # fit.st134.all.probes.frma <- lmFit(y2, design.st134.frma)
-  # cont.matrix.st134.frma <- makeContrasts(stWTDox="WT-Dox",levels=design.st134.frma)
-  # fit2.st134.all.probes.frma  <- contrasts.fit(fit.st134.all.probes.frma, cont.matrix.st134.frma)
-  # fit2.st134.all.probes.frma <- eBayes(fit2.st134.all.probes.frma)
-  # TopTableSt34.all.probes.frma<-topTable(fit2.st134.all.probes.frma,coef=1,n=dim(y2)[1],sort.by="p")
-  #
-  # cutoff <- 0.3
-  # wtResCont <- decideTests(fit2.st134.all.probes.frma, p.value = cutoff, method = "global")
-  # summary(wtResCont)
-  #
-  # length(which(TopTableSt34.all.probes.frma$adj.P.Val<0.3&TopTableSt34.all.probes.frma$logFC<0))
-  #
-  # length(which(TopTableSt34.all.probes.frma$adj.P.Val<0.3&TopTableSt34.all.probes.frma$logFC>0))
-  #
-  # #matrix of SVs
-  # svseq.NT$sv
-  # #number of SVs
-  # svseq.NT$n.sv
-  # save(svseq.NT, file='/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/svseq.NT.RData')
-  #
-  # colData.sva <- cbind(colData,svseq.NT$sv)
-  #
-  # colData.sva <- data.frame(condition=factor(rep(c('Dox', 'WT'),
-  #                                                c(4, 4)),svseq.NT$sv))
-  #
-  #
-  # # preprocess data
-  # colData.sva <- data.frame(condition=factor(rep(c('Dox', 'WT'),
-  #                                                c(4, 4))),
-  #                           svseq.NT$sv)
-  #
-  # colnames(colData.sva)[-1] = paste0("SV", 1:svseq.NT$sv)
-  #
-  # ncol <- dim(svseq.NT$sv)[2]
-  #
-  # SV1<-paste(paste0("SV", 1:svseq.NT$sv), collapse = "+")
-  #
-  # design.sva.1 <- formula(paste0("~ SV1 +","condition"))
-  #
-  # design.sva.2 <- formula(paste0("~ condition +","SV1"))
-  #
-  #
-  # #design.sva <- formula(paste0("~ paste(paste0("SV", 1:svseq.NT$sv), collapse = "+") +", condition ))
-  # colData.sva.1<-colData.sva[,c(2,1)]
-  #
-  # ddssva.NT <- DESeqDataSetFromMatrix(df.NT,colData.sva, design.sva.1)
-  # rownames(colData(ddssva.NT)) <- colnames(df.NT)
-  # ddssva.NT <- DESeq(ddssva.NT)
-  # res.sva.NT <- results(ddssva.NT)
-  # head(res.sva.NT)
-  #
-  # ddssva.NT.1 <- DESeqDataSetFromMatrix(df.NT,colData.sva.1, design.sva.1)
-  # rownames(colData(ddssva.NT.1)) <- colnames(df.NT)
-  # ddssva.NT.1 <- DESeq(ddssva.NT.1)
-  # res.sva.NT.1 <- results(ddssva.NT.1)
-  # head(res.sva.NT.1)
-  #
-  #
-  # ddssva.NT.2 <- DESeqDataSetFromMatrix(df.NT,colData.sva, design.sva)
-  # rownames(colData(ddssva.NT.2)) <- colnames(df.NT)
-  #
-  #
-  # ddssva.NT.2 <- DESeq(ddssva.NT.2)
-  # res.sva.NT.2 <- results(ddssva.NT.2)
-  #
-  # head(res.sva.NT)
+    # dds.cell.2 <- DESeq(dds.cell.2) res.dds.cell.2<- results(dds.cell.2)
+    # head(res.dds.cell.2) summary(res.dds.cell.2) summary(res.dds.cell) #Use
+    # limma based method
+    # #dat.adjusted<-cbind(dat[,c(3,4,7,8)]*(2^re.cell$log2FoldChange),dat[,c(3,4,7,8)])
+    # dds.ad <- DESeqDataSetFromMatrix(df.NT,colData.1,design=~ cell+condition)
+    # dds.ad <- estimateSizeFactors(dds.ad) norm.counts <- counts(dds.ad,
+    # normalized=TRUE) log.norm.counts <- log2(norm.counts + 1)
+    # y<-log.norm.counts batch <-
+    # c('emp','emp','hela','hela','emp','emp','hela','hela')
+    # y2<-removeBatchEffect(y, batch) #par(mfrow=c(1,2))
+    # boxplot(as.data.frame(y),main='Original')
+    # boxplot(as.data.frame(y2),main='Batch corrected') f.st134.frma
+    # <-factor(colData.1$condition) design.st134.frma <-
+    # model.matrix(~0+f.st134.frma) colnames(design.st134.frma) <-
+    # levels(f.st134.frma) fit.st134.all.probes.frma <- lmFit(y2,
+    # design.st134.frma) cont.matrix.st134.frma <-
+    # makeContrasts(stWTDox='WT-Dox',levels=design.st134.frma)
+    # fit2.st134.all.probes.frma <- contrasts.fit(fit.st134.all.probes.frma,
+    # cont.matrix.st134.frma) fit2.st134.all.probes.frma <-
+    # eBayes(fit2.st134.all.probes.frma)
+    # TopTableSt34.all.probes.frma<-topTable(fit2.st134.all.probes.frma,coef=1,n=dim(y2)[1],sort.by='p')
+    # cutoff <- 0.3 wtResCont <- decideTests(fit2.st134.all.probes.frma, p.value
+    # = cutoff, method = 'global') summary(wtResCont)
+    # length(which(TopTableSt34.all.probes.frma$adj.P.Val<0.3&TopTableSt34.all.probes.frma$logFC<0))
+    # length(which(TopTableSt34.all.probes.frma$adj.P.Val<0.3&TopTableSt34.all.probes.frma$logFC>0))
+    # #matrix of SVs svseq.NT$sv #number of SVs svseq.NT$n.sv save(svseq.NT,
+    # file='/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/svseq.NT.RData')
+    # colData.sva <- cbind(colData,svseq.NT$sv) colData.sva <-
+    # data.frame(condition=factor(rep(c('Dox', 'WT'), c(4, 4)),svseq.NT$sv)) #
+    # preprocess data colData.sva <- data.frame(condition=factor(rep(c('Dox',
+    # 'WT'), c(4, 4))), svseq.NT$sv) colnames(colData.sva)[-1] = paste0('SV',
+    # 1:svseq.NT$sv) ncol <- dim(svseq.NT$sv)[2] SV1<-paste(paste0('SV',
+    # 1:svseq.NT$sv), collapse = '+') design.sva.1 <- formula(paste0('~ SV1
+    # +','condition')) design.sva.2 <- formula(paste0('~ condition +','SV1'))
+    # #design.sva <- formula(paste0('~ paste(paste0('SV', 1:svseq.NT$sv),
+    # collapse = '+') +', condition )) colData.sva.1<-colData.sva[,c(2,1)]
+    # ddssva.NT <- DESeqDataSetFromMatrix(df.NT,colData.sva, design.sva.1)
+    # rownames(colData(ddssva.NT)) <- colnames(df.NT) ddssva.NT <-
+    # DESeq(ddssva.NT) res.sva.NT <- results(ddssva.NT) head(res.sva.NT)
+    # ddssva.NT.1 <- DESeqDataSetFromMatrix(df.NT,colData.sva.1, design.sva.1)
+    # rownames(colData(ddssva.NT.1)) <- colnames(df.NT) ddssva.NT.1 <-
+    # DESeq(ddssva.NT.1) res.sva.NT.1 <- results(ddssva.NT.1) head(res.sva.NT.1)
+    # ddssva.NT.2 <- DESeqDataSetFromMatrix(df.NT,colData.sva, design.sva)
+    # rownames(colData(ddssva.NT.2)) <- colnames(df.NT) ddssva.NT.2 <-
+    # DESeq(ddssva.NT.2) res.sva.NT.2 <- results(ddssva.NT.2) head(res.sva.NT)
 
-  MatchGene <- function(res.sva.NT,re.rMAT.com.total.test.2) {
-    temp<-re.rMAT.com.total.test.2$DE[,c(1,10:24)]
-    rownames(temp)<-temp[,1]
-    temp2<-merge(as.data.frame(res.sva.NT),temp,by=0,sort=FALSE)
-    re.FC<-temp2
-    re.FC.sorted<-re.FC[order(re.FC$pvalue),]
-    return(re.FC.sorted)
-  }
+    MatchGene <- function(res.sva.NT, re.rMAT.com.total.test.2)
+    {
+        temp <- re.rMAT.com.total.test.2$DE[, c(1, 10:24)]
+        rownames(temp) <- temp[, 1]
+        temp2 <- merge(as.data.frame(res.sva.NT), temp, by = 0, sort = FALSE)
+        re.FC <- temp2
+        re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
+        return(re.FC.sorted)
+    }
 
 
-  re.FC.sorted<-MatchGene(res.ddssva.2.sva.adjusted,re.rMAT.com.total.test.2)
+    re.FC.sorted <- MatchGene(res.ddssva.2.sva.adjusted, re.rMAT.com.total.test.2)
 
-  DE.norm.with.rpkm.norm.3<-apply(DE.norm.with.rpkm.norm.2,2,as.numeric)
+    DE.norm.with.rpkm.norm.3 <- apply(DE.norm.with.rpkm.norm.2, 2, as.numeric)
 
-  rownames(DE.norm.with.rpkm.norm.3)<-rownames(DE.norm.with.rpkm.norm.2)
+    rownames(DE.norm.with.rpkm.norm.3) <- rownames(DE.norm.with.rpkm.norm.2)
 
-  DE.rpkm.norm<-cbind(DE.norm.with.rpkm.norm.3,DE.norm.with.rpkm.norm.3[,9:16]*(1000/4500))
+    DE.rpkm.norm <- cbind(DE.norm.with.rpkm.norm.3, DE.norm.with.rpkm.norm.3[,
+        9:16] * (1000/4500))
 
-  rownames(re.FC.sorted)=re.FC.sorted$Row.names
+    rownames(re.FC.sorted) = re.FC.sorted$Row.names
 
-  re.FC.sorted<-merge(re.FC.sorted[,-1],DE.rpkm.norm,by=0,sort=FALSE)
+    re.FC.sorted <- merge(re.FC.sorted[, -1], DE.rpkm.norm, by = 0, sort = FALSE)
 
-  p.one.sided<-unlist(lapply(re.FC.sorted$stat,function(x){convert.z.score(x,two.side=F)}))
+    p.one.sided <- unlist(lapply(re.FC.sorted$stat, function(x)
+    {
+        convert.z.score(x, two.side = F)
+    }))
 
-  p.one.sided.adjust<-p.adjust(p.one.sided,method = "BH")
+    p.one.sided.adjust <- p.adjust(p.one.sided, method = "BH")
 
-  re.FC.sorted<-cbind(re.FC.sorted,p.one.sided,p.one.sided.adjust)
+    re.FC.sorted <- cbind(re.FC.sorted, p.one.sided, p.one.sided.adjust)
 
-  re.FC.sorted.sorted.by.gene<- re.FC.sorted[order(re.FC.sorted$gene),]
+    re.FC.sorted.sorted.by.gene <- re.FC.sorted[order(re.FC.sorted$gene), ]
 
-  write.csv(re.FC.sorted,file=paste0(dir.name,"3UTR_DE_",out_by_p,".csv"),row.names = FALSE,quote=FALSE)
+    write.csv(re.FC.sorted, file = paste0(dir.name, "3UTR_DE_", out_by_p, ".csv"),
+        row.names = FALSE, quote = FALSE)
 
-  write.csv(re.FC.sorted.sorted.by.gene,file=paste0(dir.name,"3UTR_DE_",out_by_gene,".csv"),row.names = FALSE,quote=FALSE)
+    write.csv(re.FC.sorted.sorted.by.gene, file = paste0(dir.name, "3UTR_DE_",
+        out_by_gene, ".csv"), row.names = FALSE, quote = FALSE)
 
-  target<-re.FC.sorted[which(re.FC.sorted$pvalue<0.05&re.FC.sorted$log2FoldChange<0),]$gene
+    target <- re.FC.sorted[which(re.FC.sorted$pvalue < 0.05 & re.FC.sorted$log2FoldChange <
+        0), ]$gene
 
-  #which(target %in% genes.interested[,1])
+    # which(target %in% genes.interested[,1])
 
-  re.genes.interested<-re.FC.sorted.interested<-re.FC.sorted[which(re.FC.sorted$gene %in% genes.interested[,1]),]
+    re.genes.interested <- re.FC.sorted.interested <- re.FC.sorted[which(re.FC.sorted$gene %in%
+        genes.interested[, 1]), ]
 
-  re.genes.interested.sig<-re.FC.sorted.interested[which(re.FC.sorted.interested$pvalue<0.05&re.FC.sorted.interested$log2FoldChange<0),]
+    re.genes.interested.sig <- re.FC.sorted.interested[which(re.FC.sorted.interested$pvalue <
+        0.05 & re.FC.sorted.interested$log2FoldChange < 0), ]
 
-  write.csv(re.genes.interested,file=paste0(dir.name,"3UTR_DE_",out_gene_interested,".csv"),row.names = FALSE,quote=FALSE)
+    write.csv(re.genes.interested, file = paste0(dir.name, "3UTR_DE_", out_gene_interested,
+        ".csv"), row.names = FALSE, quote = FALSE)
 
-  write.csv(re.genes.interested.sig,file=paste0(dir.name,"3UTR_DE_",out_gene_interested_sig,".csv"),row.names = FALSE,quote=FALSE)
+    write.csv(re.genes.interested.sig, file = paste0(dir.name, "3UTR_DE_", out_gene_interested_sig,
+        ".csv"), row.names = FALSE, quote = FALSE)
 
-  #re.com.total.pos<-re.FC.sorted[which(re.FC.sorted$`FoldChange(WT/Dox)`<1),]
-  #re.com.total.neg<-re.FC.sorted[which(re.FC.sorted$`FoldChange(WT/Dox)`>=1),]
+    # re.com.total.pos<-re.FC.sorted[which(re.FC.sorted$`FoldChange(WT/Dox)`<1),]
+    # re.com.total.neg<-re.FC.sorted[which(re.FC.sorted$`FoldChange(WT/Dox)`>=1),]
 
-  re<-list(re.FC.sorted=re.FC.sorted,
-           re.FC.sorted.sorted.by.gene=re.FC.sorted.sorted.by.gene,
-           re.genes.interested=re.genes.interested,
-           re.genes.interested.sig=re.genes.interested.sig)
+    re <- list(re.FC.sorted = re.FC.sorted, re.FC.sorted.sorted.by.gene = re.FC.sorted.sorted.by.gene,
+        re.genes.interested = re.genes.interested, re.genes.interested.sig = re.genes.interested.sig)
 
-  return(re)
+    return(re)
 }
 #' CheckBatch
 #'
@@ -255,34 +219,34 @@ AdjustBatch <- function(re.rMAT.com.total.test.2,DE.norm.with.rpkm.norm.2,dir.na
 #' rownames(df.NT)<-df.NT[,1]
 #' df.NT.2<- df.NT[,-1]
 #'
-#' CheckBatch(dir.name,"Btach_using_DoGs",df.NT.2)
+#' CheckBatch(dir.name,'Btach_using_DoGs',df.NT.2)
 #'
-CheckBatch <- function(dir.name,output_bacth_check,df.NT) {
+CheckBatch <- function(dir.name, output_bacth_check, df.NT)
+{
 
-  cell<-factor(rep(c('emp','hela'),c(2,2)))
-  cell=rep(cell,2)
+    cell <- factor(rep(c("emp", "hela"), c(2, 2)))
+    cell = rep(cell, 2)
 
-  colData.1 <- data.frame(condition=factor(rep(c('Dox', 'WT'),c(4, 4))),cell=cell)
+    colData.1 <- data.frame(condition = factor(rep(c("Dox", "WT"), c(4, 4))),
+        cell = cell)
 
-  #Check hidden batch effects
-  #dds <- estimateSizeFactors(dds)
-  dds <- DESeqDataSetFromMatrix(df.NT, colData.1, formula(~condition))
-  dat <- counts(dds)
+    # Check hidden batch effects dds <- estimateSizeFactors(dds)
+    dds <- DESeqDataSetFromMatrix(df.NT, colData.1, formula(~condition))
+    dat <- counts(dds)
 
-  #idx <- rowMeans(dat) > 1
-  #dat <- dat[idx,]
+    # idx <- rowMeans(dat) > 1 dat <- dat[idx,]
 
-  mod <- model.matrix(~condition,colData(dds))
-  mod0 <- model.matrix(~1,colData(dds))
-  svseq.NT <- svaseq(dat, mod, mod0)
+    mod <- model.matrix(~condition, colData(dds))
+    mod0 <- model.matrix(~1, colData(dds))
+    svseq.NT <- svaseq(dat, mod, mod0)
 
-  png(paste0(dir.name,output_bacth_check,".png"))
-  par(mfrow=c(2,1),mar=c(3,5,3,1))
-  stripchart(svseq.NT$sv[,1] ~ dds$cell,vertical=TRUE,main="SV1")
-  abline(h=0)
-  stripchart(svseq.NT$sv[,2] ~ dds$cell,vertical=TRUE,main="SV2")
-  abline(h=0)
-  dev.off()
+    png(paste0(dir.name, output_bacth_check, ".png"))
+    par(mfrow = c(2, 1), mar = c(3, 5, 3, 1))
+    stripchart(svseq.NT$sv[, 1] ~ dds$cell, vertical = TRUE, main = "SV1")
+    abline(h = 0)
+    stripchart(svseq.NT$sv[, 2] ~ dds$cell, vertical = TRUE, main = "SV2")
+    abline(h = 0)
+    dev.off()
 
 }
 #' Compare2Pos
@@ -296,88 +260,79 @@ CheckBatch <- function(dir.name,output_bacth_check,df.NT) {
 #' @examples
 #'
 #' #real data
-#' in1="/Volumes/Bioinformatics$/2016/Ramin_azhang/ResultsDoGsOnlyRmOne/RealData/3UTR_DE_DoGs_adjust_by_batch_all.csv"
+#' in1='/Volumes/Bioinformatics$/2016/Ramin_azhang/ResultsDoGsOnlyRmOne/RealData/3UTR_DE_DoGs_adjust_by_batch_all.csv'
 #'
 #' #permutated data
 #'
-#' in1="/Volumes/Bioinformatics$/2016/Ramin_azhang/ResultsDoGsOnlyRmOne/Counts4DoGsOnlyRmOnePermutation/3UTR_DE_DoGs_adjust_by_batch_all.csv"
+#' in1='/Volumes/Bioinformatics$/2016/Ramin_azhang/ResultsDoGsOnlyRmOne/Counts4DoGsOnlyRmOnePermutation/3UTR_DE_DoGs_adjust_by_batch_all.csv'
 #' threshold=0.05
-#' in2="/Volumes/Bioinformatics$/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/final_list.csv"
+#' in2='/Volumes/Bioinformatics$/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/final_list.csv'
 #'
 #' Compare2Pos(in1,threshold,in2)
 #'
-Compare2Pos<-function(in1,threshold,in2){
+Compare2Pos <- function(in1, threshold, in2)
+{
 
-  a<-read.table(in1,header=T,sep=",")
-  b<-read.table(in2,header=F,sep=",")
+    a <- read.table(in1, header = T, sep = ",")
+    b <- read.table(in2, header = F, sep = ",")
 
-  print(head(a))
+    print(head(a))
 
-  print(head(b))
+    print(head(b))
 
-   g1<-unique(as.character(a[which(a$padj<=threshold),22]))
-   g2<-unique(as.character(b[,1]))
+    g1 <- unique(as.character(a[which(a$padj <= threshold), 22]))
+    g2 <- unique(as.character(b[, 1]))
 
-   g11<-g1[-which(is.na(g1))]
+    g11 <- g1[-which(is.na(g1))]
 
-   g22<-g2
+    g22 <- g2
 
-   print(g11)
+    print(g11)
 
-   print(g22)
+    print(g22)
 
-  re<-list(R=g11,pos=g22,a=a,b=b)
+    re <- list(R = g11, pos = g22, a = a, b = b)
 
-  names(re)[1]<-paste0("R","_",threshold)
+    names(re)[1] <- paste0("R", "_", threshold)
 
-  venn.plot <- venn.diagram(
-    x = re[c(1,2)],
-    filename = paste0(dirname(in1),"/",names(re)[1],names(re)[2],"_overlap_venn.tiff"),
-    height = 3000,
-    width = 3500,
-    resolution = 1000,
-    col = "black",
-    lty = "dotted",
-    lwd = 1,
-    fill = c("red","blue"),
-    alpha = 0.50,
-    label.col = c(rep("black",3)),
-    cex = 0.5,
-    fontfamily = "serif",
-    fontface = "bold",
-    cat.col = c("red","blue"),
-    cat.cex = 0.5,
-    cat.pos = 0.5,
-    cat.dist = 0.05,
-    cat.fontfamily = "serif"
-  )
+    venn.plot <- venn.diagram(x = re[c(1, 2)], filename = paste0(dirname(in1),
+        "/", names(re)[1], names(re)[2], "_overlap_venn.tiff"), height = 3000,
+        width = 3500, resolution = 1000, col = "black", lty = "dotted", lwd = 1,
+        fill = c("red", "blue"), alpha = 0.5, label.col = c(rep("black", 3)),
+        cex = 0.5, fontfamily = "serif", fontface = "bold", cat.col = c("red",
+            "blue"), cat.cex = 0.5, cat.pos = 0.5, cat.dist = 0.05, cat.fontfamily = "serif")
 
-  return(re)
+    return(re)
 
 }
-CompareToFeature.R <- function(Re.unadjusted.adjusted) {
+CompareToFeature.R <- function(Re.unadjusted.adjusted)
+{
 
-  length(unique(as.character(re.DoGs.adjusted.by.batch$gene)))
+    length(unique(as.character(re.DoGs.adjusted.by.batch$gene)))
 
-  grep("-",unique(as.character(re.DoGs.adjusted.by.batch$gene)))
+    grep("-", unique(as.character(re.DoGs.adjusted.by.batch$gene)))
 
-  emp1.WT<-read.table("/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4Feature/2016-02-10-emp1_WT.gene.downstream.count.rv.m.FC.txt",header=T)
+    emp1.WT <- read.table("/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4Feature/2016-02-10-emp1_WT.gene.downstream.count.rv.m.FC.txt",
+        header = T)
 
-  emp1.WT.feature<-emp1.WT[,c(1,7)]
+    emp1.WT.feature <- emp1.WT[, c(1, 7)]
 
-  colnames(emp1.WT.feature)=c("Row.names","feature.Count")
+    colnames(emp1.WT.feature) = c("Row.names", "feature.Count")
 
-  emp1.WT.inhouse<-Re.unadjusted.adjusted$DE[,c(1,13)]
+    emp1.WT.inhouse <- Re.unadjusted.adjusted$DE[, c(1, 13)]
 
-  Re.unadjusted.adjusted$DE[which(Re.unadjusted.adjusted$DE[,1] %in% c("uc001aai.1")),]
+    Re.unadjusted.adjusted$DE[which(Re.unadjusted.adjusted$DE[, 1] %in% c("uc001aai.1")),
+        ]
 
-  emp1.inhouse.feature<-merge(emp1.WT.feature,emp1.WT.inhouse)
+    emp1.inhouse.feature <- merge(emp1.WT.feature, emp1.WT.inhouse)
 
-  colnames(emp1.inhouse.feature)<-c("Transcript","Counting_based_featureCounts","Counting_based_bbc_count")
+    colnames(emp1.inhouse.feature) <- c("Transcript", "Counting_based_featureCounts",
+        "Counting_based_bbc_count")
 
-  plot(emp1.inhouse.feature[,3],emp1.inhouse.feature[,2],ylab="featureCounts_based",xlab="bbc_inhouse_developed_program_based")
+    plot(emp1.inhouse.feature[, 3], emp1.inhouse.feature[, 2], ylab = "featureCounts_based",
+        xlab = "bbc_inhouse_developed_program_based")
 
-  head(emp1.inhouse.feature)
+    head(emp1.inhouse.feature)
 }
 #' DEAnalysisAdjustByBatch
 #'
@@ -398,72 +353,78 @@ CompareToFeature.R <- function(Re.unadjusted.adjusted) {
 #' re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(df.NT.2)
 #'
 
-DEAnalysisAdjustByBatch <- function(df.NT,Nbatch) {
+DEAnalysisAdjustByBatch <- function(df.NT, Nbatch)
+{
 
 
-  #print(pkg.env$sample)
+    # print(pkg.env$sample)
 
-  cell<-factor(rep(c('emp','hela'),Nbatch))
-  cell=rep(cell,2)
+    cell <- factor(rep(c("emp", "hela"), Nbatch))
+    cell = rep(cell, 2)
 
-  colData <- data.frame(condition=factor(rep(c('Dox', 'WT'),c(5, 5))),cell=cell)
+    colData <- data.frame(condition = factor(rep(c("Dox", "WT"), c(5, 5))),
+        cell = cell)
 
-  dds <- DESeqDataSetFromMatrix(df.NT, colData, formula(~condition))
-  dat <- counts(dds)
+    dds <- DESeqDataSetFromMatrix(df.NT, colData, formula(~condition))
+    dat <- counts(dds)
 
-  mod <- model.matrix(~condition,colData(dds))
-  mod0 <- model.matrix(~1,colData(dds))
-  svseq.NT <- svaseq(dat, mod, mod0)
+    mod <- model.matrix(~condition, colData(dds))
+    mod0 <- model.matrix(~1, colData(dds))
+    svseq.NT <- svaseq(dat, mod, mod0)
 
-  #How many significant surrogate variables is?
+    # How many significant surrogate variables is?
 
-  #ncol <- dim(svseq.NT$sv)[2]
+    # ncol <- dim(svseq.NT$sv)[2]
 
-  ncol <- svseq.NT$n.sv
+    ncol <- svseq.NT$n.sv
 
-  cat(ncol,"\n")
+    cat(ncol, "\n")
 
-  #ncol<-2
-  #Adjust by surrogate variables 1 and 2
-  ddssva <- dds
+    # ncol<-2 Adjust by surrogate variables 1 and 2
+    ddssva <- dds
 
-  if(ncol==1){
-    colData(ddssva)<-cbind2(colData(ddssva),svseq.NT$sv)
-    colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",1)
-  }else{
-    for(i in 1:ncol){
-    colData(ddssva)<-cbind2(colData(ddssva),svseq.NT$sv[,i])
-    colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",i)
+    if (ncol == 1)
+    {
+        colData(ddssva) <- cbind2(colData(ddssva), svseq.NT$sv)
+        colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV", 1)
+    } else
+    {
+        for (i in 1:ncol)
+        {
+            colData(ddssva) <- cbind2(colData(ddssva), svseq.NT$sv[, i])
+            colnames(colData(ddssva))[dim(colData(ddssva))[2]] = paste0("SV",
+                i)
+        }
     }
-  }
 
 
-  #ddssva$SV1 <- svseq.NT$sv[,1]
-  #ddssva$SV2 <- svseq.NT$sv[,2]
+    # ddssva$SV1 <- svseq.NT$sv[,1] ddssva$SV2 <- svseq.NT$sv[,2]
 
-  #design(ddssva) <- ~ SV1 + SV2 + condition
+    # design(ddssva) <- ~ SV1 + SV2 + condition
 
-  cat("ddssva")
-  print(head(ddssva))
-  cat("ddsva_done")
+    cat("ddssva")
+    print(head(ddssva))
+    cat("ddsva_done")
 
-  design(ddssva)<-formula(paste("~ ",paste(paste0("SV", 1:ncol), collapse = "+"),"+", "condition" ))
+    design(ddssva) <- formula(paste("~ ", paste(paste0("SV", 1:ncol), collapse = "+"),
+        "+", "condition"))
 
-  #formula(paste("~ ",paste(paste0("SV", 1:2), collapse = "+"),"+", "condition" ))
+    # formula(paste('~ ',paste(paste0('SV', 1:2), collapse = '+'),'+',
+    # 'condition' ))
 
-  ddssva <- DESeq(ddssva)
-  re.DESeq <- results(ddssva)
+    ddssva <- DESeq(ddssva)
+    re.DESeq <- results(ddssva)
 
-  re.FC<-cbind(as.data.frame(re.DESeq),2^re.DESeq[,2],counts(dds))
-  colnames(re.FC)[7]="FoldChange(WT/Dox)"
+    re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[, 2], counts(dds))
+    colnames(re.FC)[7] = "FoldChange(WT/Dox)"
 
-  txs.gene<-ReformatTxsGene()
+    txs.gene <- ReformatTxsGene()
 
-  re.FC<-merge(re.FC,txs.gene$txs_genes_DF_2,by=0)
+    re.FC <- merge(re.FC, txs.gene$txs_genes_DF_2, by = 0)
 
-  re.FC.sorted<-re.FC[order(re.FC$pvalue),]
+    re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
 
-  return(re.FC.sorted)
+    return(re.FC.sorted)
 
 }
 #' FilterTranscripts
@@ -473,127 +434,121 @@ DEAnalysisAdjustByBatch <- function(df.NT,Nbatch) {
 #'
 #' @examples
 #'
-#' Re.txs<-FilterTranscripts("/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/","final_list.csv")
+#' Re.txs<-FilterTranscripts('/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/','final_list.csv')
 #'
 #'
 #'
-FilterTranscripts <- function(input.dir,input.file.pattern) {
+FilterTranscripts <- function(input.dir, input.file.pattern)
+{
 
-  file.name=paste0(input.dir,dir(input.dir,recursive = TRUE,pattern=input.file.pattern))
+    file.name = paste0(input.dir, dir(input.dir, recursive = TRUE, pattern = input.file.pattern))
 
-  #print(file.name)
+    # print(file.name)
 
-  genes.interested<-read.csv(file.name,header=F)
+    genes.interested <- read.csv(file.name, header = F)
 
-  #print(genes.interested)
+    # print(genes.interested)
 
-  #library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-  txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+    # library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 
-  library("Homo.sapiens")
+    library("Homo.sapiens")
 
-  txs <- as.data.frame(transcripts(Homo.sapiens, columns=c("TXNAME","GENEID","SYMBOL")))
+    txs <- as.data.frame(transcripts(Homo.sapiens, columns = c("TXNAME", "GENEID",
+        "SYMBOL")))
 
-  txs.4.genes.interested<-txs[which(txs$SYMBOL %in% genes.interested[,1]),]
+    txs.4.genes.interested <- txs[which(txs$SYMBOL %in% genes.interested[, 1]),
+        ]
 
-  cat(dim(txs.4.genes.interested))
+    cat(dim(txs.4.genes.interested))
 
-  #print(head(txs.4.genes.interested))
+    # print(head(txs.4.genes.interested))
 
-  #
-  # columns(TxDb)
-  # library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-  # txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
-  # txs1<-transcripts(txdb)
-  #
-  # columns(txdb)
-  # keys <- c("129787")
-  # keys <- keys(hgu95av2.db, 'ENTREZID')
-  # select(txdb, keys = keys, columns=c("TXCHROM","TXSTART","TXEND","TXSTRAND","TXNAME"), keytype="GENEID")
-  # txs2<-select(txdb,keys = keys,columns=c("GENEID","TXCHROM","TXSTART","TXEND","TXSTRAND","TXNAME"),keytype="GENEID")
-  # dim(txs2)
-  # txs2
-  #
-  # txdb
-   GRList <- transcriptsBy(txdb, by = "gene")
-  # length(GRList)
-  # which(names(GRList) %in% c("129787"))
-  # GRList[[4237]]
-  # as.data.frame(GRList[[4237]])
-  #
-   num.of.txs.4.gene<-unlist2(lapply(GRList,length))
+    # columns(TxDb) library(TxDb.Hsapiens.UCSC.hg19.knownGene) txdb <-
+    # TxDb.Hsapiens.UCSC.hg19.knownGene txs1<-transcripts(txdb) columns(txdb)
+    # keys <- c('129787') keys <- keys(hgu95av2.db, 'ENTREZID') select(txdb,
+    # keys = keys, columns=c('TXCHROM','TXSTART','TXEND','TXSTRAND','TXNAME'),
+    # keytype='GENEID') txs2<-select(txdb,keys =
+    # keys,columns=c('GENEID','TXCHROM','TXSTART','TXEND','TXSTRAND','TXNAME'),keytype='GENEID')
+    # dim(txs2) txs2 txdb
+    GRList <- transcriptsBy(txdb, by = "gene")
+    # length(GRList) which(names(GRList) %in% c('129787')) GRList[[4237]]
+    # as.data.frame(GRList[[4237]])
+    num.of.txs.4.gene <- unlist2(lapply(GRList, length))
 
-   boxplot(num.of.txs.4.gene)
+    boxplot(num.of.txs.4.gene)
 
-   hist(num.of.txs.4.gene)
+    hist(num.of.txs.4.gene)
 
-  # which.max(num.of.txs.4.gene)
-  #
-  # index<-which(names(unlist(num.of.txs.4.gene))=="4237")
-  #
-  # GRList.data.frame<-lapply(GRList,as.data.frame)
-  #
-  # GRList.data.frame[[5922]]
+    # which.max(num.of.txs.4.gene)
+    # index<-which(names(unlist(num.of.txs.4.gene))=='4237')
+    # GRList.data.frame<-lapply(GRList,as.data.frame) GRList.data.frame[[5922]]
 
-  data2<-txs
-  data3<-cbind(data2,unlist(data2$SYMBOL))
-  colnames(data3)[9]="Gene"
+    data2 <- txs
+    data3 <- cbind(data2, unlist(data2$SYMBOL))
+    colnames(data3)[9] = "Gene"
 
-  txs.num<-count(data3,"Gene")
-  hist(txs.num)
+    txs.num <- count(data3, "Gene")
+    hist(txs.num)
 
-  txs.min<-do.call(rbind, by(data3, data3$Gene, function(x) x[which.min(x$width),]))
-  txs.max<-do.call(rbind, by(data3, data3$Gene, function(x) x[which.max(x$width),]))
+    txs.min <- do.call(rbind, by(data3, data3$Gene, function(x) x[which.min(x$width),
+        ]))
+    txs.max <- do.call(rbind, by(data3, data3$Gene, function(x) x[which.max(x$width),
+        ]))
 
-  txs.min.start<-do.call(rbind, by(data3, data3$Gene, function(x) x[which.min(x$start),]))
-  txs.max.end<-do.call(rbind, by(data3, data3$Gene, function(x) x[which.max(x$end),]))
+    txs.min.start <- do.call(rbind, by(data3, data3$Gene, function(x) x[which.min(x$start),
+        ]))
+    txs.max.end <- do.call(rbind, by(data3, data3$Gene, function(x) x[which.max(x$end),
+        ]))
 
-  temp<-merge(txs.min.start,txs.max.end,by="Gene",suffixes = c(".min.start",".max.end"))
-  temp2<-merge(temp,txs.min,by="Gene")
-  temp3<-merge(temp2,txs.max,by="Gene",suffixes = c(".shortest",".longest"))
-  temp4<-merge(temp3,txs.num,by="Gene")
+    temp <- merge(txs.min.start, txs.max.end, by = "Gene", suffixes = c(".min.start",
+        ".max.end"))
+    temp2 <- merge(temp, txs.min, by = "Gene")
+    temp3 <- merge(temp2, txs.max, by = "Gene", suffixes = c(".shortest", ".longest"))
+    temp4 <- merge(temp3, txs.num, by = "Gene")
 
-  #temp3<-temp[order(temp3$Gene),]
+    # temp3<-temp[order(temp3$Gene),]
 
 
-  txs.num.4.genes.interested<-txs.num[which(txs.num$Gene %in% genes.interested[,1]),]
-  txs.min.4.genes.interested<-txs.min[which(txs.min$Gene %in% genes.interested[,1]),]
-  txs.max.4.genes.interested<-txs.max[which(txs.max$Gene %in% genes.interested[,1]),]
+    txs.num.4.genes.interested <- txs.num[which(txs.num$Gene %in% genes.interested[,
+        1]), ]
+    txs.min.4.genes.interested <- txs.min[which(txs.min$Gene %in% genes.interested[,
+        1]), ]
+    txs.max.4.genes.interested <- txs.max[which(txs.max$Gene %in% genes.interested[,
+        1]), ]
 
-  re<-list(txs=txs,txs.num=txs.num,txs.min=txs.min,txs.max=txs.max,txs.min.start.max.end=temp4,
-           txs.4.genes.interested=txs.4.genes.interested,
-           txs.num.4.genes.interested=txs.num.4.genes.interested,
-           txs.min.4.genes.interested=txs.min.4.genes.interested,
-           txs.max.4.genes.interested=txs.max.4.genes.interested)
+    re <- list(txs = txs, txs.num = txs.num, txs.min = txs.min, txs.max = txs.max,
+        txs.min.start.max.end = temp4, txs.4.genes.interested = txs.4.genes.interested,
+        txs.num.4.genes.interested = txs.num.4.genes.interested, txs.min.4.genes.interested = txs.min.4.genes.interested,
+        txs.max.4.genes.interested = txs.max.4.genes.interested)
 
-  return(re)
+    return(re)
 
 }
 
 # index<-which(Re.txs$txs.min.start.max.end$seqnames.min.start!=Re.txs$txs.min.start.max.end$seqnames.max.end)
-#
 # dim(Re.txs$txs.min.start.max.end[index,])
 # names(Re.txs$txs.min.start.max.end)
-#
 # head(Re.txs$txs.min.start.max.end[index,c(1,2,10)],275)
 
-#data2<-head(Re.txs$txs.all,100)
-#data2
+# data2<-head(Re.txs$txs.all,100) data2
 
-#do.call(rbind, by(data2, unlist(data2$SYMBOL), function(x) x[which.min(x$width),]))
+# do.call(rbind, by(data2, unlist(data2$SYMBOL), function(x)
+# x[which.min(x$width),]))
 
-#do.call(rbind,tapply(1:nrow(data2), unlist(data2$SYMBOL), function(x) data2[x,][which.min(data2$width[x]),]))
-#dara
+# do.call(rbind,tapply(1:nrow(data2), unlist(data2$SYMBOL), function(x)
+# data2[x,][which.min(data2$width[x]),])) dara
 
 
 
-cmd2="wc -l /media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/*.rm.exon.intron.hg19.bed"
+cmd2 = "wc -l /media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/*.rm.exon.intron.hg19.bed"
 
-Re.out<-system(cmd2, intern = TRUE, ignore.stderr = TRUE)
+Re.out <- system(cmd2, intern = TRUE, ignore.stderr = TRUE)
 
-re<-strsplit(Re.out,split="\\/")
+re <- strsplit(Re.out, split = "\\/")
 
-re2<-cbind(trimws(do.call("rbind",lapply(re[1:4],"[[",1))),do.call("rbind",lapply(re[1:4],"[[",9)))
+re2 <- cbind(trimws(do.call("rbind", lapply(re[1:4], "[[", 1))), do.call("rbind",
+    lapply(re[1:4], "[[", 9)))
 #' InstallRequiredPackage
 #'
 #' @return
@@ -602,27 +557,28 @@ re2<-cbind(trimws(do.call("rbind",lapply(re[1:4],"[[",1))),do.call("rbind",lappl
 #' @examples
 #' InstallRequiredPackage()
 #'
-InstallRequiredPackage<- function() {
+InstallRequiredPackage <- function()
+{
 
-  source("https://bioconductor.org/biocLite.R")
-  biocLite("Homo.sapiens")
-  biocLite("hgu95av2.db")
-  biocLite("rhdf5")
-  install.packages("plyr")
-  biocLite("rtracklayer")
-  install.packages("devtools")
-  devtools::install_github("pachterlab/sleuth")
-  biocLite("biomaRt")
-  install.packages("corrplot")
-  biocLite("sva")
-  source("https://bioconductor.org/biocLite.R")
-  biocLite("ShortRead")
-  install.packages("doMC")
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("Homo.sapiens")
+    biocLite("hgu95av2.db")
+    biocLite("rhdf5")
+    install.packages("plyr")
+    biocLite("rtracklayer")
+    install.packages("devtools")
+    devtools::install_github("pachterlab/sleuth")
+    biocLite("biomaRt")
+    install.packages("corrplot")
+    biocLite("sva")
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("ShortRead")
+    install.packages("doMC")
 
-  library(Homo.sapiens)
-  library(plyr)
-  library(rtracklayer)
-  library(annotate)
+    library(Homo.sapiens)
+    library(plyr)
+    library(rtracklayer)
+    library(annotate)
 
 }
 #' Loadlibrary
@@ -634,18 +590,19 @@ InstallRequiredPackage<- function() {
 #'
 #' Loadlibrary()
 #'
-Loadlibrary <- function() {
-  suppressPackageStartupMessages(library(Homo.sapiens))
-  suppressMessages(library(hgu95av2.db))
-  suppressPackageStartupMessages(library(plyr))
-  suppressPackageStartupMessages(library(rtracklayer))
-  suppressPackageStartupMessages(library(org.Hs.eg.db))
-  suppressPackageStartupMessages(library(annotate))
-  suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene))
-  suppressPackageStartupMessages(library("sleuth"))
-  suppressPackageStartupMessages(library(corrplot))
-  suppressPackageStartupMessages(library(sva))
-  suppressPackageStartupMessages(library(DESeq2))
+Loadlibrary <- function()
+{
+    suppressPackageStartupMessages(library(Homo.sapiens))
+    suppressMessages(library(hgu95av2.db))
+    suppressPackageStartupMessages(library(plyr))
+    suppressPackageStartupMessages(library(rtracklayer))
+    suppressPackageStartupMessages(library(org.Hs.eg.db))
+    suppressPackageStartupMessages(library(annotate))
+    suppressPackageStartupMessages(library(TxDb.Hsapiens.UCSC.hg19.knownGene))
+    suppressPackageStartupMessages(library("sleuth"))
+    suppressPackageStartupMessages(library(corrplot))
+    suppressPackageStartupMessages(library(sva))
+    suppressPackageStartupMessages(library(DESeq2))
 }
 #' MatchTxs2Gene
 #'
@@ -656,36 +613,39 @@ Loadlibrary <- function() {
 #'
 #'
 #'
-#' dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
-#' output.file="InterestedGeneTxsSorted.csv"
+#' dir.name='/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/'
+#' output.file='InterestedGeneTxsSorted.csv'
 #'
 #'
 #' Re.interested.gene<-MatchTxs2Gene.R(re.rMAT,Re.txs,dir.name,output.file)
 #'
 #'
-#' Re.interested.gene[which(Re.interested.gene$SYMBOL %in% c("XYLB")),]
+#' Re.interested.gene[which(Re.interested.gene$SYMBOL %in% c('XYLB')),]
 #'
 #'
 #'
-MatchTxs2Gene.R <- function(re.rMAT,Re.txs,dir.name,out.file) {
-  txs.DE<-re.rMAT$DE
-  txs.all<-Re.txs$txs
-  head(txs.DE)
-  head(txs.all)
-  rownames(txs.all)<-txs.all$TXNAME
-  txs.DE.all<-merge(txs.DE,txs.all,by=0)
+MatchTxs2Gene.R <- function(re.rMAT, Re.txs, dir.name, out.file)
+{
+    txs.DE <- re.rMAT$DE
+    txs.all <- Re.txs$txs
+    head(txs.DE)
+    head(txs.all)
+    rownames(txs.all) <- txs.all$TXNAME
+    txs.DE.all <- merge(txs.DE, txs.all, by = 0)
 
-  txs.4.certain.gene<-txs.DE.all[which(txs.DE.all$SYMBOL %in% Re.txs$txs.4.genes.interested$SYMBOL),]
+    txs.4.certain.gene <- txs.DE.all[which(txs.DE.all$SYMBOL %in% Re.txs$txs.4.genes.interested$SYMBOL),
+        ]
 
-  gene<-unlist2(txs.4.certain.gene$SYMBOL)
+    gene <- unlist2(txs.4.certain.gene$SYMBOL)
 
-  txs.4.certain.gene.2<-cbind(txs.4.certain.gene,gene)
+    txs.4.certain.gene.2 <- cbind(txs.4.certain.gene, gene)
 
-  txs.4.certain.gene.3<-txs.4.certain.gene.2[order(txs.4.certain.gene.2$gene),]
+    txs.4.certain.gene.3 <- txs.4.certain.gene.2[order(txs.4.certain.gene.2$gene),
+        ]
 
-  write.csv(txs.4.certain.gene.3,file=paste0(dir.name,out.file))
+    write.csv(txs.4.certain.gene.3, file = paste0(dir.name, out.file))
 
-  return(txs.4.certain.gene.2)
+    return(txs.4.certain.gene.2)
 
 }
 #' Title
@@ -700,71 +660,83 @@ MatchTxs2Gene.R <- function(re.rMAT,Re.txs,dir.name,out.file) {
 #' @examples
 #'
 #'
-#' dir.name=/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
+#' dir.name=/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/'
 #'
-#' by_what="*.rm.exon.intron.hg19.bed"
+#' by_what='*.rm.exon.intron.hg19.bed'
 #'
 #' NormalizedCount(re.out,dir.name,by_what)
 
-NormalizedCount <- function(re.out,dir.name,by_what) {
+NormalizedCount <- function(re.out, dir.name, by_what)
+{
 
 
-  pattern_check=grep(glob2rx("*.rm.exon.intron.hg19.bed"),by_what)
+    pattern_check = grep(glob2rx("*.rm.exon.intron.hg19.bed"), by_what)
 
-  if(length(pattern_check)!=0){
-    cmd2=paste0("wc -l ",dir.name,by_what)
-  }else{
-    cmd2=paste0("wc -l $(ls ",dir.name,by_what," | grep -v hg19)")
-  }
+    if (length(pattern_check) != 0)
+    {
+        cmd2 = paste0("wc -l ", dir.name, by_what)
+    } else
+    {
+        cmd2 = paste0("wc -l $(ls ", dir.name, by_what, " | grep -v hg19)")
+    }
 
-  num.intergenic.reads<-system(cmd2, intern = TRUE, ignore.stderr = TRUE)
+    num.intergenic.reads <- system(cmd2, intern = TRUE, ignore.stderr = TRUE)
 
-  num.intergenic.reads.2<-strsplit(num.intergenic.reads,split="\\/")
+    num.intergenic.reads.2 <- strsplit(num.intergenic.reads, split = "\\/")
 
-  #cat("OK")
-  #print(num.intergenic.reads.2)
-  #cat("OK")
+    # cat('OK') print(num.intergenic.reads.2) cat('OK')
 
-  n=length(num.intergenic.reads.2)-1
-  num.intergenic.reads.3<-cbind(trimws(do.call("rbind",lapply(num.intergenic.reads.2[1:n],"[[",1))),do.call("rbind",lapply(num.intergenic.reads.2[1:n],"[[",9)))
+    n = length(num.intergenic.reads.2) - 1
+    num.intergenic.reads.3 <- cbind(trimws(do.call("rbind", lapply(num.intergenic.reads.2[1:n],
+        "[[", 1))), do.call("rbind", lapply(num.intergenic.reads.2[1:n], "[[",
+        9)))
 
-  name.sample<-unlist(lapply(strsplit(num.intergenic.reads.3[,2],split="\\."),"[[",1))
+    name.sample <- unlist(lapply(strsplit(num.intergenic.reads.3[, 2], split = "\\."),
+        "[[", 1))
 
-  print(names(re.out))
+    print(names(re.out))
 
-  print(name.sample)
+    print(name.sample)
 
-  normalized.count.gene.matched.final<-list()
+    normalized.count.gene.matched.final <- list()
 
-  for(i in 1:8){
-    count.gene.matched<-re.out[(grep(name.sample[i],names(re.out)))]
-    num.intergenic.reads.matched<-as.numeric(num.intergenic.reads.3[grep(name.sample[i],num.intergenic.reads.3[,2]),1])
+    for (i in 1:8)
+    {
+        count.gene.matched <- re.out[(grep(name.sample[i], names(re.out)))]
+        num.intergenic.reads.matched <- as.numeric(num.intergenic.reads.3[grep(name.sample[i],
+            num.intergenic.reads.3[, 2]), 1])
 
-    #print(count.gene.matched)
-    #print(num.intergenic.reads.matched)
+        # print(count.gene.matched) print(num.intergenic.reads.matched)
 
-    normalized.count.gene.matched<-(count.gene.matched[[1]][,1]/num.intergenic.reads.matched)*(10^6)
-    count.gene.matched.2<-data.frame(cbind(as.character(count.gene.matched[[1]][,2]),count.gene.matched[[1]][,1],normalized.count.gene.matched))
+        normalized.count.gene.matched <- (count.gene.matched[[1]][, 1]/num.intergenic.reads.matched) *
+            (10^6)
+        count.gene.matched.2 <- data.frame(cbind(as.character(count.gene.matched[[1]][,
+            2]), count.gene.matched[[1]][, 1], normalized.count.gene.matched))
 
-    colnames(count.gene.matched.2)=c("Gene",paste0("Counts.",name.sample[i]),paste0("Normalized.Counts.",name.sample[i]))
+        colnames(count.gene.matched.2) = c("Gene", paste0("Counts.", name.sample[i]),
+            paste0("Normalized.Counts.", name.sample[i]))
 
-    normalized.count.gene.matched.final[[i]]<-count.gene.matched.2
-  }
+        normalized.count.gene.matched.final[[i]] <- count.gene.matched.2
+    }
 
-  merge.all <- function(x, y) {
-    merge(x, y, all=TRUE, by="Gene")
-  }
+    merge.all <- function(x, y)
+    {
+        merge(x, y, all = TRUE, by = "Gene")
+    }
 
-  output <- Reduce(merge.all,normalized.count.gene.matched.final)
+    output <- Reduce(merge.all, normalized.count.gene.matched.final)
 
-  row.has.na <- apply(output, 1, function(x){any(is.na(x))})
-  print(sum(row.has.na))
+    row.has.na <- apply(output, 1, function(x)
+    {
+        any(is.na(x))
+    })
+    print(sum(row.has.na))
 
-  final.filtered <- output[!row.has.na,]
+    final.filtered <- output[!row.has.na, ]
 
-  re<-list(final.filtered=final.filtered,num.intergenic.reads.2=num.intergenic.reads.2)
+    re <- list(final.filtered = final.filtered, num.intergenic.reads.2 = num.intergenic.reads.2)
 
-  return(re)
+    return(re)
 
 }
 #' Title
@@ -797,26 +769,27 @@ NormalizedCount <- function(re.out,dir.name,by_what) {
 #' estimateSizeFactorsForMatrix(raw.count.2)
 #'
 #'
-norm_factors <- function(mat) {
-  #nz <- apply(mat, 1, function(row) !any(round(row) == 0))
-  #mat_nz <- mat[nz,]
-  #p <- ncol(mat)
-  #geo_means <- exp(apply(mat_nz, 1, function(row) mean(log(row)) ))
+norm_factors <- function(mat)
+{
+    # nz <- apply(mat, 1, function(row) !any(round(row) == 0)) mat_nz <-
+    # mat[nz,] p <- ncol(mat) geo_means <- exp(apply(mat_nz, 1, function(row)
+    # mean(log(row)) ))
 
-  loggeomeans <- rowMeans(log(mat))
+    loggeomeans <- rowMeans(log(mat))
 
-  counts<-mat
+    counts <- mat
 
-  sf<-apply(counts, 2, function(cnts) {
-    exp(median(log(cnts)-loggeomeans))})
+    sf <- apply(counts, 2, function(cnts)
+    {
+        exp(median(log(cnts) - loggeomeans))
+    })
 
-  # <- sweep(mat_nz, 1, geo_means, `/`)
+    # <- sweep(mat_nz, 1, geo_means, `/`)
 
-  #sf <- apply(s, 2, median)
-  #scaling <- exp( (-1 / p) * sum(log(sf)))
+    # sf <- apply(s, 2, median) scaling <- exp( (-1 / p) * sum(log(sf)))
 
-  #sf * scaling
-  sf
+    # sf * scaling
+    sf
 }
 #' @title ProcessOutputFilesFrom3UTR
 #'
@@ -832,27 +805,27 @@ norm_factors <- function(mat) {
 #'
 #' @examples
 #'
-#' dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/"
+#' dir.name='/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results/'
 #'
 #' #new data
-#' dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
-#' input.file.pattern="*downstream.count.hg19.strand.based.txt"
+#' dir.name='/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/'
+#' input.file.pattern='*downstream.count.hg19.strand.based.txt'
 #'
-#' com.input.file.pattern="*downstream.com.count.hg19.strand.based.txt"
+#' com.input.file.pattern='*downstream.com.count.hg19.strand.based.txt'
 #'
-#' total.com.input.file.pattern="*.gene.downstream.count.hg19.strand.based.total2.txt"
+#' total.com.input.file.pattern='*.gene.downstream.count.hg19.strand.based.total2.txt'
 #'
 #' #use intergenic reads as normal factor
-#' normal.factor="*.rm.exon.intron.hg19.bed"
+#' normal.factor='*.rm.exon.intron.hg19.bed'
 #'
 #' #use total reads as normal factor
-#' normal.factor="*.bed"
+#' normal.factor='*.bed'
 #'
-#' sink("testcode.txt")
-#' re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"intergenic")
-#' re.rMAT.com<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_intergenic")
+#' sink('testcode.txt')
+#' re.rMAT<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,'intergenic')
+#' re.rMAT.com<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,'com_intergenic')
 #'
-#' re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,"com_total")
+#' re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,'com_total')
 #'
 #' re.rMAT.com.total.interested<-re.rMAT.com.total$DE[which(re.rMAT.com.total$DE$gene %in% genes.interested[,1]),]
 #'
@@ -860,23 +833,23 @@ norm_factors <- function(mat) {
 #' re.com.total.neg<-re.rMAT.com.total.interested[which(re.rMAT.com.total.interested$`FoldChange(WT/Dox)`>=1),]
 #'
 #'
-#' re.com.total.pos[which(re.com.total.pos$gene %in% c("TPCN2")),]
+#' re.com.total.pos[which(re.com.total.pos$gene %in% c('TPCN2')),]
 #'
 #' re.rMAT.com.interested<-re.rMAT.com$DE[which(re.rMAT.com$DE$gene %in% genes.interested[,1]),]
 #' re.pos<-re.rMAT.com.interested[which(re.rMAT.com.interested$`FoldChange(WT/Dox)`<1),]
 #' re.neg<-re.rMAT.com.interested[which(re.rMAT.com.interested$`FoldChange(WT/Dox)`>=1),]
 #'
 #'
-#' re.rMAT.total<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,"total")
-#' re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total")
+#' re.rMAT.total<-ProcessOutputFilesFrom3UTR(dir.name,input.file.pattern,normal.factor,'total')
+#' re.rMAT.com.total<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,'com_total')
 #'
 #' sink()
 #'
-#' sink("test_com_total.txt")
-#' re.rMAT.com.total.test<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,"com_total_test")
+#' sink('test_com_total.txt')
+#' re.rMAT.com.total.test<-ProcessOutputFilesFrom3UTR(dir.name,com.input.file.pattern,normal.factor,'com_total_test')
 #' sink()
 #'
-#' re.rMAT.com.total.test.2<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,"com_total_test_3")
+#' re.rMAT.com.total.test.2<-ProcessOutputFilesFrom3UTR(dir.name,total.com.input.file.pattern,normal.factor,'com_total_test_3')
 #'
 #' geoMeans <- exp(rowMeans(log(counts(re.rMAT.com.total.test$dds))))
 #'
@@ -897,10 +870,10 @@ norm_factors <- function(mat) {
 #'
 #' DE.norm.with.rpkm.norm.2<-DE.norm.with.rpkm.norm[,-9]
 #'
-#' col.name<-c(paste0("D.",sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[1:8],"\\."),"[[",2)),
-#' paste0("R.",sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[9:16],"\\."),"[[",3)))
+#' col.name<-c(paste0('D.',sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[1:8],'\\.'),'[[',2)),
+#' paste0('R.',sapply(strsplit(colnames(DE.norm.with.rpkm.norm.2)[9:16],'\\.'),'[[',3)))
 #'
-#' col.name.2<-gsub("2016-02-10-","",col.name)
+#' col.name.2<-gsub('2016-02-10-','',col.name)
 #'
 #' cbind(colnames(DE.norm.with.rpkm.norm.2),col.name.2)
 #'
@@ -913,7 +886,7 @@ norm_factors <- function(mat) {
 #'for (i in 1:8) {
 #' plot(DE.norm.with.rpkm.norm.3[,c(i,i+8)])
 #' model <- lm(DE.norm.with.rpkm.norm.3[,i+8] ~ DE.norm.with.rpkm.norm.3[,i], data = as.data.frame(DE.norm.with.rpkm.norm.3))
-#' abline(model, col = "red")
+#' abline(model, col = 'red')
 #'}
 #'
 #' plot(apply(DE.norm.with.rpkm.norm.2,2,as.numeric)[,1:3])
@@ -922,103 +895,110 @@ norm_factors <- function(mat) {
 #'
 #' corrplot.mixed(M)
 #'
-#' corrplot(M,method="ellipse",order = "hclust", addrect = 2)
+#' corrplot(M,method='ellipse',order = 'hclust', addrect = 2)
 #'
-#' corrplot(M,method="number",order = "hclust", addrect = 2)
+#' corrplot(M,method='number',order = 'hclust', addrect = 2)
 #'
-#' corrplot(M,method="number",order = "FPC", addrect = 2)
+#' corrplot(M,method='number',order = 'FPC', addrect = 2)
 #'
 #
-#' corrplot(M,method="ellipse")
+#' corrplot(M,method='ellipse')
 #'
-#' corrplot(M,method="ellipse",type="upper",)
-#' corrplot(M, method="number")
+#' corrplot(M,method='ellipse',type='upper',)
+#' corrplot(M, method='number')
 #'
-#' corrplot(M,method="ellipse",order="hclust", addrect=4)
+#' corrplot(M,method='ellipse',order='hclust', addrect=4)
 
 #'
 #' size.factor.2<-estimateSizeFactors(re.rMAT.com.total.test.2$dds)
 #' sizeFactors(size.factor.2)
 
-#corrplot(M, order="hclust", addrect=2, col="wb", bg="gold2")
+# corrplot(M, order='hclust', addrect=2, col='wb', bg='gold2')
 
 
-ProcessOutputFilesFrom3UTR<-function(dir.name,input.file.pattern,normal.factor,out){
+ProcessOutputFilesFrom3UTR <- function(dir.name, input.file.pattern, normal.factor,
+    out)
+    {
 
-  file.name=paste0(dir.name,dir(dir.name,recursive = TRUE,pattern=input.file.pattern))
-  file.name.2<-as.list(file.name)
+    file.name = paste0(dir.name, dir(dir.name, recursive = TRUE, pattern = input.file.pattern))
+    file.name.2 <- as.list(file.name)
 
-  names(file.name.2)=sapply(strsplit(file.name,split="\\/"),"[[",9)
+    names(file.name.2) = sapply(strsplit(file.name, split = "\\/"), "[[", 9)
 
-  print(file.name.2)
+    print(file.name.2)
 
-  re.out<-lapply(file.name.2,function(u){
-    re=read.table(u,header=F)
-    colnames(re)=c("Count","GeneName")
-    re
-  })
+    re.out <- lapply(file.name.2, function(u)
+    {
+        re = read.table(u, header = F)
+        colnames(re) = c("Count", "GeneName")
+        re
+    })
 
-  temp.name<-strsplit(names(file.name.2),split="\\.")
+    temp.name <- strsplit(names(file.name.2), split = "\\.")
 
-  temp.name.2<-trimws(do.call("rbind",lapply(temp.name,"[[",1)))
+    temp.name.2 <- trimws(do.call("rbind", lapply(temp.name, "[[", 1)))
 
-  final.filtered.norm<-NormalizedCount(re.out,dir.name,normal.factor)
+    final.filtered.norm <- NormalizedCount(re.out, dir.name, normal.factor)
 
-  final.filtered<-final.filtered.norm$final.filtered
-  num.intergenic.reads.2<-final.filtered.norm$num.intergenic.reads.2
+    final.filtered <- final.filtered.norm$final.filtered
+    num.intergenic.reads.2 <- final.filtered.norm$num.intergenic.reads.2
 
-  n=length(num.intergenic.reads.2)-1
-  #suppressPackageStartupMessages(library(DESeq2))
+    n = length(num.intergenic.reads.2) - 1
+    # suppressPackageStartupMessages(library(DESeq2))
 
-  print(head(final.filtered))
+    print(head(final.filtered))
 
-  countData <- apply(final.filtered[,c(2,6,10,12,4,8,14,16)], 2, as.numeric)
+    countData <- apply(final.filtered[, c(2, 6, 10, 12, 4, 8, 14, 16)], 2, as.numeric)
 
-  rownames(countData)<-final.filtered[,1]
+    rownames(countData) <- final.filtered[, 1]
 
-  colData <- data.frame(condition=factor(c(rep("Dox",4),rep("WT",4))))
-  dds <- DESeqDataSetFromMatrix(countData, colData, formula(~ condition))
+    colData <- data.frame(condition = factor(c(rep("Dox", 4), rep("WT", 4))))
+    dds <- DESeqDataSetFromMatrix(countData, colData, formula(~condition))
 
-  #size.factor<-estimateSizeFactors(dds)
+    # size.factor<-estimateSizeFactors(dds)
 
-  #print(size.factor)
+    # print(size.factor)
 
-  re.DESeq<-results(DESeq(dds))
+    re.DESeq <- results(DESeq(dds))
 
-  print(re.DESeq)
+    print(re.DESeq)
 
-  re.FC<-cbind(as.data.frame(re.DESeq),2^re.DESeq[,2],counts(dds))
-  colnames(re.FC)[7]="FoldChange(WT/Dox)"
+    re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[, 2], counts(dds))
+    colnames(re.FC)[7] = "FoldChange(WT/Dox)"
 
-  txs.gene<-ReformatTxsGene()
+    txs.gene <- ReformatTxsGene()
 
-  re.FC<-merge(re.FC,txs.gene$txs_genes_DF_2,by=0)
+    re.FC <- merge(re.FC, txs.gene$txs_genes_DF_2, by = 0)
 
-  #print(head(final.filtered))
+    # print(head(final.filtered))
 
-  colnames(final.filtered)[1]<-"tx_name"
+    colnames(final.filtered)[1] <- "tx_name"
 
-  final.filtered.2<-cbind(final.filtered[,grep(glob2rx("tx_name"),colnames(final.filtered))],
-  final.filtered[,grep(glob2rx("Normalized*emp*Dox*"),colnames(final.filtered))],
-  final.filtered[,grep(glob2rx("Normalized*hela*dox*"),colnames(final.filtered))],
-  final.filtered[,grep(glob2rx("Normalized*emp*WT*"),colnames(final.filtered))],
-  final.filtered[,grep(glob2rx("Normalized*hela*wt*"),colnames(final.filtered))])
+    final.filtered.2 <- cbind(final.filtered[, grep(glob2rx("tx_name"), colnames(final.filtered))],
+        final.filtered[, grep(glob2rx("Normalized*emp*Dox*"), colnames(final.filtered))],
+        final.filtered[, grep(glob2rx("Normalized*hela*dox*"), colnames(final.filtered))],
+        final.filtered[, grep(glob2rx("Normalized*emp*WT*"), colnames(final.filtered))],
+        final.filtered[, grep(glob2rx("Normalized*hela*wt*"), colnames(final.filtered))])
 
-  colnames(final.filtered.2)[1]<-"tx_name"
+    colnames(final.filtered.2)[1] <- "tx_name"
 
-  re.FC<-merge(re.FC,final.filtered.2,by="tx_name")
+    re.FC <- merge(re.FC, final.filtered.2, by = "tx_name")
 
-  re.FC.sorted<-re.FC[order(re.FC$pvalue),]
+    re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
 
-  input.file.pattern.2<-sub("\\*","_",input.file.pattern)
+    input.file.pattern.2 <- sub("\\*", "_", input.file.pattern)
 
-  write.csv(re.FC.sorted,file=paste0(dir.name,"3UTR_DE_",out,input.file.pattern.2,".csv"))
+    write.csv(re.FC.sorted, file = paste0(dir.name, "3UTR_DE_", out, input.file.pattern.2,
+        ".csv"))
 
-  re2<-cbind(trimws(do.call("rbind",lapply(num.intergenic.reads.2[1:n],"[[",1))),do.call("rbind",lapply(num.intergenic.reads.2[1:n],"[[",9)))
+    re2 <- cbind(trimws(do.call("rbind", lapply(num.intergenic.reads.2[1:n],
+        "[[", 1))), do.call("rbind", lapply(num.intergenic.reads.2[1:n], "[[",
+        9)))
 
-  re.out.3<-list(ReadDownstream45kb=re.out,intergenic_reads=re2,MergedNorma=final.filtered,DE=re.FC.sorted,dds=dds)
+    re.out.3 <- list(ReadDownstream45kb = re.out, intergenic_reads = re2, MergedNorma = final.filtered,
+        DE = re.FC.sorted, dds = dds)
 
-  return(re.out.3)
+    return(re.out.3)
 
 }
 #' @title ProcessOutputFilesFrom3UTR_recount
@@ -1036,166 +1016,191 @@ ProcessOutputFilesFrom3UTR<-function(dir.name,input.file.pattern,normal.factor,o
 #' @examples
 #'
 #' #new data
-#' dir.name="/media/H_driver/2016/Ramin_azhang/"
+#' dir.name='/media/H_driver/2016/Ramin_azhang/'
 #'
-#' input.file.pattern="*downstream.count.plus.minus.and.minus.plus.3.FPKM.xls"
+#' input.file.pattern='*downstream.count.plus.minus.and.minus.plus.3.FPKM.xls'
 #'
-#' input.file.pattern.4.interested.gene="final_list.csv"
+#' input.file.pattern.4.interested.gene='final_list.csv'
 #'
-#' out_put="for_bioinfo_core/RNA_seq/Results4Check/"
+#' out_put='for_bioinfo_core/RNA_seq/Results4Check/'
 #'
-#' out_by_p=paste0(out_put,"DE_by_p.csv")
-#' out_by_gene=paste0(out_put,"DE_by_gene.csv")
-#' out_gene_interested=paste0(out_put,"DE_by_interested_gene.csv")
-#' out_gene_interested_sig=paste0(out_put,"DE_by_interested_gene_sig.csv")
+#' out_by_p=paste0(out_put,'DE_by_p.csv')
+#' out_by_gene=paste0(out_put,'DE_by_gene.csv')
+#' out_gene_interested=paste0(out_put,'DE_by_interested_gene.csv')
+#' out_gene_interested_sig=paste0(out_put,'DE_by_interested_gene_sig.csv')
 #'
 #' re<-ProcessOutputFilesFrom3UTR_recount(dir.name,input.file.pattern,input.file.pattern.4.interested.gene,out_by_p,out_by_gene,out_gene_interested,out_gene_interested_sig)
 #'
 
-ProcessOutputFilesFrom3UTR_recount<-function(dir.name,input.file.pattern,input.file.pattern.4.interested.gene,out_by_p,out_by_gene,out_gene_interested,out_gene_interested_sig){
+ProcessOutputFilesFrom3UTR_recount <- function(dir.name, input.file.pattern,
+    input.file.pattern.4.interested.gene, out_by_p, out_by_gene, out_gene_interested,
+    out_gene_interested_sig)
+    {
 
-  file.name=paste0(dir.name,dir(dir.name,recursive = TRUE,pattern=input.file.pattern))
-  file.name.2<-as.list(file.name)
+    file.name = paste0(dir.name, dir(dir.name, recursive = TRUE, pattern = input.file.pattern))
+    file.name.2 <- as.list(file.name)
 
-  names(file.name.2)=sapply(strsplit(file.name,split="\\/"),"[[",9)
+    names(file.name.2) = sapply(strsplit(file.name, split = "\\/"), "[[", 9)
 
-  #print(file.name.2)
+    # print(file.name.2)
 
-  re.out<-lapply(file.name.2,function(u){
-    re=read.table(u,header=F)
-    colnames(re)=c("chrom","st","end","accession","mRNA_size","gene_strand","Frag_count","FPM","FPKM")
-    re
-  })
+    re.out <- lapply(file.name.2, function(u)
+    {
+        re = read.table(u, header = F)
+        colnames(re) = c("chrom", "st", "end", "accession", "mRNA_size", "gene_strand",
+            "Frag_count", "FPM", "FPKM")
+        re
+    })
 
-  temp.name<-strsplit(names(file.name.2),split="\\.")
-  temp.name.2<-trimws(do.call("rbind",lapply(temp.name,"[[",1)))
+    temp.name <- strsplit(names(file.name.2), split = "\\.")
+    temp.name.2 <- trimws(do.call("rbind", lapply(temp.name, "[[", 1)))
 
-  re.out.2<-do.call("cbind",lapply(re.out,function(x){x}))
+    re.out.2 <- do.call("cbind", lapply(re.out, function(x)
+    {
+        x
+    }))
 
-  re.out.2.name<-gsub("gene.downstream.count.plus.minus.and.minus.plus.3.FPKM.xls.","",colnames(re.out.2))
+    re.out.2.name <- gsub("gene.downstream.count.plus.minus.and.minus.plus.3.FPKM.xls.",
+        "", colnames(re.out.2))
 
-  colnames(re.out.2)<-re.out.2.name
+    colnames(re.out.2) <- re.out.2.name
 
-  chrom<-as.data.frame(apply(re.out.2[,grep("chrom",colnames(re.out.2))],1,unique))
-  st<-as.data.frame(apply(re.out.2[,grep("\\.st",colnames(re.out.2))],1,unique))
-  end<-as.data.frame(apply(re.out.2[,grep("end",colnames(re.out.2))],1,unique))
-  accession<-as.data.frame(apply(re.out.2[,grep("accession",colnames(re.out.2))],1,unique))
-  mRNA_size<-as.data.frame(apply(re.out.2[,grep("mRNA_size",colnames(re.out.2))],1,unique))
-  gene_strand<-as.data.frame(apply(re.out.2[,grep("gene_strand",colnames(re.out.2))],1,unique))
+    chrom <- as.data.frame(apply(re.out.2[, grep("chrom", colnames(re.out.2))],
+        1, unique))
+    st <- as.data.frame(apply(re.out.2[, grep("\\.st", colnames(re.out.2))],
+        1, unique))
+    end <- as.data.frame(apply(re.out.2[, grep("end", colnames(re.out.2))],
+        1, unique))
+    accession <- as.data.frame(apply(re.out.2[, grep("accession", colnames(re.out.2))],
+        1, unique))
+    mRNA_size <- as.data.frame(apply(re.out.2[, grep("mRNA_size", colnames(re.out.2))],
+        1, unique))
+    gene_strand <- as.data.frame(apply(re.out.2[, grep("gene_strand", colnames(re.out.2))],
+        1, unique))
 
-  colnames(chrom)<-"chrom"
-  colnames(st)<-"st"
-  colnames(end)<-"end"
-  colnames(accession)<-"accession"
-  colnames(mRNA_size)<-"mRNA_size"
-  colnames(gene_strand)<-"gene_strand"
+    colnames(chrom) <- "chrom"
+    colnames(st) <- "st"
+    colnames(end) <- "end"
+    colnames(accession) <- "accession"
+    colnames(mRNA_size) <- "mRNA_size"
+    colnames(gene_strand) <- "gene_strand"
 
-  temp<-cbind.data.frame(chrom,st,end,accession,mRNA_size,gene_strand)
+    temp <- cbind.data.frame(chrom, st, end, accession, mRNA_size, gene_strand)
 
-  Frag_count<-re.out.2[,grep("Frag_count",colnames(re.out.2))]
-  FPM<-re.out.2[,grep("FPM",colnames(re.out.2))]
-  FPKM<-re.out.2[,grep("FPKM",colnames(re.out.2))]
+    Frag_count <- re.out.2[, grep("Frag_count", colnames(re.out.2))]
+    FPM <- re.out.2[, grep("FPM", colnames(re.out.2))]
+    FPKM <- re.out.2[, grep("FPKM", colnames(re.out.2))]
 
-  re.out.3<-cbind(temp,Frag_count,FPM,FPKM)
+    re.out.3 <- cbind(temp, Frag_count, FPM, FPKM)
 
-  countData <- apply(re.out.3[,c(7,9,11,12,8,10,13,14)], 2, as.numeric)
+    countData <- apply(re.out.3[, c(7, 9, 11, 12, 8, 10, 13, 14)], 2, as.numeric)
 
-  rownames(countData)<-re.out.3[,4]
+    rownames(countData) <- re.out.3[, 4]
 
-  dat <- countData
-  idx <- rowMeans(dat) > 1
-  dat <- dat[idx,]
-
-
-  cell<-factor(rep(c('emp','hela'),c(2,2)))
-  cell=rep(cell,2)
-
-  colData <- data.frame(condition=factor(rep(c('Dox', 'WT'),c(4, 4))),cell=cell)
-
-  dds <- DESeqDataSetFromMatrix(dat, colData, formula(~ condition))
-
-  #counts(dds)
-
-
-  mod <- model.matrix(~condition,colData(dds))
-  mod0 <- model.matrix(~1,colData(dds))
-  svseq.NT <- svaseq(counts(dds), mod, mod0)
-
-  par(mfrow=c(2,1),mar=c(3,5,3,1))
-  stripchart(svseq.NT$sv[,1] ~ dds$cell,vertical=TRUE,main="SV1")
-  abline(h=0)
-  stripchart(svseq.NT$sv[,2] ~ dds$cell,vertical=TRUE,main="SV2")
-  abline(h=0)
+    dat <- countData
+    idx <- rowMeans(dat) > 1
+    dat <- dat[idx, ]
 
 
-  #Adjust by surrogate variables 1 and 2
-  ddssva <- dds
-  ddssva$SV1 <- svseq.NT$sv[,1]
-  ddssva$SV2 <- svseq.NT$sv[,2]
-  design(ddssva) <- ~ SV1 + SV2 + condition
-  ddssva <- DESeq(ddssva)
+    cell <- factor(rep(c("emp", "hela"), c(2, 2)))
+    cell = rep(cell, 2)
 
-  #print(sizeFactors(estimateSizeFactors(ddssva)))
-  #print(head(counts(ddssva,normalized = TRUE)))
+    colData <- data.frame(condition = factor(rep(c("Dox", "WT"), c(4, 4))),
+        cell = cell)
 
-  res.ddssva.2.sva.adjusted <- results(ddssva)
-  #head(res.ddssva.2.sva.adjusted)
-  #summary(res.ddssva.2.sva.adjusted)
+    dds <- DESeqDataSetFromMatrix(dat, colData, formula(~condition))
 
-  re.FC<-cbind(as.data.frame(res.ddssva.2.sva.adjusted),2^res.ddssva.2.sva.adjusted[,2])
-  colnames(re.FC)[7]="FoldChange(WT/Dox)"
+    # counts(dds)
 
-  MatchGene <- function(res.sva.NT,re.rMAT.com.total.test.2) {
-    temp<-re.rMAT.com.total.test.2$DE[,c(1,23,24)]
-    rownames(temp)<-temp[,1]
-    #temp<-temp[,-1]
-    temp2<-merge(as.data.frame(res.sva.NT),temp,by=0,sort=FALSE)
-    re.FC<-temp2
-    re.FC.sorted<-re.FC[order(re.FC$pvalue),]
-    return(re.FC.sorted)
-  }
 
-  re.FC.sorted<-MatchGene(re.FC,re.rMAT.com.total.test.2)
+    mod <- model.matrix(~condition, colData(dds))
+    mod0 <- model.matrix(~1, colData(dds))
+    svseq.NT <- svaseq(counts(dds), mod, mod0)
 
-  rownames(re.out.3)=re.out.3$accession
-  re.FC.sorted<-re.FC.sorted[,-1]
+    par(mfrow = c(2, 1), mar = c(3, 5, 3, 1))
+    stripchart(svseq.NT$sv[, 1] ~ dds$cell, vertical = TRUE, main = "SV1")
+    abline(h = 0)
+    stripchart(svseq.NT$sv[, 2] ~ dds$cell, vertical = TRUE, main = "SV2")
+    abline(h = 0)
 
-  rownames(re.FC.sorted)=re.FC.sorted$tx_name
 
-  re.out.3.temp<-re.out.3[,c(1:6,7,9,11,12,8,10,13,14,15,17,19,20,16,18,21,22,23,25,27,28,24,26,29,30)]
+    # Adjust by surrogate variables 1 and 2
+    ddssva <- dds
+    ddssva$SV1 <- svseq.NT$sv[, 1]
+    ddssva$SV2 <- svseq.NT$sv[, 2]
+    design(ddssva) <- ~SV1 + SV2 + condition
+    ddssva <- DESeq(ddssva)
 
-  re.FC.sorted<-merge(re.FC.sorted,re.out.3.temp,by=0,sort=FALSE)
+    # print(sizeFactors(estimateSizeFactors(ddssva)))
+    # print(head(counts(ddssva,normalized = TRUE)))
 
-  p.one.sided<-unlist(lapply(re.FC.sorted$stat,function(x){convert.z.score(x,two.side=F)}))
+    res.ddssva.2.sva.adjusted <- results(ddssva)
+    # head(res.ddssva.2.sva.adjusted) summary(res.ddssva.2.sva.adjusted)
 
-  p.one.sided.adjust<-p.adjust(p.one.sided,method = "BH")
+    re.FC <- cbind(as.data.frame(res.ddssva.2.sva.adjusted), 2^res.ddssva.2.sva.adjusted[,
+        2])
+    colnames(re.FC)[7] = "FoldChange(WT/Dox)"
 
-  re.FC.sorted<-cbind(re.FC.sorted,p.one.sided,p.one.sided.adjust)
+    MatchGene <- function(res.sva.NT, re.rMAT.com.total.test.2)
+    {
+        temp <- re.rMAT.com.total.test.2$DE[, c(1, 23, 24)]
+        rownames(temp) <- temp[, 1]
+        # temp<-temp[,-1]
+        temp2 <- merge(as.data.frame(res.sva.NT), temp, by = 0, sort = FALSE)
+        re.FC <- temp2
+        re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
+        return(re.FC.sorted)
+    }
 
-  re.FC.sorted.sorted.by.gene<- re.FC.sorted[order(re.FC.sorted$gene),]
+    re.FC.sorted <- MatchGene(re.FC, re.rMAT.com.total.test.2)
 
-  write.csv(re.FC.sorted,file=paste0(dir.name,out_by_p),row.names = FALSE,quote=FALSE)
+    rownames(re.out.3) = re.out.3$accession
+    re.FC.sorted <- re.FC.sorted[, -1]
 
-  write.csv(re.FC.sorted.sorted.by.gene,file=paste0(dir.name,out_by_gene),row.names = FALSE,quote=FALSE)
+    rownames(re.FC.sorted) = re.FC.sorted$tx_name
 
-  file.name=paste0(dir.name,dir(dir.name,recursive = TRUE,pattern=input.file.pattern.4.interested.gene))
+    re.out.3.temp <- re.out.3[, c(1:6, 7, 9, 11, 12, 8, 10, 13, 14, 15, 17,
+        19, 20, 16, 18, 21, 22, 23, 25, 27, 28, 24, 26, 29, 30)]
 
-  genes.interested<-read.csv(file.name,header=F)
+    re.FC.sorted <- merge(re.FC.sorted, re.out.3.temp, by = 0, sort = FALSE)
 
-  re.genes.interested<-re.FC.sorted[which(re.FC.sorted$gene %in% genes.interested[,1]),]
+    p.one.sided <- unlist(lapply(re.FC.sorted$stat, function(x)
+    {
+        convert.z.score(x, two.side = F)
+    }))
 
-  re.genes.interested.sig<-re.genes.interested[which(re.genes.interested$pvalue<0.05&re.genes.interested$log2FoldChange<0),]
+    p.one.sided.adjust <- p.adjust(p.one.sided, method = "BH")
 
-  write.csv(re.genes.interested,file=paste0(dir.name,out_gene_interested),row.names = FALSE,quote=FALSE)
+    re.FC.sorted <- cbind(re.FC.sorted, p.one.sided, p.one.sided.adjust)
 
-  write.csv(re.genes.interested.sig,file=paste0(dir.name,out_gene_interested_sig),row.names = FALSE,quote=FALSE)
+    re.FC.sorted.sorted.by.gene <- re.FC.sorted[order(re.FC.sorted$gene), ]
 
-  re<-list(re.FC.sorted=re.FC.sorted,
-           re.FC.sorted.sorted.by.gene=re.FC.sorted.sorted.by.gene,
-           re.genes.interested=re.genes.interested,
-           re.genes.interested.sig=re.genes.interested.sig)
+    write.csv(re.FC.sorted, file = paste0(dir.name, out_by_p), row.names = FALSE,
+        quote = FALSE)
 
-  return(re)
+    write.csv(re.FC.sorted.sorted.by.gene, file = paste0(dir.name, out_by_gene),
+        row.names = FALSE, quote = FALSE)
+
+    file.name = paste0(dir.name, dir(dir.name, recursive = TRUE, pattern = input.file.pattern.4.interested.gene))
+
+    genes.interested <- read.csv(file.name, header = F)
+
+    re.genes.interested <- re.FC.sorted[which(re.FC.sorted$gene %in% genes.interested[,
+        1]), ]
+
+    re.genes.interested.sig <- re.genes.interested[which(re.genes.interested$pvalue <
+        0.05 & re.genes.interested$log2FoldChange < 0), ]
+
+    write.csv(re.genes.interested, file = paste0(dir.name, out_gene_interested),
+        row.names = FALSE, quote = FALSE)
+
+    write.csv(re.genes.interested.sig, file = paste0(dir.name, out_gene_interested_sig),
+        row.names = FALSE, quote = FALSE)
+
+    re <- list(re.FC.sorted = re.FC.sorted, re.FC.sorted.sorted.by.gene = re.FC.sorted.sorted.by.gene,
+        re.genes.interested = re.genes.interested, re.genes.interested.sig = re.genes.interested.sig)
+
+    return(re)
 
 }
 #' @title ProcessOutputFilesFrom5Cases
@@ -1212,19 +1217,19 @@ ProcessOutputFilesFrom3UTR_recount<-function(dir.name,input.file.pattern,input.f
 #'
 #' @examples
 #'
-#' dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/"
-#' input.file.pattern="*count.2.txt"
+#' dir.name='/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/'
+#' input.file.pattern='*count.2.txt'
 #'
-#' dir.name.gene.list="/media/H_driver/2016/Ramin_azhang/"
-#' pattern.4.gene.list="final_list.csv"
+#' dir.name.gene.list='/media/H_driver/2016/Ramin_azhang/'
+#' pattern.4.gene.list='final_list.csv'
 #'
 
-#' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/"
+#' out.dir.name='/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/'
 #'
-#' out.file.pattern.interested="DoGs_adjust_by_batch_interested_gene"
-#' out.file.pattern.positive.gene="DoGs_adjust_by_batch_positive"
-#' out.file.pattern.negative.gene="DoGs_adjust_by_batch_negative"
-#' out.file.pattern.all= "DoGs_adjust_by_batch_all"
+#' out.file.pattern.interested='DoGs_adjust_by_batch_interested_gene'
+#' out.file.pattern.positive.gene='DoGs_adjust_by_batch_positive'
+#' out.file.pattern.negative.gene='DoGs_adjust_by_batch_negative'
+#' out.file.pattern.all= 'DoGs_adjust_by_batch_all'
 #'
 #' Re.unadjusted.adjusted<-ProcessOutputFilesFrom5Cases(dir.name,input.file.pattern,out.dir.name,out.file.pattern.interested,
 #' out.file.pattern.positive.gene,
@@ -1232,306 +1237,330 @@ ProcessOutputFilesFrom3UTR_recount<-function(dir.name,input.file.pattern,input.f
 #' out.file.pattern.all,
 #' dir.name.gene.list,
 #' pattern.4.gene.list,
-#' adjust_by_batch="YES")
+#' adjust_by_batch='YES')
 #'
-#' save.image(file=paste0(out.dir.name,"re_save_2.RData"))
-#' savehistory(file=paste0(out.dir.name,"re_save_2.Rhistory"))
+#' save.image(file=paste0(out.dir.name,'re_save_2.RData'))
+#' savehistory(file=paste0(out.dir.name,'re_save_2.Rhistory'))
 #'
 
-ProcessOutputFilesFrom5Cases<-function(dir.name,input.file.pattern,out.dir.name,out.file.pattern.interested,out.file.pattern.positive.gene,
-                                       out.file.pattern.negative.gene,out.file.pattern.all,dir.name.gene.list,pattern.4.gene.list,adjust_by_batch){
+ProcessOutputFilesFrom5Cases <- function(dir.name, input.file.pattern, out.dir.name,
+    out.file.pattern.interested, out.file.pattern.positive.gene, out.file.pattern.negative.gene,
+    out.file.pattern.all, dir.name.gene.list, pattern.4.gene.list, adjust_by_batch)
+    {
 
-  file.name=paste0(dir.name,dir(dir.name,recursive = TRUE,pattern=input.file.pattern))
-  file.name.2<-as.list(file.name)
+    file.name = paste0(dir.name, dir(dir.name, recursive = TRUE, pattern = input.file.pattern))
+    file.name.2 <- as.list(file.name)
 
-  names(file.name.2)=sapply(strsplit(file.name,split="\\/"),"[[",7)
+    names(file.name.2) = sapply(strsplit(file.name, split = "\\/"), "[[", 7)
 
-  print(file.name.2)
+    print(file.name.2)
 
-  re.out<-lapply(file.name.2,function(u){
-    re=read.table(u,header=F)
-    colnames(re)=c("Count","GeneName")
-    re
-  })
+    re.out <- lapply(file.name.2, function(u)
+    {
+        re = read.table(u, header = F)
+        colnames(re) = c("Count", "GeneName")
+        re
+    })
 
-  temp.name<-strsplit(names(file.name.2),split="\\.")
+    temp.name <- strsplit(names(file.name.2), split = "\\.")
 
-  temp.name.2<-trimws(do.call("rbind",lapply(temp.name,"[[",1)))
+    temp.name.2 <- trimws(do.call("rbind", lapply(temp.name, "[[", 1)))
 
-  temp.name.3<-unique(temp.name.2[,1])
+    temp.name.3 <- unique(temp.name.2[, 1])
 
-  temp.name.4<-as.list(temp.name.3)
-  names(temp.name.4)<-temp.name.3
+    temp.name.4 <- as.list(temp.name.3)
+    names(temp.name.4) <- temp.name.3
 
-  txs.name<-lapply(re.out,"[[",2)
-  txs.name<-unlist(txs.name)
-  txs.name<-unique(as.character(txs.name))
-  txs.name.count<-data.frame(Count=rep(0,length(txs.name)),GeneName=txs.name)
+    txs.name <- lapply(re.out, "[[", 2)
+    txs.name <- unlist(txs.name)
+    txs.name <- unique(as.character(txs.name))
+    txs.name.count <- data.frame(Count = rep(0, length(txs.name)), GeneName = txs.name)
 
-  #dim(txs.name.count)
+    # dim(txs.name.count)
 
-    Process4EachSample <- function(one_sample,txs.name.count,re.out) {
+    Process4EachSample <- function(one_sample, txs.name.count, re.out)
+    {
 
-      count.gene.matched<-re.out[(grep(one_sample,names(re.out)))]
+        count.gene.matched <- re.out[(grep(one_sample, names(re.out)))]
 
-      count.gene.matched.minus.gene<-count.gene.matched[(grep("minus.gene",names(count.gene.matched)))]
-      count.gene.matched.plus.gene<-count.gene.matched[(grep("plus.gene",names(count.gene.matched)))]
+        count.gene.matched.minus.gene <- count.gene.matched[(grep("minus.gene",
+            names(count.gene.matched)))]
+        count.gene.matched.plus.gene <- count.gene.matched[(grep("plus.gene",
+            names(count.gene.matched)))]
 
-      ReformatCount <- function(count.gene.matched.minus.gene,txs.name.count) {
+        ReformatCount <- function(count.gene.matched.minus.gene, txs.name.count)
+        {
 
-        reformat.count.gene.matched<-lapply(count.gene.matched.minus.gene,function(x,txs.name.count){
-          y<-txs.name.count
-          if(dim(x[which(x$GeneName %in% y$GeneName),])[1]!=0)
-          {
-            y[match(x$GeneName,y$GeneName),]$Count<-x$Count
-          }
-          y
-          },txs.name.count)
-
-
-        reformat.count.gene.matched.2<-cbind(apply(do.call("cbind",lapply(reformat.count.gene.matched,"[",2)),1,unique),
-        do.call("cbind",lapply(reformat.count.gene.matched,"[",1)))
-
-        colnames(reformat.count.gene.matched.2)=c("GeneName",names(count.gene.matched.minus.gene))
-
-        gene<-as.character(reformat.count.gene.matched.2$GeneName)
-
-        count.DoGs.plus.read<-apply(reformat.count.gene.matched.2[,c(grep("plus.read.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                           grep("plus.read.overlap.Gene.and.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                           grep("plus.read.overlap.Gene.and.DoGs.start.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                           grep("plus.read.overlap.Gene.and.DoGs.end.count.2.txt",colnames(reformat.count.gene.matched.2)))],1,sum)
-
-        count.DoGs.minus.read<-apply(reformat.count.gene.matched.2[,c(grep("minus.read.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.start.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.end.count.2.txt",colnames(reformat.count.gene.matched.2)))],1,sum)
-
-        count.gene.plus.read<-apply(reformat.count.gene.matched.2[,c(grep("plus.read.gene.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                                     grep("plus.read.overlap.Gene.and.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                                     grep("plus.read.overlap.Gene.and.DoGs.start.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                                                     grep("plus.read.overlap.Gene.and.DoGs.end.count.2.txt",colnames(reformat.count.gene.matched.2)))],1,sum)
-
-        count.gene.minus.read<-apply(reformat.count.gene.matched.2[,c(grep("minus.read.gene.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.start.count.2.txt",colnames(reformat.count.gene.matched.2)),
-                                               grep("minus.read.overlap.Gene.and.DoGs.end.count.2.txt",colnames(reformat.count.gene.matched.2)))],1,sum)
+            reformat.count.gene.matched <- lapply(count.gene.matched.minus.gene,
+                function(x, txs.name.count)
+                {
+                  y <- txs.name.count
+                  if (dim(x[which(x$GeneName %in% y$GeneName), ])[1] != 0)
+                  {
+                    y[match(x$GeneName, y$GeneName), ]$Count <- x$Count
+                  }
+                  y
+                }, txs.name.count)
 
 
-        reformat.count.gene.matched.3<-as.data.frame(cbind(gene,count.gene.plus.read,count.gene.minus.read,count.DoGs.plus.read,count.DoGs.minus.read))
+            reformat.count.gene.matched.2 <- cbind(apply(do.call("cbind", lapply(reformat.count.gene.matched,
+                "[", 2)), 1, unique), do.call("cbind", lapply(reformat.count.gene.matched,
+                "[", 1)))
 
-        return(reformat.count.gene.matched.3)
-      }
+            colnames(reformat.count.gene.matched.2) = c("GeneName", names(count.gene.matched.minus.gene))
 
-      re1<-ReformatCount(count.gene.matched.minus.gene,txs.name.count)
-      re2<-ReformatCount(count.gene.matched.plus.gene,txs.name.count)
-      re<-rbind(re1,re2)
+            gene <- as.character(reformat.count.gene.matched.2$GeneName)
 
-      re<-re[order(re$gene),]
+            count.DoGs.plus.read <- apply(reformat.count.gene.matched.2[, c(grep("plus.read.DoGs.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("plus.read.overlap.Gene.and.DoGs.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("plus.read.overlap.Gene.and.DoGs.start.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("plus.read.overlap.Gene.and.DoGs.end.count.2.txt",
+                colnames(reformat.count.gene.matched.2)))], 1, sum)
 
-      return(re)
+            count.DoGs.minus.read <- apply(reformat.count.gene.matched.2[, c(grep("minus.read.DoGs.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("minus.read.overlap.Gene.and.DoGs.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("minus.read.overlap.Gene.and.DoGs.start.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("minus.read.overlap.Gene.and.DoGs.end.count.2.txt",
+                colnames(reformat.count.gene.matched.2)))], 1, sum)
+
+            count.gene.plus.read <- apply(reformat.count.gene.matched.2[, c(grep("plus.read.gene.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("plus.read.overlap.Gene.and.DoGs.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("plus.read.overlap.Gene.and.DoGs.start.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("plus.read.overlap.Gene.and.DoGs.end.count.2.txt",
+                colnames(reformat.count.gene.matched.2)))], 1, sum)
+
+            count.gene.minus.read <- apply(reformat.count.gene.matched.2[, c(grep("minus.read.gene.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("minus.read.overlap.Gene.and.DoGs.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("minus.read.overlap.Gene.and.DoGs.start.count.2.txt",
+                colnames(reformat.count.gene.matched.2)), grep("minus.read.overlap.Gene.and.DoGs.end.count.2.txt",
+                colnames(reformat.count.gene.matched.2)))], 1, sum)
+
+
+            reformat.count.gene.matched.3 <- as.data.frame(cbind(gene, count.gene.plus.read,
+                count.gene.minus.read, count.DoGs.plus.read, count.DoGs.minus.read))
+
+            return(reformat.count.gene.matched.3)
+        }
+
+        re1 <- ReformatCount(count.gene.matched.minus.gene, txs.name.count)
+        re2 <- ReformatCount(count.gene.matched.plus.gene, txs.name.count)
+        re <- rbind(re1, re2)
+
+        re <- re[order(re$gene), ]
+
+        return(re)
     }
 
-   re.8.samples<-lapply(temp.name.4,function(u,txs.name.count,re.out){
-     YY<-Process4EachSample(u,txs.name.count,re.out)
-     YY},txs.name.count,re.out)
+    re.8.samples <- lapply(temp.name.4, function(u, txs.name.count, re.out)
+    {
+        YY <- Process4EachSample(u, txs.name.count, re.out)
+        YY
+    }, txs.name.count, re.out)
 
-   DEAnalysis <- function(countData) {
-     colData <- data.frame(condition=factor(c(rep("Dox",4),rep("WT",4))))
+    DEAnalysis <- function(countData)
+    {
+        colData <- data.frame(condition = factor(c(rep("Dox", 4), rep("WT",
+            4))))
 
-     dds <- DESeqDataSetFromMatrix(countData, colData, formula(~ condition))
+        dds <- DESeqDataSetFromMatrix(countData, colData, formula(~condition))
 
-     #size.factor<-estimateSizeFactors(dds)
+        # size.factor<-estimateSizeFactors(dds)
 
-     #print(size.factor)
+        # print(size.factor)
 
-     re.DESeq<-results(DESeq(dds))
+        re.DESeq <- results(DESeq(dds))
 
-     re.FC<-cbind(as.data.frame(re.DESeq),2^re.DESeq[,2],counts(dds))
-     colnames(re.FC)[7]="FoldChange(WT/Dox)"
+        re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[, 2], counts(dds))
+        colnames(re.FC)[7] = "FoldChange(WT/Dox)"
 
-     txs.gene<-ReformatTxsGene()
+        txs.gene <- ReformatTxsGene()
 
-     re.FC<-merge(re.FC,txs.gene$txs_genes_DF_2,by=0)
+        re.FC <- merge(re.FC, txs.gene$txs_genes_DF_2, by = 0)
 
-     re.FC.sorted<-re.FC[order(re.FC$pvalue),]
+        re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
 
-     return(re.FC.sorted)
+        return(re.FC.sorted)
 
-   }
-
-   ProcessEachCorner <- function(re.8.samples,i){
-
-     gene<-apply(do.call("cbind",lapply(re.8.samples,"[",1)),1,unique)
-     count.gene.plus.read.8.samples<-cbind(gene,do.call("cbind",lapply(re.8.samples,"[",i)))
-
-     colnames(count.gene.plus.read.8.samples)=c("gene",names(re.8.samples))
-
-     df<-count.gene.plus.read.8.samples
-     df<-apply(df[,-1],2,as.numeric)
-     index<-rowSums(df[, -1])>0
-     dff<-count.gene.plus.read.8.samples[index,]
-     rownames(dff)<-dff$gene
-     dff<-dff[,-1]
-
-    countData <- apply(dff[,c(1,3,5,6,2,4,7,8)], 2, as.numeric)
-
-    rownames(countData)<-rownames(dff)
-
-    re.FC<-DEAnalysis(countData)
-
-    #re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(countData)
-
-    # re.FC<-cbind(as.data.frame(re.DESeq),2^re.DESeq[,2],counts(dds))
-    # colnames(re.FC)[7]="FoldChange(WT/Dox)"
-    #
-    # txs.gene<-ReformatTxsGene()
-    #
-    #re.FC<-list(re.FC=re.FC,re.DoGs.adjusted.by.batch=re.DoGs.adjusted.by.batch)
-
-    return(re.FC)
-
-   }
-
-  re.BL<-ProcessEachCorner(re.8.samples,2) #BL
-  re.TL<-ProcessEachCorner(re.8.samples,3) #TL
-  re.BR<-ProcessEachCorner(re.8.samples,4) #BR
-  re.TR<-ProcessEachCorner(re.8.samples,5) #TR
-
-  #head(re.BL)
-  #head(re.BR)
-
-  #head(re.TL)
-  #head(re.TR)
-
-  #re.TR[which(re.TR$Row.names =="uc003tzi.4"),]
-
-  #Check for uc003tzi.4:gene(+)
-  #re.BL[[1]][which(re.BL[[1]]$Row.names =="uc003tzi.4"),] #BL for gene(+)
-  #re.TL[[1]][which(re.TL[[1]]$Row.names =="uc003tzi.4"),] #TL for gene(+) gene
-  #re.BR[[1]][which(re.BR[[1]]$Row.names =="uc003tzi.4"),] #BR for gene(+)
-  #re.TR[[1]][which(re.TR[[1]]$Row.names =="uc003tzi.4"),] #TR for gene(+) DoGs
-
-  #Check for uc002szf.1:gene(-)
-  #re.BL[[1]][which(re.BL[[1]]$Row.names =="uc002szf.1"),] #BR for gene(-)
-  #re.TL[[1]][which(re.TL[[1]]$Row.names =="uc002szf.1"),] #
-  #re.BR[[1]][which(re.BR[[1]]$Row.names =="uc002szf.1"),] #
-  #re.TR[[1]][which(re.TR[[1]]$Row.names =="uc002szf.1"),] #
-
-  #Check for uc001aac.4:gene(-)
-  #re.BL[[1]][which(re.BL[[1]]$Row.names =="uc001aac.4"),]#BR for gene(-) Gene
-  #re.TL[[1]][which(re.TL[[1]]$Row.names =="uc001aac.4"),]#TR for gene(-)
-  #re.TR[[1]][which(re.BR[[1]]$Row.names =="uc001aac.4"),]#TL for gene(-)
-  #re.BR[[1]][which(re.TR[[1]]$Row.names =="uc001aac.4"),]#BL for gene(-) DoGs
-
-  #if(adjust_by_batch=="NO"){
-  re.BL.4.plus.gene.BR.4.minus.gene<-re.BL
-  re.TL.4.plus.gene.TR.4.minus.gene<-re.TL
-  re.BR.4.plus.gene.BL.4.minus.gene<-re.BR
-  re.TR.4.plus.gene.TL.4.minus.gene<-re.TR
-  #}else{
-  #  re.BL.4.plus.gene.BR.4.minus.gene<-re.BL[[2]]
-  #  re.TL.4.plus.gene.TR.4.minus.gene<-re.TL[[2]]
-  #  re.BR.4.plus.gene.BL.4.minus.gene<-re.BR[[2]]
-  #  re.TR.4.plus.gene.TL.4.minus.gene<-re.TR[[2]]
-  #}
-
-  #Get the counts for DoGs of plus and minus gene
-  DoGs.4.plus.Gene<-re.TR.4.plus.gene.TL.4.minus.gene[which(re.TR.4.plus.gene.TL.4.minus.gene$strand=="+"),]
-  DoGs.4.minus.Gene<-re.BR.4.plus.gene.BL.4.minus.gene[which(re.BR.4.plus.gene.BL.4.minus.gene$strand=="-"),]
-
-  DoGs.4.plus.minus.Gene<-rbind(DoGs.4.plus.Gene, DoGs.4.minus.Gene)
-
-  #DoGs.4.plus.Gene[which(DoGs.4.plus.Gene$Row.names =="uc003tzi.4"),] #TR for gene(+) DoGs
-  #DoGs.4.minus.Gene[which( DoGs.4.minus.Gene$Row.names =="uc001aac.4"),]#BL for gene(-) DoGs
-
-  GeneTypeBasedDE <- function(DoGs.4.plus.Gene) {
-    Count.DoGs.4.plus.Gene<-DoGs.4.plus.Gene[,c(1,9:16)]
-    rownames(Count.DoGs.4.plus.Gene)<-Count.DoGs.4.plus.Gene$Row.names
-    Count.DoGs.4.plus.Gene.2<-Count.DoGs.4.plus.Gene[,-1]
-    head(Count.DoGs.4.plus.Gene.2)
-
-    if(adjust_by_batch=="NO"){
-    re.DESeq.DoGs.plus.gene<-DEAnalysis(Count.DoGs.4.plus.Gene.2)
-    }else{
-    re.DESeq.DoGs.plus.gene<-DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2)
     }
 
-    return(re.DESeq.DoGs.plus.gene)
-  }
+    ProcessEachCorner <- function(re.8.samples, i)
+    {
 
-  re.DESeq.DoGs.plus.gene<-GeneTypeBasedDE(DoGs.4.plus.Gene)
-  #head(re.DESeq.DoGs.plus.gene[which(re.DESeq.DoGs.plus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.gene$pvalue<0.05),])
+        gene <- apply(do.call("cbind", lapply(re.8.samples, "[", 1)), 1, unique)
+        count.gene.plus.read.8.samples <- cbind(gene, do.call("cbind", lapply(re.8.samples,
+            "[", i)))
 
-  re.DESeq.DoGs.minus.gene<-GeneTypeBasedDE(DoGs.4.minus.Gene)
-  #head(re.DESeq.DoGs.minus.gene[which(re.DESeq.DoGs.minus.gene$log2FoldChange<0&re.DESeq.DoGs.minus.gene$pvalue<0.05),])
+        colnames(count.gene.plus.read.8.samples) = c("gene", names(re.8.samples))
 
-  re.DESeq.DoGs.plus.minus.gene<-GeneTypeBasedDE(DoGs.4.plus.minus.Gene)
-  #head(re.DESeq.DoGs.plus.minus.gene[which(re.DESeq.DoGs.plus.minus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.minus.gene$pvalue<0.05),])
+        df <- count.gene.plus.read.8.samples
+        df <- apply(df[, -1], 2, as.numeric)
+        index <- rowSums(df[, -1]) > 0
+        dff <- count.gene.plus.read.8.samples[index, ]
+        rownames(dff) <- dff$gene
+        dff <- dff[, -1]
 
-  gene.interested<-ReadGeneList(dir.name.gene.list,pattern.4.gene.list)
+        countData <- apply(dff[, c(1, 3, 5, 6, 2, 4, 7, 8)], 2, as.numeric)
 
-  re.DESeq.DoGs.plus.minus.gene.interested<-re.DESeq.DoGs.plus.minus.gene[which(re.DESeq.DoGs.plus.minus.gene$gene %in% gene.interested[,1]),]
+        rownames(countData) <- rownames(dff)
 
-  #re.DESeq.DoGs.plus.minus.gene.interested[which(re.DESeq.DoGs.plus.minus.gene.interested$gene %in% c("TPCN2")),]
-  #re.FC.sorted<-re.FC[order(re.FC$pvalue),]
+        re.FC <- DEAnalysis(countData)
+
+        # re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(countData)
+
+        # re.FC<-cbind(as.data.frame(re.DESeq),2^re.DESeq[,2],counts(dds))
+        # colnames(re.FC)[7]='FoldChange(WT/Dox)' txs.gene<-ReformatTxsGene()
+        # re.FC<-list(re.FC=re.FC,re.DoGs.adjusted.by.batch=re.DoGs.adjusted.by.batch)
+
+        return(re.FC)
+
+    }
+
+    re.BL <- ProcessEachCorner(re.8.samples, 2)  #BL
+    re.TL <- ProcessEachCorner(re.8.samples, 3)  #TL
+    re.BR <- ProcessEachCorner(re.8.samples, 4)  #BR
+    re.TR <- ProcessEachCorner(re.8.samples, 5)  #TR
+
+    # head(re.BL) head(re.BR)
+
+    # head(re.TL) head(re.TR)
+
+    # re.TR[which(re.TR$Row.names =='uc003tzi.4'),]
+
+    # Check for uc003tzi.4:gene(+) re.BL[[1]][which(re.BL[[1]]$Row.names
+    # =='uc003tzi.4'),] #BL for gene(+) re.TL[[1]][which(re.TL[[1]]$Row.names
+    # =='uc003tzi.4'),] #TL for gene(+) gene
+    # re.BR[[1]][which(re.BR[[1]]$Row.names =='uc003tzi.4'),] #BR for gene(+)
+    # re.TR[[1]][which(re.TR[[1]]$Row.names =='uc003tzi.4'),] #TR for gene(+)
+    # DoGs
+
+    # Check for uc002szf.1:gene(-) re.BL[[1]][which(re.BL[[1]]$Row.names
+    # =='uc002szf.1'),] #BR for gene(-) re.TL[[1]][which(re.TL[[1]]$Row.names
+    # =='uc002szf.1'),] # re.BR[[1]][which(re.BR[[1]]$Row.names
+    # =='uc002szf.1'),] # re.TR[[1]][which(re.TR[[1]]$Row.names
+    # =='uc002szf.1'),] #
+
+    # Check for uc001aac.4:gene(-) re.BL[[1]][which(re.BL[[1]]$Row.names
+    # =='uc001aac.4'),]#BR for gene(-) Gene
+    # re.TL[[1]][which(re.TL[[1]]$Row.names =='uc001aac.4'),]#TR for gene(-)
+    # re.TR[[1]][which(re.BR[[1]]$Row.names =='uc001aac.4'),]#TL for gene(-)
+    # re.BR[[1]][which(re.TR[[1]]$Row.names =='uc001aac.4'),]#BL for gene(-)
+    # DoGs
+
+    # if(adjust_by_batch=='NO'){
+    re.BL.4.plus.gene.BR.4.minus.gene <- re.BL
+    re.TL.4.plus.gene.TR.4.minus.gene <- re.TL
+    re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
+    re.TR.4.plus.gene.TL.4.minus.gene <- re.TR
+    # }else{ re.BL.4.plus.gene.BR.4.minus.gene<-re.BL[[2]]
+    # re.TL.4.plus.gene.TR.4.minus.gene<-re.TL[[2]]
+    # re.BR.4.plus.gene.BL.4.minus.gene<-re.BR[[2]]
+    # re.TR.4.plus.gene.TL.4.minus.gene<-re.TR[[2]] }
+
+    # Get the counts for DoGs of plus and minus gene
+    DoGs.4.plus.Gene <- re.TR.4.plus.gene.TL.4.minus.gene[which(re.TR.4.plus.gene.TL.4.minus.gene$strand ==
+        "+"), ]
+    DoGs.4.minus.Gene <- re.BR.4.plus.gene.BL.4.minus.gene[which(re.BR.4.plus.gene.BL.4.minus.gene$strand ==
+        "-"), ]
+
+    DoGs.4.plus.minus.Gene <- rbind(DoGs.4.plus.Gene, DoGs.4.minus.Gene)
+
+    # DoGs.4.plus.Gene[which(DoGs.4.plus.Gene$Row.names =='uc003tzi.4'),] #TR
+    # for gene(+) DoGs DoGs.4.minus.Gene[which( DoGs.4.minus.Gene$Row.names
+    # =='uc001aac.4'),]#BL for gene(-) DoGs
+
+    GeneTypeBasedDE <- function(DoGs.4.plus.Gene)
+    {
+        Count.DoGs.4.plus.Gene <- DoGs.4.plus.Gene[, c(1, 9:16)]
+        rownames(Count.DoGs.4.plus.Gene) <- Count.DoGs.4.plus.Gene$Row.names
+        Count.DoGs.4.plus.Gene.2 <- Count.DoGs.4.plus.Gene[, -1]
+        head(Count.DoGs.4.plus.Gene.2)
+
+        if (adjust_by_batch == "NO")
+        {
+            re.DESeq.DoGs.plus.gene <- DEAnalysis(Count.DoGs.4.plus.Gene.2)
+        } else
+        {
+            re.DESeq.DoGs.plus.gene <- DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2)
+        }
+
+        return(re.DESeq.DoGs.plus.gene)
+    }
+
+    re.DESeq.DoGs.plus.gene <- GeneTypeBasedDE(DoGs.4.plus.Gene)
+    # head(re.DESeq.DoGs.plus.gene[which(re.DESeq.DoGs.plus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.gene$pvalue<0.05),])
+
+    re.DESeq.DoGs.minus.gene <- GeneTypeBasedDE(DoGs.4.minus.Gene)
+    # head(re.DESeq.DoGs.minus.gene[which(re.DESeq.DoGs.minus.gene$log2FoldChange<0&re.DESeq.DoGs.minus.gene$pvalue<0.05),])
+
+    re.DESeq.DoGs.plus.minus.gene <- GeneTypeBasedDE(DoGs.4.plus.minus.Gene)
+    # head(re.DESeq.DoGs.plus.minus.gene[which(re.DESeq.DoGs.plus.minus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.minus.gene$pvalue<0.05),])
+
+    gene.interested <- ReadGeneList(dir.name.gene.list, pattern.4.gene.list)
+
+    re.DESeq.DoGs.plus.minus.gene.interested <- re.DESeq.DoGs.plus.minus.gene[which(re.DESeq.DoGs.plus.minus.gene$gene %in%
+        gene.interested[, 1]), ]
+
+    # re.DESeq.DoGs.plus.minus.gene.interested[which(re.DESeq.DoGs.plus.minus.gene.interested$gene
+    # %in% c('TPCN2')),] re.FC.sorted<-re.FC[order(re.FC$pvalue),]
 
 
-  write.csv(re.DESeq.DoGs.plus.gene,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.positive.gene,".csv"),row.names = FALSE,quote=FALSE)
+    write.csv(re.DESeq.DoGs.plus.gene, file = paste0(out.dir.name, "3UTR_DE_",
+        out.file.pattern.positive.gene, ".csv"), row.names = FALSE, quote = FALSE)
 
-  write.csv(re.DESeq.DoGs.minus.gene,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.negative.gene,".csv"),row.names = FALSE,quote=FALSE)
+    write.csv(re.DESeq.DoGs.minus.gene, file = paste0(out.dir.name, "3UTR_DE_",
+        out.file.pattern.negative.gene, ".csv"), row.names = FALSE, quote = FALSE)
 
-  write.csv(re.DESeq.DoGs.plus.minus.gene,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.all,".csv"),row.names = FALSE,quote=FALSE)
-  #Re.unadjusted.adjusted$DE
+    write.csv(re.DESeq.DoGs.plus.minus.gene, file = paste0(out.dir.name, "3UTR_DE_",
+        out.file.pattern.all, ".csv"), row.names = FALSE, quote = FALSE)
+    # Re.unadjusted.adjusted$DE
 
-  #write.csv(Re.unadjusted.adjusted$DE,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.all,".csv"),row.names = FALSE,quote=FALSE)
+    # write.csv(Re.unadjusted.adjusted$DE,file=paste0(out.dir.name,'3UTR_DE_',out.file.pattern.all,'.csv'),row.names
+    # = FALSE,quote=FALSE)
 
-  write.csv(re.DESeq.DoGs.plus.minus.gene.interested,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.interested,".csv"))
-
-
-  #write.csv(re.DESeq.DoGs.plus.minus.gene,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.all,".csv"),row.names = FALSE,quote=FALSE)
-  #Re.unadjusted.adjusted$DE
-
-  #write.csv(Re.unadjusted.adjusted$DE,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern.all,".csv"),row.names = FALSE,quote=FALSE)
+    write.csv(re.DESeq.DoGs.plus.minus.gene.interested, file = paste0(out.dir.name,
+        "3UTR_DE_", out.file.pattern.interested, ".csv"))
 
 
-  re.out.3<-list(re.out=re.out,
-                 re.8.samples=re.8.samples,
-                 DE_positive_gene=re.DESeq.DoGs.plus.gene,
-                 DE_negative_gene=re.DESeq.DoGs.minus.gene,
-                 DE=re.DESeq.DoGs.plus.minus.gene,
-                 DE_interested= re.DESeq.DoGs.plus.minus.gene.interested)
+    # write.csv(re.DESeq.DoGs.plus.minus.gene,file=paste0(out.dir.name,'3UTR_DE_',out.file.pattern.all,'.csv'),row.names
+    # = FALSE,quote=FALSE) Re.unadjusted.adjusted$DE
 
-  return(re.out.3)
+    # write.csv(Re.unadjusted.adjusted$DE,file=paste0(out.dir.name,'3UTR_DE_',out.file.pattern.all,'.csv'),row.names
+    # = FALSE,quote=FALSE)
+
+
+    re.out.3 <- list(re.out = re.out, re.8.samples = re.8.samples, DE_positive_gene = re.DESeq.DoGs.plus.gene,
+        DE_negative_gene = re.DESeq.DoGs.minus.gene, DE = re.DESeq.DoGs.plus.minus.gene,
+        DE_interested = re.DESeq.DoGs.plus.minus.gene.interested)
+
+    return(re.out.3)
 
 }
-DEAnalysis <- function(countData,wt.index,dox.index)
+DEAnalysis <- function(countData, wt.index, dox.index)
 {
 
-  a <- length(wt.index)
-  b <- length(dox.index)
+    a <- length(wt.index)
+    b <- length(dox.index)
 
-  colData <- data.frame(condition = factor(c(rep("Dox",
-                                                 b), rep("WT", a))))
+    colData <- data.frame(condition = factor(c(rep("Dox", b), rep("WT", a))))
 
-  dds <- DESeqDataSetFromMatrix(countData, colData, formula(~condition))
+    dds <- DESeqDataSetFromMatrix(countData, colData, formula(~condition))
 
-  # size.factor<-estimateSizeFactors(dds)
+    # size.factor<-estimateSizeFactors(dds)
 
-  # print(size.factor)
+    # print(size.factor)
 
-  re.DESeq <- results(DESeq(dds))
+    re.DESeq <- results(DESeq(dds))
 
-  re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[,
-                                                     2], counts(dds))
-  colnames(re.FC)[7] = "FoldChange(WT/Dox)"
+    re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[, 2], counts(dds))
+    colnames(re.FC)[7] = "FoldChange(WT/Dox)"
 
-  txs.gene <- ReformatTxsGene()
+    txs.gene <- ReformatTxsGene()
 
-  re.FC <- merge(re.FC, txs.gene$txs_genes_DF_2, by = 0)
+    re.FC <- merge(re.FC, txs.gene$txs_genes_DF_2, by = 0)
 
-  re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
+    re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
 
-  return(re.FC.sorted)
+    return(re.FC.sorted)
 
 }
 
@@ -1545,240 +1574,228 @@ DEAnalysis <- function(countData,wt.index,dox.index)
 #'
 #' @examples
 #'
-#' dir.name <- "/Volumes/Bioinformatics$/Aimin_project/UTR/NewCounts"
-#' input.file.pattern <- "count.txt"
+#' dir.name <- '/Volumes/Bioinformatics$/Aimin_project/UTR/NewCounts'
+#' input.file.pattern <- 'count.txt'
 #'
-#' res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"))
+#' res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern,file.path(system.file('extdata',package = 'ThreeUTR'),'sample_infor.txt'))
 #'
-getutrcount <- function(dir.name, input.file.pattern,sample.infor.file,group.comparision=c(1,2))
-{
-  file.name = file.path(dir.name, dir(dir.name, recursive = TRUE,
-                                      pattern = input.file.pattern))
-  file.name.2 <- as.list(file.name)
+getutrcount <- function(dir.name, input.file.pattern, sample.infor.file, group.comparision = c(1,
+    2))
+    {
+    file.name = file.path(dir.name, dir(dir.name, recursive = TRUE, pattern = input.file.pattern))
+    file.name.2 <- as.list(file.name)
 
-  names(file.name.2) = basename(file.name)
+    names(file.name.2) = basename(file.name)
 
 
-  file.name.3 <- lapply(file.name.2, function(u)
-  {
-    if (!file.size(u) == 0){
-      re = u
-    }else{
-      re= NULL
+    file.name.3 <- lapply(file.name.2, function(u)
+    {
+        if (!file.size(u) == 0)
+        {
+            re = u
+        } else
+        {
+            re = NULL
+        }
+        re
+    })
+
+    filterByRmNull <- function(re.peaks.only.bed)
+    {
+        re.peaks.only.bed.2 <- re.peaks.only.bed[lapply(re.peaks.only.bed, length) >
+            0]
+
+        # names(re.peaks.only.bed.2)=unlist(lapply(1:length(re.peaks.only.bed.2),function(u,re.peaks.only.bed.2){
+        # tmp=re.peaks.only.bed.2 x=tmp[[u]] path_name=dirname(x)
+        # file_name=basename(x) file_name },re.peaks.only.bed.2))
+        return(re.peaks.only.bed.2)
     }
-    re
-  })
 
-  filterByRmNull <- function(re.peaks.only.bed) {
-    re.peaks.only.bed.2<-re.peaks.only.bed[lapply(re.peaks.only.bed,length) > 0]
+    file.name.4 <- filterByRmNull(file.name.3)
 
-    # names(re.peaks.only.bed.2)=unlist(lapply(1:length(re.peaks.only.bed.2),function(u,re.peaks.only.bed.2){
-    #   tmp=re.peaks.only.bed.2
-    #   x=tmp[[u]]
-    #   path_name=dirname(x)
-    #   file_name=basename(x)
-    #   file_name
-    # },re.peaks.only.bed.2))
-    return(re.peaks.only.bed.2)
-  }
+    sample.infor <- read.table(sample.infor.file, header = TRUE)
 
-  file.name.4 <- filterByRmNull(file.name.3)
+    names(file.name.4) = unlist(lapply(1:length(file.name.4), function(u, file.name.4,
+        sample.infor)
+        {
 
-  sample.infor <- read.table(sample.infor.file,header = TRUE)
+        tmp = file.name.4
+        x = tmp[[u]]
+        path_name = dirname(x)
+        file_name = basename(x)
+        pos = gregexpr("-", file_name)
+        a = pos[[1]][1] + 1
+        b = pos[[1]][2] - 1
+        c = substr(file_name, a, b)
+        con = sample.infor[match(c, sample.infor$Sample), ]$Condition
+        file_name_con = paste0(con, "-", file_name)
 
-  names(file.name.4)=unlist(lapply(1:length(file.name.4),function(u,file.name.4,sample.infor){
-
-    tmp=file.name.4
-    x=tmp[[u]]
-    path_name=dirname(x)
-    file_name=basename(x)
-    pos = gregexpr('-', file_name)
-    a = pos[[1]][1]+1
-    b = pos[[1]][2]-1
-    c = substr(file_name,a,b)
-    con = sample.infor[match(c,sample.infor$Sample),]$Condition
-    file_name_con = paste0(con,"-",file_name)
-
-    file_name_con
+        file_name_con
 
 
-  },file.name.4,sample.infor))
+    }, file.name.4, sample.infor))
 
-  re.out <- lapply(file.name.4, function(u)
-  {
-    if (!file.size(u) == 0){
-      re = read.table(u, header = F)
-      colnames(re) = c("Count", "GeneName")
-      re
-    }
-  })
+    re.out <- lapply(file.name.4, function(u)
+    {
+        if (!file.size(u) == 0)
+        {
+            re = read.table(u, header = F)
+            colnames(re) = c("Count", "GeneName")
+            re
+        }
+    })
 
-  names(re.out)=names(file.name.4)
+    names(re.out) = names(file.name.4)
 
-  temp.name <- strsplit(names(file.name.4), split = "\\.")
-  temp.name.2 <- trimws(do.call("rbind", lapply(temp.name,
-                                                "[[", 1)))
+    temp.name <- strsplit(names(file.name.4), split = "\\.")
+    temp.name.2 <- trimws(do.call("rbind", lapply(temp.name, "[[", 1)))
 
-  temp.name.3 <- unique(temp.name.2[, 1])
+    temp.name.3 <- unique(temp.name.2[, 1])
 
-  temp.name.4 <- as.list(temp.name.3)
-  names(temp.name.4) <- temp.name.3
+    temp.name.4 <- as.list(temp.name.3)
+    names(temp.name.4) <- temp.name.3
 
-  txs.name <- lapply(re.out, "[[", 2)
-  txs.name <- unlist(txs.name)
-  txs.name <- unique(as.character(txs.name))
-  txs.name.count <- data.frame(Count = rep(0, length(txs.name)),
-                               GeneName = txs.name)
+    txs.name <- lapply(re.out, "[[", 2)
+    txs.name <- unlist(txs.name)
+    txs.name <- unique(as.character(txs.name))
+    txs.name.count <- data.frame(Count = rep(0, length(txs.name)), GeneName = txs.name)
 
-  # dim(txs.name.count)
+    # dim(txs.name.count)
 
-  Process4EachSample <- function(one_sample, txs.name.count,
-                                 re.out)
-  {
-
-    count.gene.matched <- re.out[(grep(one_sample, names(re.out)))]
-
-    count.gene.matched.minus.gene <- count.gene.matched[(grep("minus.gene",
-                                                              names(count.gene.matched)))]
-    count.gene.matched.plus.gene <- count.gene.matched[(grep("plus.gene",
-                                                             names(count.gene.matched)))]
-
-    ReformatCount <- function(count.gene.matched.minus.gene,
-                              txs.name.count)
+    Process4EachSample <- function(one_sample, txs.name.count, re.out)
     {
 
-      reformat.count.gene.matched <- lapply(count.gene.matched.minus.gene,
-                                            function(x, txs.name.count)
-                                            {
-                                              y <- txs.name.count
-                                              if (dim(x[which(x$GeneName %in% y$GeneName),
-                                                        ])[1] != 0)
-                                              {
-                                                y[match(x$GeneName, y$GeneName), ]$Count <- x$Count
-                                              }
-                                              y
-                                            }, txs.name.count)
+        count.gene.matched <- re.out[(grep(one_sample, names(re.out)))]
+
+        count.gene.matched.minus.gene <- count.gene.matched[(grep("minus.gene",
+            names(count.gene.matched)))]
+        count.gene.matched.plus.gene <- count.gene.matched[(grep("plus.gene",
+            names(count.gene.matched)))]
+
+        ReformatCount <- function(count.gene.matched.minus.gene, txs.name.count)
+        {
+
+            reformat.count.gene.matched <- lapply(count.gene.matched.minus.gene,
+                function(x, txs.name.count)
+                {
+                  y <- txs.name.count
+                  if (dim(x[which(x$GeneName %in% y$GeneName), ])[1] != 0)
+                  {
+                    y[match(x$GeneName, y$GeneName), ]$Count <- x$Count
+                  }
+                  y
+                }, txs.name.count)
 
 
-      reformat.count.gene.matched.2 <- cbind(apply(do.call("cbind",
-                                                           lapply(reformat.count.gene.matched, "[", 2)),
-                                                   1, unique), do.call("cbind", lapply(reformat.count.gene.matched,
-                                                                                       "[", 1)))
+            reformat.count.gene.matched.2 <- cbind(apply(do.call("cbind", lapply(reformat.count.gene.matched,
+                "[", 2)), 1, unique), do.call("cbind", lapply(reformat.count.gene.matched,
+                "[", 1)))
 
-      colnames(reformat.count.gene.matched.2) = c("GeneName",
-                                                  names(count.gene.matched.minus.gene))
+            colnames(reformat.count.gene.matched.2) = c("GeneName", names(count.gene.matched.minus.gene))
 
-      gene <- as.character(reformat.count.gene.matched.2$GeneName)
+            gene <- as.character(reformat.count.gene.matched.2$GeneName)
 
-      count.DoGs.plus.read <- apply(as.data.frame(reformat.count.gene.matched.2[,
-                                                                                c(grep("plus.read.DoGs.count.txt", colnames(reformat.count.gene.matched.2)))]),
-                                    1, sum)
-      count.DoGs.minus.read <- apply(as.data.frame(reformat.count.gene.matched.2[,
-                                                                                 c(grep("minus.read.DoGs.count.txt", colnames(reformat.count.gene.matched.2)))]),
-                                     1, sum)
+            count.DoGs.plus.read <- apply(as.data.frame(reformat.count.gene.matched.2[,
+                c(grep("plus.read.DoGs.count.txt", colnames(reformat.count.gene.matched.2)))]),
+                1, sum)
+            count.DoGs.minus.read <- apply(as.data.frame(reformat.count.gene.matched.2[,
+                c(grep("minus.read.DoGs.count.txt", colnames(reformat.count.gene.matched.2)))]),
+                1, sum)
 
 
-      reformat.count.gene.matched.3 <- as.data.frame(cbind(gene,
-                                                           count.DoGs.plus.read, count.DoGs.minus.read))
+            reformat.count.gene.matched.3 <- as.data.frame(cbind(gene, count.DoGs.plus.read,
+                count.DoGs.minus.read))
 
-      return(reformat.count.gene.matched.3)
+            return(reformat.count.gene.matched.3)
+        }
+
+        re1 <- ReformatCount(count.gene.matched.minus.gene, txs.name.count)
+        re2 <- ReformatCount(count.gene.matched.plus.gene, txs.name.count)
+        re <- rbind(re1, re2)
+
+        re <- re[order(re$gene), ]
+
+        return(re)
     }
 
-    re1 <- ReformatCount(count.gene.matched.minus.gene, txs.name.count)
-    re2 <- ReformatCount(count.gene.matched.plus.gene, txs.name.count)
-    re <- rbind(re1, re2)
+    re.8.samples <- lapply(temp.name.4, function(u, txs.name.count, re.out)
+    {
+        YY <- Process4EachSample(u, txs.name.count, re.out)
+        YY
+    }, txs.name.count, re.out)
 
-    re <- re[order(re$gene), ]
+    ProcessEachCorner <- function(re.8.samples, i, sample.infor, group.comparision)
+    {
 
-    return(re)
-  }
+        gene <- apply(do.call("cbind", lapply(re.8.samples, "[", 1)), 1, unique)
+        count.gene.plus.read.8.samples <- cbind(gene, do.call("cbind", lapply(re.8.samples,
+            "[", i)))
 
-  re.8.samples <- lapply(temp.name.4, function(u, txs.name.count,
-                                               re.out)
-  {
-    YY <- Process4EachSample(u, txs.name.count, re.out)
-    YY
-  }, txs.name.count, re.out)
+        colnames(count.gene.plus.read.8.samples) = c("gene", names(re.8.samples))
 
-  ProcessEachCorner <- function(re.8.samples, i,sample.infor,group.comparision)
-  {
+        df <- count.gene.plus.read.8.samples
+        df <- apply(df[, -1], 2, as.numeric)
+        index <- rowSums(df) > 0
+        dff <- count.gene.plus.read.8.samples[index, ]
+        rownames(dff) <- dff$gene
+        dff <- dff[, -1]
 
-    gene <- apply(do.call("cbind", lapply(re.8.samples, "[",
-                                          1)), 1, unique)
-    count.gene.plus.read.8.samples <- cbind(gene, do.call("cbind",
-                                                          lapply(re.8.samples, "[", i)))
+        X <- toupper(unique(as.character(sample.infor$Condition)))
 
-    colnames(count.gene.plus.read.8.samples) = c("gene",
-                                                 names(re.8.samples))
+        wt.index <- grep(X[group.comparision[1]], toupper(colnames(dff)))
 
-     df <- count.gene.plus.read.8.samples
-     df <- apply(df[, -1], 2, as.numeric)
-     index <- rowSums(df) > 0
-     dff <- count.gene.plus.read.8.samples[index, ]
-     rownames(dff) <- dff$gene
-     dff <- dff[, -1]
+        dox.index <- grep(X[group.comparision[2]], toupper(colnames(dff)))
 
-     X <- toupper(unique(as.character(sample.infor$Condition)))
+        real.index <- c(dox.index, wt.index)
 
-     wt.index <- grep(X[group.comparision[1]],toupper(colnames(dff)))
+        n.sample <- length(real.index)
 
-     dox.index <- grep(X[group.comparision[2]],toupper(colnames(dff)))
+        permutation.index <- real.index
 
-     real.index <- c(dox.index,wt.index)
+        countData <- apply(dff[, permutation.index], 2, as.numeric)
 
-     n.sample <- length(real.index)
+        rownames(countData) <- rownames(dff)
 
-     permutation.index <- real.index
+        txs.gene <- ReformatTxsGene()
 
-     countData <- apply(dff[, permutation.index], 2, as.numeric)
+        xx <- txs.gene$txs_genes_DF_2
 
-     rownames(countData) <- rownames(dff)
+        mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 
-     txs.gene <- ReformatTxsGene()
+        results <- getBM(attributes = c("ucsc", "ensembl_transcript_id"), filters = "ensembl_transcript_id",
+            values = xx, mart = mart)
 
-     xx <- txs.gene$txs_genes_DF_2
+        xxx <- results[-which(results$ucsc == ""), ]
 
-     mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
+        rownames(xxx) <- xxx$ucsc
 
-     results <- getBM(attributes = c("ucsc","ensembl_transcript_id"),
-                     filters = "ensembl_transcript_id", values = xx,
-                     mart = mart)
+        re.FC <- merge(countData, xxx, by = 0)
 
-     xxx <- results[-which(results$ucsc==""),]
+        re.FC <- countData
 
-     rownames(xxx) <- xxx$ucsc
+        return(re.FC)
 
-     re.FC <- merge(countData,xxx, by = 0)
+    }
 
-     re.FC <- countData
-
-     return(re.FC)
-
-  }
-
-   re.BR <- ProcessEachCorner(re.8.samples, 2,sample.infor)  #BR
-   re.TR <- ProcessEachCorner(re.8.samples, 3,sample.infor)  #TR
+    re.BR <- ProcessEachCorner(re.8.samples, 2, sample.infor)  #BR
+    re.TR <- ProcessEachCorner(re.8.samples, 3, sample.infor)  #TR
 
 
-  #  re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
-  #  re.TR.4.plus.gene.TL.4.minus.gene <- re.TR
-  #
-  # # Get the counts for DoGs of plus and minus gene
-  # DoGs.4.plus.Gene <- re.TR.4.plus.gene.TL.4.minus.gene[which(re.TR.4.plus.gene.TL.4.minus.gene$strand ==
-  #                                                               "+"), ]
-  # DoGs.4.minus.Gene <- re.BR.4.plus.gene.BL.4.minus.gene[which(re.BR.4.plus.gene.BL.4.minus.gene$strand ==
-  #                                                                "-"), ]
-  #
-  # DoGs.4.plus.minus.Gene <- rbind(DoGs.4.plus.Gene, DoGs.4.minus.Gene)
-  #
-  # res <- list(DoGs.4.plus.Gene=DoGs.4.minus.Gene,
-  #             DoGs.4.minus.Gene=DoGs.4.minus.Gene,
-  #             DoGs.4.plus.minus.Gene=DoGs.4.plus.minus.Gene)
+    # re.BR.4.plus.gene.BL.4.minus.gene <- re.BR
+    # re.TR.4.plus.gene.TL.4.minus.gene <- re.TR # Get the counts for DoGs of
+    # plus and minus gene DoGs.4.plus.Gene <-
+    # re.TR.4.plus.gene.TL.4.minus.gene[which(re.TR.4.plus.gene.TL.4.minus.gene$strand
+    # == '+'), ] DoGs.4.minus.Gene <-
+    # re.BR.4.plus.gene.BL.4.minus.gene[which(re.BR.4.plus.gene.BL.4.minus.gene$strand
+    # == '-'), ] DoGs.4.plus.minus.Gene <- rbind(DoGs.4.plus.Gene,
+    # DoGs.4.minus.Gene) res <- list(DoGs.4.plus.Gene=DoGs.4.minus.Gene,
+    # DoGs.4.minus.Gene=DoGs.4.minus.Gene,
+    # DoGs.4.plus.minus.Gene=DoGs.4.plus.minus.Gene)
 
-   res <- list(reBR=re.BR,reTR=re.TR,re.8.samples=re.8.samples)
+    res <- list(reBR = re.BR, reTR = re.TR, re.8.samples = re.8.samples)
 
 
-  return(res)
+    return(res)
 
 }
 
@@ -1796,23 +1813,23 @@ getutrcount <- function(dir.name, input.file.pattern,sample.infor.file,group.com
 annotatetranscript <- function(res)
 {
 
-  x <- res
-  mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",
-                           dataset = "hsapiens_gene_ensembl",
-                           host = 'ensembl.org')
+    x <- res
+    mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl",
+        host = "ensembl.org")
 
-  t2g <-  getBM(attributes = c("ucsc","ensembl_transcript_id","strand","ensembl_gene_id",
-                                       "external_gene_name"),  filters = "ensembl_transcript_id",values = rownames(x),mart = mart)
+    t2g <- getBM(attributes = c("ucsc", "ensembl_transcript_id", "strand", "ensembl_gene_id",
+        "external_gene_name"), filters = "ensembl_transcript_id", values = rownames(x),
+        mart = mart)
 
-  #xx <- t2g[-which(t2g$ensembl_transcript_id==""),]
+    # xx <- t2g[-which(t2g$ensembl_transcript_id==''),]
 
-  #rownames(xx) <- xx$ensembl_transcript_id
+    # rownames(xx) <- xx$ensembl_transcript_id
 
-  #xxx <- merge(x,xx,by=0)
+    # xxx <- merge(x,xx,by=0)
 
-  xxx <- t2g
+    xxx <- t2g
 
-  xxx
+    xxx
 }
 
 #' ProcessOutputFilesFromDoGsOnly
@@ -1867,10 +1884,10 @@ annotatetranscript <- function(res)
 #' save.image(file=paste0(out.dir.name,'re_save_2.RData'))
 #' savehistory(file=paste0(out.dir.name,'re_save_2.Rhistory'))
 
-ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
-    out.dir.name, out.file.pattern.interested, out.file.pattern.positive.gene,
-    out.file.pattern.negative.gene, out.file.pattern.all, dir.name.gene.list,
-    pattern.4.gene.list, adjust_by_batch,permutation.set.up=NULL)
+ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern, out.dir.name,
+    out.file.pattern.interested, out.file.pattern.positive.gene, out.file.pattern.negative.gene,
+    out.file.pattern.all, dir.name.gene.list, pattern.4.gene.list, adjust_by_batch,
+    permutation.set.up = NULL)
     {
 
     x <- getutrcount(dir.name, input.file.pattern)
@@ -1882,30 +1899,30 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     GeneTypeBasedDE <- function(DoGs.4.plus.Gene)
     {
 
-        #a <- n+9-1
+        # a <- n+9-1
 
         Count.DoGs.4.plus.Gene <- DoGs.4.plus.Gene
         rownames(Count.DoGs.4.plus.Gene) <- Count.DoGs.4.plus.Gene$Row.names
-        Count.DoGs.4.plus.Gene.2 <- Count.DoGs.4.plus.Gene[,
-            -1]
+        Count.DoGs.4.plus.Gene.2 <- Count.DoGs.4.plus.Gene[, -1]
 
         # head(Count.DoGs.4.plus.Gene.2)
 
-        wt.index <- grep("WT",toupper(colnames(Count.DoGs.4.plus.Gene.2)))
+        wt.index <- grep("WT", toupper(colnames(Count.DoGs.4.plus.Gene.2)))
 
-        dox.index <- grep("DOX",toupper(colnames(Count.DoGs.4.plus.Gene.2)))
+        dox.index <- grep("DOX", toupper(colnames(Count.DoGs.4.plus.Gene.2)))
 
-        real.index <- c(dox.index,wt.index)
+        real.index <- c(dox.index, wt.index)
 
         n <- length(real.index)
 
-        if(!is.null(permutation.set.up)){
-        real.index <- seq(1,n)
-        permutation.index <- real.index
-        permutation.index = array(sample(real.index))
-        }else
+        if (!is.null(permutation.set.up))
         {
-          permutation.index <- real.index
+            real.index <- seq(1, n)
+            permutation.index <- real.index
+            permutation.index = array(sample(real.index))
+        } else
+        {
+            permutation.index <- real.index
         }
 
         tmp <- Count.DoGs.4.plus.Gene.2
@@ -1918,11 +1935,13 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
         if (adjust_by_batch == "NO")
         {
-            re.DESeq.DoGs.plus.gene <- DEAnalysis(Count.DoGs.4.plus.Gene.2,wt.index,dox.index)
+            re.DESeq.DoGs.plus.gene <- DEAnalysis(Count.DoGs.4.plus.Gene.2,
+                wt.index, dox.index)
         } else
         {
 
-          re.DESeq.DoGs.plus.gene <- DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2,Nbatch=c(3,2))
+            re.DESeq.DoGs.plus.gene <- DEAnalysisAdjustByBatch(Count.DoGs.4.plus.Gene.2,
+                Nbatch = c(3, 2))
         }
 
         return(re.DESeq.DoGs.plus.gene)
@@ -1937,7 +1956,8 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     # head(re.DESeq.DoGs.minus.gene[which(re.DESeq.DoGs.minus.gene$log2FoldChange<0&re.DESeq.DoGs.minus.gene$pvalue<0.05),])
 
     print(head(DoGs.4.plus.minus.Gene))
-    re.DESeq.DoGs.plus.minus.gene <- GeneTypeBasedDE(DoGs.4.plus.minus.Gene,n)
+    re.DESeq.DoGs.plus.minus.gene <- GeneTypeBasedDE(DoGs.4.plus.minus.Gene,
+        n)
     # head(re.DESeq.DoGs.plus.minus.gene[which(re.DESeq.DoGs.plus.minus.gene$log2FoldChange<0&re.DESeq.DoGs.plus.minus.gene$pvalue<0.05),])
 
     gene.interested <- ReadGeneList(dir.name.gene.list, pattern.4.gene.list)
@@ -1946,8 +1966,7 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
         gene.interested[, 1]), ]
 
     # re.DESeq.DoGs.plus.minus.gene.interested[which(re.DESeq.DoGs.plus.minus.gene.interested$gene
-    # %in% c('TPCN2')),]
-    # re.FC.sorted<-re.FC[order(re.FC$pvalue),]
+    # %in% c('TPCN2')),] re.FC.sorted<-re.FC[order(re.FC$pvalue),]
 
     ReformatGeneSymbol <- function(re.DoGs.adjusted.by.batch)
     {
@@ -1983,9 +2002,9 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
     # = FALSE,quote=FALSE)
 
 
-    re.out.3 <- list(dogcount=x,
-        DE_positive_gene = re.DESeq.DoGs.plus.gene, DE_negative_gene = re.DESeq.DoGs.minus.gene,
-        DE = re.DESeq.DoGs.plus.minus.gene, DE_interested = re.DESeq.DoGs.plus.minus.gene.interested)
+    re.out.3 <- list(dogcount = x, DE_positive_gene = re.DESeq.DoGs.plus.gene,
+        DE_negative_gene = re.DESeq.DoGs.minus.gene, DE = re.DESeq.DoGs.plus.minus.gene,
+        DE_interested = re.DESeq.DoGs.plus.minus.gene.interested)
 
     return(re.out.3)
 
@@ -1994,15 +2013,16 @@ ProcessOutputFilesFromDoGsOnly <- function(dir.name, input.file.pattern,
 
 
 
-idtransform <- function(values_to_be_transforemd) {
+idtransform <- function(values_to_be_transforemd)
+{
 
-  mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL",
-                  dataset = "hsapiens_gene_ensembl",
-                  host = 'ensembl.org')
+    mart <- useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl",
+        host = "ensembl.org")
 
-  t2g <-  getBM(attributes = c("ucsc","ensembl_transcript_id","strand","ensembl_gene_id",
-                               "external_gene_name"),  filters = "ucsc",values = values_to_be_transforemd,mart = mart)
-  t2g
+    t2g <- getBM(attributes = c("ucsc", "ensembl_transcript_id", "strand", "ensembl_gene_id",
+        "external_gene_name"), filters = "ucsc", values = values_to_be_transforemd,
+        mart = mart)
+    t2g
 
 
 }
@@ -2016,22 +2036,23 @@ idtransform <- function(values_to_be_transforemd) {
 #' @export
 #'
 #' @examples
-#' input.file <- "/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript.tsv"
-#' output.file <- "/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript-transformed.tsv"
+#' input.file <- '/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript.tsv'
+#' output.file <- '/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript-transformed.tsv'
 #' ThreeUTR:::gaoidtransform(input.file,output.file)
 #'
-gaoidtransform <- function(input.file, output.file) {
+gaoidtransform <- function(input.file, output.file)
+{
 
-  res <- read.table(input.file,header=F)
-  colnames(res) <- c("Chr","Start","End","utr","Symbol","Strand","ucsc")
+    res <- read.table(input.file, header = F)
+    colnames(res) <- c("Chr", "Start", "End", "utr", "Symbol", "Strand", "ucsc")
 
-  #head(res)
+    # head(res)
 
-  y <- ThreeUTR:::idtransform(res$ucsc)
+    y <- ThreeUTR:::idtransform(res$ucsc)
 
-  yy <- merge(res,y,by="ucsc")
-  write.table(yy, file = output.file, append = FALSE, quote = FALSE, sep = "\t",
-                          eol = "\n", na = "NA", dec = ".", row.names = FALSE)
+    yy <- merge(res, y, by = "ucsc")
+    write.table(yy, file = output.file, append = FALSE, quote = FALSE, sep = "\t",
+        eol = "\n", na = "NA", dec = ".", row.names = FALSE)
 }
 #' ProcessTranscript2
 #'
@@ -2041,120 +2062,138 @@ gaoidtransform <- function(input.file, output.file) {
 #' @examples
 #'
 #' ProcessTranscript2()
-ProcessTranscript2 <- function() {
+ProcessTranscript2 <- function()
+{
 
-  #Gene based
-  genes_hg19<-as.data.frame(genes(TxDb.Hsapiens.UCSC.hg19.knownGene))
+    # Gene based
+    genes_hg19 <- as.data.frame(genes(TxDb.Hsapiens.UCSC.hg19.knownGene))
 
-  #Transcripts based
-  txs.genes<-transcriptsBy(TxDb.Hsapiens.UCSC.hg19.knownGene)
+    # Transcripts based
+    txs.genes <- transcriptsBy(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
-  gene.symbol<-getSYMBOL(names(txs.genes), data='org.Hs.eg')
+    gene.symbol <- getSYMBOL(names(txs.genes), data = "org.Hs.eg")
 
-  txs.genes.2<-txs.genes
-  names(txs.genes.2)<-gene.symbol
+    txs.genes.2 <- txs.genes
+    names(txs.genes.2) <- gene.symbol
 
-  gene.symbol.2<-getSYMBOL(genes_hg19$gene_id,data = 'org.Hs.eg')
-  gene.hg19.gene.symbol<-cbind(genes_hg19,gene.symbol.2)
+    gene.symbol.2 <- getSYMBOL(genes_hg19$gene_id, data = "org.Hs.eg")
+    gene.hg19.gene.symbol <- cbind(genes_hg19, gene.symbol.2)
 
-  txs.genes.3<-lapply(txs.genes.2,as.data.frame)
+    txs.genes.3 <- lapply(txs.genes.2, as.data.frame)
 
-  txs.genes.3.name<-sapply(txs.genes.3,function(x){
+    txs.genes.3.name <- sapply(txs.genes.3, function(x)
+    {
 
-    gene<-names(x)
-    #
-    #
-    #})
+        gene <- names(x)
+        # })
 
-    #print(x)
+        # print(x)
 
-    n.txs<-dim(x)[1]
-    y<-cbind(x,rep(gene,n.txs))
-    y
-    },simplify=FALSE,USE.NAMES = TRUE)
+        n.txs <- dim(x)[1]
+        y <- cbind(x, rep(gene, n.txs))
+        y
+    }, simplify = FALSE, USE.NAMES = TRUE)
 
-  ListReformat <- function(txs.genes.3) {
-    txs.genes.3.name<-lapply(seq_along(txs.genes.3), function(i){
-      name.gene<-names(txs.genes.3)[[i]]
-      n.txs<-dim(txs.genes.3[[i]])[1]
-      gene<-rep(name.gene,n.txs)
-      y<-cbind(txs.genes.3[[i]],gene)
-      y
+    ListReformat <- function(txs.genes.3)
+    {
+        txs.genes.3.name <- lapply(seq_along(txs.genes.3), function(i)
+        {
+            name.gene <- names(txs.genes.3)[[i]]
+            n.txs <- dim(txs.genes.3[[i]])[1]
+            gene <- rep(name.gene, n.txs)
+            y <- cbind(txs.genes.3[[i]], gene)
+            y
+        })
+        names(txs.genes.3.name) <- names(txs.genes.3)
+        return(txs.genes.3.name)
+    }
+
+    txs.genes.3.name.2 <- ListReformat(txs.genes.3)
+
+    txs.genes.3.name.2.DF <- do.call(rbind.data.frame, txs.genes.3.name.2)
+
+    # txs.genes.3.name.22<-unlist2(txs.genes.3.name.2)
+
+    txs.genes.33 <- do.call(rbind.data.frame, txs.genes.3)
+    txs.genes.33.sorted <- txs.genes.33[order(row.names(txs.genes.33)), ]
+
+    # txs.genes.33.sorted.2<-cbind(txs.genes.33.sorted,strsplit(rownames(txs.genes.33.sorted),split='.'))
+
+    # txs.gene.333<-data.frame(Reduce(rbind,txs.genes.3))
+
+    print(txs.genes.3[which(names(txs.genes.3) == "STRA6")])
+
+    txs.genes.4 <- lapply(txs.genes.3, function(x)
+    {
+        y <- unique(x$seqnames)
+        ny <- length(y)
+        ny
     })
-    names(txs.genes.3.name)<-names(txs.genes.3)
-    return(txs.genes.3.name)
-  }
+    txs.genes.5 <- do.call("rbind", lapply(txs.genes.4, "[[", 1))
 
-  txs.genes.3.name.2<-ListReformat(txs.genes.3)
+    head(txs.genes.5)
 
-  txs.genes.3.name.2.DF<-do.call(rbind.data.frame,txs.genes.3.name.2)
+    gene.not.unique.chr <- unique(names(txs.genes.5[which(txs.genes.5[, 1] !=
+        1), ]))
 
-  #txs.genes.3.name.22<-unlist2(txs.genes.3.name.2)
-
-  txs.genes.33<-do.call(rbind.data.frame,txs.genes.3)
-  txs.genes.33.sorted <- txs.genes.33[order(row.names(txs.genes.33)), ]
-
-  #txs.genes.33.sorted.2<-cbind(txs.genes.33.sorted,strsplit(rownames(txs.genes.33.sorted),split="."))
-
-  #txs.gene.333<-data.frame(Reduce(rbind,txs.genes.3))
-
-  print(txs.genes.3[which(names(txs.genes.3)=="STRA6")])
-
-  txs.genes.4<-lapply(txs.genes.3,function(x){
-    y<-unique(x$seqnames)
-    ny<-length(y)
-    ny})
-  txs.genes.5<-do.call("rbind", lapply(txs.genes.4, "[[", 1))
-
-  head(txs.genes.5)
-
-  gene.not.unique.chr<-unique(names(txs.genes.5[which(txs.genes.5[,1]!=1),]))
-
-  gene.unique.chr<-unique(names(txs.genes.5[which(txs.genes.5[,1]==1),]))
+    gene.unique.chr <- unique(names(txs.genes.5[which(txs.genes.5[, 1] == 1),
+        ]))
 
 
-  txs.genes.3.name.not.unique<-txs.genes.3.name.2[which(names(txs.genes.3.name.2) %in% gene.not.unique.chr)]
+    txs.genes.3.name.not.unique <- txs.genes.3.name.2[which(names(txs.genes.3.name.2) %in%
+        gene.not.unique.chr)]
 
-  txs.genes.3.name.unique<-txs.genes.3.name.2[which(names(txs.genes.3.name.2) %in% gene.unique.chr)]
-
-
-  txs.genes.4.strand<-lapply(txs.genes.3.name.unique,function(x){
-    y<-unique(x$strand)
-    ny<-length(y)
-    ny})
-  txs.genes.5.strand<-do.call("rbind", lapply(txs.genes.4.strand, "[[", 1))
-
-  temp<-names(txs.genes.5.strand[which(txs.genes.5.strand[,1]==2),])
-
-  txs.genes.3.unique.name.not.strand<-txs.genes.3.name.unique[which(names(txs.genes.3.name.unique) %in% temp)]
-
-  length(unique(names(txs.genes.3.unique.name.not.strand)))
-
-  temp2<-names(txs.genes.5.strand[which(txs.genes.5.strand[,1]==1),])
-
-  txs.genes.3.unique.name.unique.strand<-txs.genes.3.name.unique[which(names(txs.genes.3.name.unique) %in% temp2)]
-
-  length(unique(names(txs.genes.3.unique.name.unique.strand)))
+    txs.genes.3.name.unique <- txs.genes.3.name.2[which(names(txs.genes.3.name.2) %in%
+        gene.unique.chr)]
 
 
-  input.dir="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/"
-  input.file.pattern="final_list.csv"
-  file.name=paste0(input.dir,dir(input.dir,recursive = TRUE,pattern=input.file.pattern))
-  genes.interested<-read.csv(file.name,header=F)
+    txs.genes.4.strand <- lapply(txs.genes.3.name.unique, function(x)
+    {
+        y <- unique(x$strand)
+        ny <- length(y)
+        ny
+    })
+    txs.genes.5.strand <- do.call("rbind", lapply(txs.genes.4.strand, "[[",
+        1))
 
-  length(which(names(txs.genes.3.unique.name.unique.strand) %in% genes.interested[,1]))
+    temp <- names(txs.genes.5.strand[which(txs.genes.5.strand[, 1] == 2), ])
 
-  length(which(names(txs.genes.3.unique.name.not.strand) %in% genes.interested[,1]))
+    txs.genes.3.unique.name.not.strand <- txs.genes.3.name.unique[which(names(txs.genes.3.name.unique) %in%
+        temp)]
 
-  length(which(names(txs.genes.3.name.not.unique) %in% genes.interested[,1]))
+    length(unique(names(txs.genes.3.unique.name.not.strand)))
 
-  txs.genes.3.name.not.unique[which(names(txs.genes.3.name.not.unique) %in% genes.interested[,1])]
+    temp2 <- names(txs.genes.5.strand[which(txs.genes.5.strand[, 1] == 1), ])
 
-  print(gene.hg19.gene.symbol[which(gene.hg19.gene.symbol$gene.symbol.2=="STRA6"),])
+    txs.genes.3.unique.name.unique.strand <- txs.genes.3.name.unique[which(names(txs.genes.3.name.unique) %in%
+        temp2)]
 
-  re<-list(txs_genes_list=txs.genes.3.name.2,txs_genes_DF=txs.genes.3.name.2.DF)
+    length(unique(names(txs.genes.3.unique.name.unique.strand)))
 
-  return(re)
+
+    input.dir = "/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/"
+    input.file.pattern = "final_list.csv"
+    file.name = paste0(input.dir, dir(input.dir, recursive = TRUE, pattern = input.file.pattern))
+    genes.interested <- read.csv(file.name, header = F)
+
+    length(which(names(txs.genes.3.unique.name.unique.strand) %in% genes.interested[,
+        1]))
+
+    length(which(names(txs.genes.3.unique.name.not.strand) %in% genes.interested[,
+        1]))
+
+    length(which(names(txs.genes.3.name.not.unique) %in% genes.interested[,
+        1]))
+
+    txs.genes.3.name.not.unique[which(names(txs.genes.3.name.not.unique) %in%
+        genes.interested[, 1])]
+
+    print(gene.hg19.gene.symbol[which(gene.hg19.gene.symbol$gene.symbol.2 ==
+        "STRA6"), ])
+
+    re <- list(txs_genes_list = txs.genes.3.name.2, txs_genes_DF = txs.genes.3.name.2.DF)
+
+    return(re)
 
 }
 #' Title
@@ -2166,14 +2205,15 @@ ProcessTranscript2 <- function() {
 #' @export
 #'
 #' @examples
-#'  dir.name="/media/H_driver/2016/Ramin_azhang/"
-#'  input.file.pattern.4.interested.gene="final_list.csv"
+#'  dir.name='/media/H_driver/2016/Ramin_azhang/'
+#'  input.file.pattern.4.interested.gene='final_list.csv'
 #' gene.interested<-ReadGeneList(dir.name, input.file.pattern.4.interested.gene)
 #'
-ReadGeneList<- function(dir.name, input.file.pattern.4.interested.gene) {
-  file.name=file.path(dir.name,input.file.pattern.4.interested.gene)
-  genes.interested<-read.csv(file.name,header=F)
-  return(genes.interested)
+ReadGeneList <- function(dir.name, input.file.pattern.4.interested.gene)
+{
+    file.name = file.path(dir.name, input.file.pattern.4.interested.gene)
+    genes.interested <- read.csv(file.name, header = F)
+    return(genes.interested)
 }
 #' ReformatTxsGene
 #'
@@ -2184,134 +2224,142 @@ ReadGeneList<- function(dir.name, input.file.pattern.4.interested.gene) {
 #'
 #' ReformatTxsGene()
 #'
-ReformatTxsGene <- function() {
+ReformatTxsGene <- function()
+{
 
-  #Transcripts based
-  txs.genes<-transcriptsBy(TxDb.Hsapiens.UCSC.hg19.knownGene)
-  gene.symbol<-getSYMBOL(names(txs.genes), data='org.Hs.eg')
+    # Transcripts based
+    txs.genes <- transcriptsBy(TxDb.Hsapiens.UCSC.hg19.knownGene)
+    gene.symbol <- getSYMBOL(names(txs.genes), data = "org.Hs.eg")
 
-  txs.genes.2<-txs.genes
-  names(txs.genes.2)<-gene.symbol
+    txs.genes.2 <- txs.genes
+    names(txs.genes.2) <- gene.symbol
 
-  txs.genes.3<-lapply(txs.genes.2,as.data.frame)
+    txs.genes.3 <- lapply(txs.genes.2, as.data.frame)
 
-  ListReformat <- function(txs.genes.3) {
-    txs.genes.3.name<-lapply(seq_along(txs.genes.3), function(i){
-      name.gene<-names(txs.genes.3)[[i]]
-      n.txs<-dim(txs.genes.3[[i]])[1]
-      gene<-rep(name.gene,n.txs)
-      y<-cbind(txs.genes.3[[i]],gene)
-      y
-    })
-    names(txs.genes.3.name)<-names(txs.genes.3)
-    return(txs.genes.3.name)
-  }
+    ListReformat <- function(txs.genes.3)
+    {
+        txs.genes.3.name <- lapply(seq_along(txs.genes.3), function(i)
+        {
+            name.gene <- names(txs.genes.3)[[i]]
+            n.txs <- dim(txs.genes.3[[i]])[1]
+            gene <- rep(name.gene, n.txs)
+            y <- cbind(txs.genes.3[[i]], gene)
+            y
+        })
+        names(txs.genes.3.name) <- names(txs.genes.3)
+        return(txs.genes.3.name)
+    }
 
-  txs.genes.3.name.2<-ListReformat(txs.genes.3)
+    txs.genes.3.name.2 <- ListReformat(txs.genes.3)
 
-  txs.genes.3.name.2.DF<-do.call(rbind.data.frame,txs.genes.3.name.2)
+    txs.genes.3.name.2.DF <- do.call(rbind.data.frame, txs.genes.3.name.2)
 
-  txs.genes.3.name.2.DF.2<-txs.genes.3.name.2.DF
+    txs.genes.3.name.2.DF.2 <- txs.genes.3.name.2.DF
 
-  rownames(txs.genes.3.name.2.DF.2)<-txs.genes.3.name.2.DF$tx_name
+    rownames(txs.genes.3.name.2.DF.2) <- txs.genes.3.name.2.DF$tx_name
 
-  re<-list(txs_genes_list=txs.genes.3.name.2,txs_genes_DF=txs.genes.3.name.2.DF,txs_genes_DF_2=txs.genes.3.name.2.DF.2)
+    re <- list(txs_genes_list = txs.genes.3.name.2, txs_genes_DF = txs.genes.3.name.2.DF,
+        txs_genes_DF_2 = txs.genes.3.name.2.DF.2)
 
-  return(re)
+    return(re)
 
 }
-Sleuth <- function(dplyr, select, run_accession, condition, mutate, biomaRt, useMart, getBM, rename, ensembl_transcript_id, ensembl_gene_id, external_gene_name) {
-  base_dir <- "~/Downloads/"
+Sleuth <- function(dplyr, select, run_accession, condition, mutate, biomaRt,
+    useMart, getBM, rename, ensembl_transcript_id, ensembl_gene_id, external_gene_name)
+    {
+    base_dir <- "~/Downloads/"
 
-  sample_id <- dir(file.path(base_dir,"results"))
+    sample_id <- dir(file.path(base_dir, "results"))
 
-  kal_dirs <- sapply(sample_id, function(id) file.path(base_dir,"results",id,"kallisto"))
+    kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, "results",
+        id, "kallisto"))
 
-  s2c <- read.table(file.path(base_dir, "hiseq_info.txt"), header = TRUE, stringsAsFactors=FALSE)
-  s2c <- dplyr::select(s2c, sample = run_accession, condition)
-  s2c <- dplyr::mutate(s2c, path = kal_dirs)
-  print(s2c)
-  so <- sleuth_prep(s2c, ~ condition)
-  so <- sleuth_fit(so)
-  so <- sleuth_fit(so, ~1, 'reduced')
-  so <- sleuth_lrt(so, 'reduced', 'full')
-  models(so)
-  mart <- biomaRt::useMart(biomart = "ENSEMBL_MART_ENSEMBL",
-                           dataset = "hsapiens_gene_ensembl",
-                           host = 'ensembl.org')
+    s2c <- read.table(file.path(base_dir, "hiseq_info.txt"), header = TRUE,
+        stringsAsFactors = FALSE)
+    s2c <- dplyr::select(s2c, sample = run_accession, condition)
+    s2c <- dplyr::mutate(s2c, path = kal_dirs)
+    print(s2c)
+    so <- sleuth_prep(s2c, ~condition)
+    so <- sleuth_fit(so)
+    so <- sleuth_fit(so, ~1, "reduced")
+    so <- sleuth_lrt(so, "reduced", "full")
+    models(so)
+    mart <- biomaRt::useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl",
+        host = "ensembl.org")
 
-  t2g <- biomaRt::getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id",
-                                       "external_gene_name"), mart = mart)
-  t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id,
-                       ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
-  so <- sleuth_prep(s2c, ~ condition, target_mapping = t2g)
+    t2g <- biomaRt::getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id",
+        "external_gene_name"), mart = mart)
+    t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id,
+        ext_gene = external_gene_name)
+    so <- sleuth_prep(s2c, ~condition, target_mapping = t2g)
 
-  so <- sleuth_fit(so)
+    so <- sleuth_fit(so)
 
-  so <- sleuth_fit(so, ~1, 'reduced')
+    so <- sleuth_fit(so, ~1, "reduced")
 
-  so <- sleuth_lrt(so, 'reduced', 'full')
+    so <- sleuth_lrt(so, "reduced", "full")
 
-  sleuth_live(so)
-  results_table <- sleuth_results(so, 'reduced:full', test_type = 'lrt')
+    sleuth_live(so)
+    results_table <- sleuth_results(so, "reduced:full", test_type = "lrt")
 
-  #gene level
-  so <- sleuth_prep(s2c, ~condition, target_mapping = t2g,
-                    aggregation_column = 'ens_gene')
+    # gene level
+    so <- sleuth_prep(s2c, ~condition, target_mapping = t2g, aggregation_column = "ens_gene")
 }
 
 
-TxsDE <- function(dplyr, select, run_accession, condition, mutate, biomaRt, useMart, getBM, rename, ensembl_transcript_id, ensembl_gene_id, external_gene_name) {
-  base_dir <- "~/Downloads/"
+TxsDE <- function(dplyr, select, run_accession, condition, mutate, biomaRt,
+    useMart, getBM, rename, ensembl_transcript_id, ensembl_gene_id, external_gene_name)
+    {
+    base_dir <- "~/Downloads/"
 
-  sample_id <- dir(file.path(base_dir,"results"))
+    sample_id <- dir(file.path(base_dir, "results"))
 
-  kal_dirs <- sapply(sample_id, function(id) file.path(base_dir,"results",id,"kallisto"))
+    kal_dirs <- sapply(sample_id, function(id) file.path(base_dir, "results",
+        id, "kallisto"))
 
-  s2c <- read.table(file.path(base_dir, "hiseq_info.txt"), header = TRUE, stringsAsFactors=FALSE)
-  s2c <- dplyr::select(s2c, sample = run_accession, condition)
-  s2c <- dplyr::mutate(s2c, path = kal_dirs)
-  print(s2c)
+    s2c <- read.table(file.path(base_dir, "hiseq_info.txt"), header = TRUE,
+        stringsAsFactors = FALSE)
+    s2c <- dplyr::select(s2c, sample = run_accession, condition)
+    s2c <- dplyr::mutate(s2c, path = kal_dirs)
+    print(s2c)
 
-  #transcript based
-  so <- sleuth_prep(s2c, ~ condition)
-  so <- sleuth_fit(so)
-  so <- sleuth_fit(so, ~1, 'reduced')
-  so <- sleuth_lrt(so, 'reduced', 'full')
-  models(so)
+    # transcript based
+    so <- sleuth_prep(s2c, ~condition)
+    so <- sleuth_fit(so)
+    so <- sleuth_fit(so, ~1, "reduced")
+    so <- sleuth_lrt(so, "reduced", "full")
+    models(so)
 
-  #Including gene names into transcript-level analysis
-  mart <- biomaRt::useMart(biomart = "ENSEMBL_MART_ENSEMBL",
-                           dataset = "hsapiens_gene_ensembl",
-                           host = 'ensembl.org')
+    # Including gene names into transcript-level analysis
+    mart <- biomaRt::useMart(biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl",
+        host = "ensembl.org")
 
-  t2g <- biomaRt::getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id",
-                                       "external_gene_name"), mart = mart)
-  t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id,
-                       ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
+    t2g <- biomaRt::getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id",
+        "external_gene_name"), mart = mart)
+    t2g <- dplyr::rename(t2g, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id,
+        ext_gene = external_gene_name)
 
 
-  so <- sleuth_prep(s2c, ~ condition, target_mapping = t2g)
+    so <- sleuth_prep(s2c, ~condition, target_mapping = t2g)
 
-  so <- sleuth_fit(so)
+    so <- sleuth_fit(so)
 
-  so <- sleuth_fit(so, ~1, 'reduced')
+    so <- sleuth_fit(so, ~1, "reduced")
 
-  so <- sleuth_lrt(so, 'reduced', 'full')
+    so <- sleuth_lrt(so, "reduced", "full")
 
-  sleuth_live(so)
-  results_table <- sleuth_results(so, 'reduced:full', test_type = 'lrt')
+    sleuth_live(so)
+    results_table <- sleuth_results(so, "reduced:full", test_type = "lrt")
 
-  #gene level based
-  so <- sleuth_prep(s2c, ~condition, target_mapping = t2g,
-                    aggregation_column = 'ens_gene')
-  so <- sleuth_fit(so)
-  so <- sleuth_fit(so, ~1, 'reduced')
-  so <- sleuth_lrt(so, 'reduced', 'full')
-  models(so)
+    # gene level based
+    so <- sleuth_prep(s2c, ~condition, target_mapping = t2g, aggregation_column = "ens_gene")
+    so <- sleuth_fit(so)
+    so <- sleuth_fit(so, ~1, "reduced")
+    so <- sleuth_lrt(so, "reduced", "full")
+    models(so)
 
-  #get results
-  results_table_gene <- sleuth_results(so, 'reduced:full', test_type = 'lrt')
+    # get results
+    results_table_gene <- sleuth_results(so, "reduced:full", test_type = "lrt")
 
 }
 #' TestUseLongestTxsOfGene
@@ -2324,48 +2372,50 @@ TxsDE <- function(dplyr, select, run_accession, condition, mutate, biomaRt, useM
 #' @examples
 #'
 #'
-#' out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/"
-#' out.file.pattern="DoGs_using_longest_txs_adjust_by_batch"
+#' out.dir.name='/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/'
+#' out.file.pattern='DoGs_using_longest_txs_adjust_by_batch'
 #'
 #' re.longest.transcript<-TestUseLongestTxsOfGene(Re.unadjusted.adjusted,out.dir.name,out.file.pattern)
 #'
-TestUseLongestTxsOfGene<-function(Re.unadjusted.adjusted,out.dir.name,out.file.pattern){
+TestUseLongestTxsOfGene <- function(Re.unadjusted.adjusted, out.dir.name, out.file.pattern)
+{
 
-  tempData<-Re.unadjusted.adjusted$DE
+    tempData <- Re.unadjusted.adjusted$DE
 
-  #which(tempData$gene==NA)
+    # which(tempData$gene==NA)
 
-  tempdata.byGSym.2<-tempData
+    tempdata.byGSym.2 <- tempData
 
-  rownames(tempdata.byGSym.2) = NULL
+    rownames(tempdata.byGSym.2) = NULL
 
-  data.byGSym = ddply(tempdata.byGSym.2, c("gene"),function(h){
-    #summary = apply(h,2,max)
-    y<-as.data.frame(h[which.max(h$width),])
-    y
-   }
-  )
+    data.byGSym = ddply(tempdata.byGSym.2, c("gene"), function(h)
+    {
+        # summary = apply(h,2,max)
+        y <- as.data.frame(h[which.max(h$width), ])
+        y
+    })
 
-  df.NT<-data.byGSym[,c(1,9:16)]
-  rownames(df.NT)<-df.NT[,1]
-  df.NT.2<- df.NT[,-1]
+    df.NT <- data.byGSym[, c(1, 9:16)]
+    rownames(df.NT) <- df.NT[, 1]
+    df.NT.2 <- df.NT[, -1]
 
-  re.DoGs.adjusted.by.batch<-DEAnalysisAdjustByBatch(df.NT.2)
+    re.DoGs.adjusted.by.batch <- DEAnalysisAdjustByBatch(df.NT.2)
 
-  re2<-re.DoGs.adjusted.by.batch
-  re2$gene<-as.character(re2$gene)
-  re2$gene<-paste0("'",as.character(re2$gene),"'")
+    re2 <- re.DoGs.adjusted.by.batch
+    re2$gene <- as.character(re2$gene)
+    re2$gene <- paste0("'", as.character(re2$gene), "'")
 
-  re.DoGs.adjusted.by.batch[which(re.DoGs.adjusted.by.batch$Row.names=="uc010paz.2"),]
+    re.DoGs.adjusted.by.batch[which(re.DoGs.adjusted.by.batch$Row.names == "uc010paz.2"),
+        ]
 
-  #length(unique(as.character(re.DoGs.adjusted.by.batch$gene)))
-  #unique(as.character(re.DoGs.adjusted.by.batch$gene))
-  #[grep("uc002jah.2",unique(as.character(re.DoGs.adjusted.by.batch$Row.names)))]
+    # length(unique(as.character(re.DoGs.adjusted.by.batch$gene)))
+    # unique(as.character(re.DoGs.adjusted.by.batch$gene))
+    # [grep('uc002jah.2',unique(as.character(re.DoGs.adjusted.by.batch$Row.names)))]
 
-  write.csv(re2,file=paste0(out.dir.name,"3UTR_DE_",out.file.pattern,".csv")
-            ,row.names = FALSE,quote=TRUE)
+    write.csv(re2, file = paste0(out.dir.name, "3UTR_DE_", out.file.pattern,
+        ".csv"), row.names = FALSE, quote = TRUE)
 
-  return(re.DoGs.adjusted.by.batch)
+    return(re.DoGs.adjusted.by.batch)
 
 }
 installercran <- function(.cran_packages)
@@ -2481,27 +2531,29 @@ parserreadfiles <- function(input.file.dir, input.file.type, sample.group = NULL
 
     if (!is.null(sample.group))
     {
-      x <- unlist(res$input)
+        x <- unlist(res$input)
 
-      file.name.5 <- lapply(1:length(sample.group),function(sample.group,x){
+        file.name.5 <- lapply(1:length(sample.group), function(sample.group,
+            x)
+            {
 
-        xx <- x[grep(toupper(sample.group[[u]]),toupper(x))]
+            xx <- x[grep(toupper(sample.group[[u]]), toupper(x))]
 
-      },sample.group,x)
+        }, sample.group, x)
 
-      #  g1 <- grep(sample.group[1], toupper(names(res$input)))
+        # g1 <- grep(sample.group[1], toupper(names(res$input)))
 
-      #  g2 <- grep(sample.group[2], toupper(names(res$input)))
+        # g2 <- grep(sample.group[2], toupper(names(res$input)))
 
         # output.dir.name = reformatPath(output.file.dir) temp3 = output.dir.name
-        re2 <- list(input = file.name.5,input.file.type = input.file.type)
+        re2 <- list(input = file.name.5, input.file.type = input.file.type)
     } else
     {
         re2 <- list(input = file.name.5, input.file.type = input.file.type)
     }
 
-    #pkg.env <- new.env(parent = emptyenv())
-    #pkg.env$sample <- ThreeUTR:::parsersample()
+    # pkg.env <- new.env(parent = emptyenv()) pkg.env$sample <-
+    # ThreeUTR:::parsersample()
 
     return(re2)
 
@@ -2621,7 +2673,7 @@ useInferExperiment <- function(input.file.dir, ref.gene.bed.file, output.dir)
 #' res <- convertbam2bed(input.bamfile.dir,output.bedfile.dir)
 #'
 #'
-#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/scratch/projects/bbc/aiminy_project/DoGs")'
+#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs')'
 #'
 convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
 {
@@ -2631,10 +2683,8 @@ convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
 
     m.id <- grep("login", system("hostname", intern = TRUE))
 
-    #if (!dir.exists(output.bedfile.dir))
-    #{
-    #  dir.create(output.bedfile.dir, recursive = TRUE)
-    #}
+    # if (!dir.exists(output.bedfile.dir)) { dir.create(output.bedfile.dir,
+    # recursive = TRUE) }
 
     output.bedfile.dir <- file.path(output.bedfile.dir, "BedFileFromBam")
 
@@ -2643,7 +2693,7 @@ convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
         dir.create(output.bedfile.dir, recursive = TRUE)
     }
 
-    cmd.l <- lapply(1:length(res), function(u, m.id,res,output.bedfile.dir)
+    cmd.l <- lapply(1:length(res), function(u, m.id, res, output.bedfile.dir)
     {
         # cat(u,'\n') cmd9 <- 'grep' cmd10 <- '~/PathwaySplice/inst/extdata/' cmd11
         # <- '/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt' cmd12 <- '>' cmd13
@@ -2657,24 +2707,25 @@ convertbam2bed <- function(input.bamfile.dir, output.bedfile.dir)
         file_name <- paste0(path_name2, "-", file_name)
         if (m.id == 1)
         {
-        job.name <- paste0("bam2bed.",u)
-        cmd0 <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name)
+            job.name <- paste0("bam2bed.", u)
+            cmd0 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+                Memory = 25000, span.ptile = 16, job.name)
 
-        cmd1 <- "bedtools bamtobed -i"
-        cmd2 <- "\\>"
+            cmd1 <- "bedtools bamtobed -i"
+            cmd2 <- "\\>"
 
-        cmd3 <- paste(cmd0,cmd1, res[[u]], cmd2, file.path(output.bedfile.dir, paste0(file_name,
-            ".bed")), sep = " ")
-        }else
+            cmd3 <- paste(cmd0, cmd1, res[[u]], cmd2, file.path(output.bedfile.dir,
+                paste0(file_name, ".bed")), sep = " ")
+        } else
         {
-        cmd3 <- paste(cmd1, res[[u]], cmd2, file.path(output.bedfile.dir, paste0(file_name,
-                                                                                 ".bed")), sep = " ")
+            cmd3 <- paste(cmd1, res[[u]], cmd2, file.path(output.bedfile.dir,
+                paste0(file_name, ".bed")), sep = " ")
         }
 
         system(cmd3)
 
         cmd3
-    }, m.id,res,output.bedfile.dir)
+    }, m.id, res, output.bedfile.dir)
 
     re <- list(cmdl = cmd.l, output.bedfile.dir = output.bedfile.dir)
 
@@ -2721,8 +2772,9 @@ matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld,
         dir.create(output.bedfile.dir, recursive = TRUE)
     }
 
-    cmd.l <- lapply(1:length(res), function(u,res,m.id,ld,rd,annotation.bed.file,output.bedfile.dir)
-    {
+    cmd.l <- lapply(1:length(res), function(u, res, m.id, ld, rd, annotation.bed.file,
+        output.bedfile.dir)
+        {
         # cat(u,'\n') cmd9 <- 'grep' cmd10 <- '~/PathwaySplice/inst/extdata/' cmd11
         # <- '/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt' cmd12 <- '>' cmd13
         # <- paste0('/Counts.',n,'.genes.txt') xxx <- gsub(';','',xx)
@@ -2730,30 +2782,30 @@ matchbed2annotation <- function(input.bedfile.dir, annotation.bed.file, ld,
 
         if (m.id == 1)
         {
-          job.name <- paste0("bedMannot.",u)
-          wait.job.name <- paste0("bam2bed.",u)
-          cmd.p <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name,wait.job.name)
+            job.name <- paste0("bedMannot.", u)
+            wait.job.name <- paste0("bam2bed.", u)
+            cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+                Memory = 25000, span.ptile = 16, job.name, wait.job.name)
 
-          #cmd1 <- "bedtools bamtobed -i"
-          #cmd2 <- "\\>"
+            # cmd1 <- 'bedtools bamtobed -i' cmd2 <- '\\>'
 
-          cmd0 <- paste("bedtools window -a", annotation.bed.file, "-b", sep = " ")
-          cmd1 <- paste("-l", ld, "-r", rd, "-sw", "\\>", sep = " ")
-          cmd2 <- paste(cmd.p,cmd0, res[[u]], cmd1, file.path(output.bedfile.dir, paste0(file_name,
-                                                                            "_matched.bed")), sep = " ")
+            cmd0 <- paste("bedtools window -a", annotation.bed.file, "-b", sep = " ")
+            cmd1 <- paste("-l", ld, "-r", rd, "-sw", "\\>", sep = " ")
+            cmd2 <- paste(cmd.p, cmd0, res[[u]], cmd1, file.path(output.bedfile.dir,
+                paste0(file_name, "_matched.bed")), sep = " ")
 
-        }else
+        } else
         {
-          cmd0 <- paste("bedtools window -a", annotation.bed.file, "-b", sep = " ")
-          cmd1 <- paste("-l", ld, "-r", rd, "-sw", ">", sep = " ")
-          cmd2 <- paste(cmd.p,cmd0, res[[u]], cmd1, file.path(output.bedfile.dir, paste0(file_name,
-                                                                                         "_matched.bed")), sep= " ")
+            cmd0 <- paste("bedtools window -a", annotation.bed.file, "-b", sep = " ")
+            cmd1 <- paste("-l", ld, "-r", rd, "-sw", ">", sep = " ")
+            cmd2 <- paste(cmd.p, cmd0, res[[u]], cmd1, file.path(output.bedfile.dir,
+                paste0(file_name, "_matched.bed")), sep = " ")
         }
 
         system(cmd2)
 
         cmd2
-    },res,m.id,ld,rd,annotation.bed.file,output.bedfile.dir)
+    }, res, m.id, ld, rd, annotation.bed.file, output.bedfile.dir)
 
     re <- list(cmdl = cmd.l, output.bedfile.dir = output.bedfile.dir)
 
@@ -2785,7 +2837,13 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
     filter.sample)
     {
 
-  #bsub -P bbc -J "count.8" -o %J.count.8.log -e %J.count.8.err -W 72:00 -n 32 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 16 ]' -u aimin.yan@med.miami.edu "awk -F '\t' '\$6==\"-\" && \$12==\"-\"' /scratch/projects/bbc/aiminy_project/DoGs/MatchedBedFile/BAM-SRR2039089-Fs-accepted_hits_matched.bed | awk '\$8 <= \$3 && \$9 > \$3' | awk '{print \$4}' | sort | uniq -c | sort -nr > /scratch/projects/bbc/aiminy_project/DoGs/Counts/BAM-SRR2039089-Fs-accepted_hits_matched.minus.gene.minus.read.below.DoGs.count.txt"
+    # bsub -P bbc -J 'count.8' -o %J.count.8.log -e %J.count.8.err -W 72:00 -n
+    # 32 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 16 ]' -u
+    # aimin.yan@med.miami.edu 'awk -F '\t' '\$6==\'-\' && \$12==\'-\''
+    # /scratch/projects/bbc/aiminy_project/DoGs/MatchedBedFile/BAM-SRR2039089-Fs-accepted_hits_matched.bed
+    # | awk '\$8 <= \$3 && \$9 > \$3' | awk '{print \$4}' | sort | uniq -c
+    # | sort -nr >
+    # /scratch/projects/bbc/aiminy_project/DoGs/Counts/BAM-SRR2039089-Fs-accepted_hits_matched.minus.gene.minus.read.below.DoGs.count.txt'
 
     res <- parserreadfiles(input.bedfile.dir, "bed", filter.sample = filter.sample)
 
@@ -2797,7 +2855,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
     m.id <- grep("login", system("hostname", intern = TRUE))
     cmd0 <- "awk -F '\\t'"
 
-    cmd1 <-  "'\\$6==\\\"+\\\" && \\$12==\\\"-\\\"'"
+    cmd1 <- "'\\$6==\\\"+\\\" && \\$12==\\\"-\\\"'"
     cmd11 <- "'\\$6==\\\"+\\\" && \\$12==\\\"+\\\"'"
     cmd12 <- "'\\$6==\\\"-\\\" && \\$12==\\\"+\\\"'"
     cmd13 <- "'\\$6==\\\"-\\\" && \\$12==\\\"-\\\"'"
@@ -2823,47 +2881,50 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
         dir.create(output.count.file.dir, recursive = TRUE)
     }
 
-    counteachcase <- function(res, m.id,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
-        location, output.count.file.dir)
+    counteachcase <- function(res, m.id, cmd0, cmd1, cmd2, cmd3, gene.strand,
+        read.strand, location, output.count.file.dir)
         {
-        cmd.l <- lapply(1:length(res), function(u,m.id,res,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
-                                      location,output.count.file.dir)
-        {
+        cmd.l <- lapply(1:length(res), function(u, m.id, res, cmd0, cmd1, cmd2,
+            cmd3, gene.strand, read.strand, location, output.count.file.dir)
+            {
             file_name = file_path_sans_ext(basename(res[[u]]))
 
             if (m.id == 1)
             {
-              job.name <- paste0("count.",u)
-              wait.job.name <- paste0("bedMannot.",u)
+                job.name <- paste0("count.", u)
+                wait.job.name <- paste0("bedMannot.", u)
 
-              cmd.p <- ChipSeq:::usePegasus('parallel', Wall.time = '72:00',cores = 32,Memory = 25000,span.ptile = 16,job.name)
-              cmd3 <- ">"
+                cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
+                  cores = 32, Memory = 25000, span.ptile = 16, job.name)
+                cmd3 <- ">"
 
-            cmd4 <- paste(cmd.p,paste0('\"',cmd0), cmd1, res[[u]], cmd2, cmd3, file.path(output.count.file.dir,
-                paste0(file_name, ".", gene.strand, ".gene.", read.strand, ".read.",
-                  location, ".count.txt",'\"')),sep = " ")
+                cmd4 <- paste(cmd.p, paste0("\"", cmd0), cmd1, res[[u]], cmd2,
+                  cmd3, file.path(output.count.file.dir, paste0(file_name, ".",
+                    gene.strand, ".gene.", read.strand, ".read.", location,
+                    ".count.txt", "\"")), sep = " ")
 
-            }else
+            } else
             {
-              cmd4 <- paste(cmd0, cmd1, res[[u]], cmd2, cmd3, file.path(output.count.file.dir,                                                  paste0(file_name, ".", gene.strand, ".gene.", read.strand, ".read.",
-                   location, ".count.txt")), sep = " ")
+                cmd4 <- paste(cmd0, cmd1, res[[u]], cmd2, cmd3, file.path(output.count.file.dir,
+                  paste0(file_name, ".", gene.strand, ".gene.", read.strand,
+                    ".read.", location, ".count.txt")), sep = " ")
 
             }
 
             cat(cmd4, "\n")
 
-            system(cmd4,intern = TRUE)
+            system(cmd4, intern = TRUE)
 
             cmd4
 
-        },m.id,res,cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand,
-        location,output.count.file.dir)
+        }, m.id, res, cmd0, cmd1, cmd2, cmd3, gene.strand, read.strand, location,
+            output.count.file.dir)
 
         return(cmd.l)
 
     }
 
-    cmdtempres2 <- apply(cmdtemp, 1, function(u,res,m.id, cmd0, cmd3, output.count.file.dir)
+    cmdtempres2 <- apply(cmdtemp, 1, function(u, res, m.id, cmd0, cmd3, output.count.file.dir)
     {
         x <- as.data.frame(t(u))
 
@@ -2875,12 +2936,12 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
 
         location <- x[, 5]
 
-        cmdtempres <- counteachcase(res, m.id,cmd0, cmd1, cmd2, cmd3, gene.strand,
+        cmdtempres <- counteachcase(res, m.id, cmd0, cmd1, cmd2, cmd3, gene.strand,
             read.strand, location, output.count.file.dir)
 
         cmdtempres
 
-    }, res,m.id,cmd0, cmd3, output.count.file.dir)
+    }, res, m.id, cmd0, cmd3, output.count.file.dir)
 
     re <- list(cmdl = cmdtempres2, output.count.file.dir = output.count.file.dir)
 
@@ -2903,7 +2964,7 @@ getcountsfromMatchedbed <- function(input.bedfile.dir, output.count.file.dir,
 #'
 #' getcounts()
 #'
-#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getcounts("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/projects/ctsi/bbc/aimin/annotation/hg19_DoGs_2.bed",0,0,"/scratch/projects/bbc/aiminy_project/DoGs")'
+#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getcounts('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/projects/ctsi/bbc/aimin/annotation/hg19_DoGs_2.bed',0,0,'/scratch/projects/bbc/aiminy_project/DoGs')'
 #'
 getcounts <- function(input.bamfile.dir, annotation.bed.file, ld, rd, output.count.file.dir,
     filter.sample)
@@ -3514,7 +3575,7 @@ splitBam <- function(input.bam.file.dir, output.bw.file.dir)
 
 }
 
-#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/","/scratch/projects/bbc/aiminy_project/DoGs/BW_split")'
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/','/scratch/projects/bbc/aiminy_project/DoGs/BW_split')'
 #'
 
 convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir)
@@ -3578,102 +3639,101 @@ convertBam2StrandBw2 <- function(input.bam.file.dir, output.bw.file.dir)
 
 }
 
-#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2bed2("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/scratch/projects/bbc/aiminy_project/DoGs/BED2")'
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2bed2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BED2')'
 #'
 
 convertBam2bed2 <- function(input.bam.file.dir, output.bed.file.dir)
 {
-  re <- parserreadfiles(input.bam.file.dir, "bam")
+    re <- parserreadfiles(input.bam.file.dir, "bam")
 
-  res <- re$input
+    res <- re$input
 
-  m.id <- grep("login", system("hostname", intern = TRUE))
+    m.id <- grep("login", system("hostname", intern = TRUE))
 
-  if (!dir.exists(output.bed.file.dir))
-  {
-    dir.create(output.bed.file.dir, recursive = TRUE)
-  }
-
-  cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
-                                          span.ptile, res, output.bed.file.dir)
-  {
-
-    file_name = file_path_sans_ext(basename(res[[u]]))
-
-    if (m.id == 1)
+    if (!dir.exists(output.bed.file.dir))
     {
-      job.name = paste0("bam2bed.", u)
-      cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
-                                   Memory = 16000, span.ptile = 16, job.name)
+        dir.create(output.bed.file.dir, recursive = TRUE)
+    }
 
-      cmd2 = paste("bam2gff_bed.pl -pe --bed --out",
-                     file.path(output.bed.file.dir, paste0(file_name, ".bed")),
-                     "--in", res[[u]], sep = " ")
-      cmd3 = paste(cmd1, cmd2, sep = " ")
-      } else
-      {
-        cmd3 = paste("bam2gff_bed.pl -pe --bed --out",
-                     file.path(output.bed.file.dir, paste0(file_name, ".bed")),
-                     "--in", res[[u]], sep = " ")
-      }
+    cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
+        span.ptile, res, output.bed.file.dir)
+        {
 
-    cmd <- cmd3
+        file_name = file_path_sans_ext(basename(res[[u]]))
 
-    system(cmd)
+        if (m.id == 1)
+        {
+            job.name = paste0("bam2bed.", u)
+            cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+                Memory = 16000, span.ptile = 16, job.name)
 
-    cmd
-  }, m.id, Wall.time, cores, Memory, span.ptile, res, output.bed.file.dir)
+            cmd2 = paste("bam2gff_bed.pl -pe --bed --out", file.path(output.bed.file.dir,
+                paste0(file_name, ".bed")), "--in", res[[u]], sep = " ")
+            cmd3 = paste(cmd1, cmd2, sep = " ")
+        } else
+        {
+            cmd3 = paste("bam2gff_bed.pl -pe --bed --out", file.path(output.bed.file.dir,
+                paste0(file_name, ".bed")), "--in", res[[u]], sep = " ")
+        }
+
+        cmd <- cmd3
+
+        system(cmd)
+
+        cmd
+    }, m.id, Wall.time, cores, Memory, span.ptile, res, output.bed.file.dir)
 
 }
 
-#'bedtools intersect -v -a "Results/""Aligned".bed -b /media/H_driver/2016/Ramin_azhang/Annotation/exons.bed /media/H_driver/2016/Ramin_azhang/Annotation/intron.bed
+#'bedtools intersect -v -a 'Results/''Aligned'.bed -b /media/H_driver/2016/Ramin_azhang/Annotation/exons.bed /media/H_driver/2016/Ramin_azhang/Annotation/intron.bed
 
-#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/scratch/projects/bbc/aiminy_project/DoGs/BED2","/projects/ctsi/bbc/aimin/annotation/",/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron")'
+#'R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron('/scratch/projects/bbc/aiminy_project/DoGs/BED2','/projects/ctsi/bbc/aimin/annotation/',/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron')'
 #'
-removeReadsOnExonIntron <- function(input.bed.file.dir,annotation.bed.file.dir,output.bed.file.dir)
-{
-  re <- parserreadfiles(input.bed.file.dir, "bed")
-
-  res <- re$input
-
-  annotationBed <- unlist(parserreadfiles(annotation.bed.file.dir, "bed"))
-
-  m.id <- grep("login", system("hostname", intern = TRUE))
-
-  if (!dir.exists(output.bed.file.dir))
-  {
-    dir.create(output.bed.file.dir, recursive = TRUE)
-  }
-
-  cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
-                                          span.ptile, res,annotationBed,output.bed.file.dir)
-  {
-
-    file_name = file_path_sans_ext(basename(res[[u]]))
-
-    if (m.id == 1)
+removeReadsOnExonIntron <- function(input.bed.file.dir, annotation.bed.file.dir,
+    output.bed.file.dir)
     {
-      job.name = paste0("bedRmExonIntron.", u)
-      cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
-                                   Memory = 16000, span.ptile = 16, job.name)
-      exon <-
-      intron <-
+    re <- parserreadfiles(input.bed.file.dir, "bed")
 
-      cmd2 = paste("bedtools intersect -v -a",res[[u]],"-b",exon,intron,"\\>",
-                   file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),sep = " ")
-      cmd3 = paste(cmd1, cmd2, sep = " ")
-    } else
+    res <- re$input
+
+    annotationBed <- unlist(parserreadfiles(annotation.bed.file.dir, "bed"))
+
+    m.id <- grep("login", system("hostname", intern = TRUE))
+
+    if (!dir.exists(output.bed.file.dir))
     {
-      cmd3 = paste("bedtools intersect -v -a",res[[u]],"-b",exon,intron,"\\>",
-                   file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),sep = " ")
+        dir.create(output.bed.file.dir, recursive = TRUE)
     }
 
-    cmd <- cmd3
+    cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
+        span.ptile, res, annotationBed, output.bed.file.dir)
+        {
 
-    system(cmd)
+        file_name = file_path_sans_ext(basename(res[[u]]))
 
-    cmd
-  }, m.id, Wall.time, cores, Memory, span.ptile, res,annotationBed,output.bed.file.dir)
+        if (m.id == 1)
+        {
+            job.name = paste0("bedRmExonIntron.", u)
+            cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+                Memory = 16000, span.ptile = 16, job.name)
+            exon <- intron <-
+            cmd2 = paste("bedtools intersect -v -a", res[[u]], "-b", exon, intron,
+                "\\>", file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),
+                sep = " ")
+            cmd3 = paste(cmd1, cmd2, sep = " ")
+        } else
+        {
+            cmd3 = paste("bedtools intersect -v -a", res[[u]], "-b", exon, intron,
+                "\\>", file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),
+                sep = " ")
+        }
+
+        cmd <- cmd3
+
+        system(cmd)
+
+        cmd
+    }, m.id, Wall.time, cores, Memory, span.ptile, res, annotationBed, output.bed.file.dir)
 
 }
 
@@ -4234,61 +4294,66 @@ subsetBam <- function(input.bam.file.dir, region.bed.file, output.bw.file.dir,
 #' one.sided.p<-convert.z.score(re.3UTR$re.FC.sorted$pvalue,two.sided=F)
 #'
 #'
-convert.z.score<-function(z, two.sided=T) {
-  if((two.sided)) {
-    pval = 2*pnorm(-abs(z));
-  } else if(sign(z)==-1) {
-    pval = pnorm(-abs(z));
-  } else {
-    pval = 1-pnorm(-abs(z));
-  }
-  return(pval);
+convert.z.score <- function(z, two.sided = T)
+{
+    if ((two.sided))
+    {
+        pval = 2 * pnorm(-abs(z))
+    } else if (sign(z) == -1)
+    {
+        pval = pnorm(-abs(z))
+    } else
+    {
+        pval = 1 - pnorm(-abs(z))
+    }
+    return(pval)
 }
-sanitizeColData <- function(object) {
-  if (is.null(mcols(colData(object)))) {
-    mcols(colData(object)) <- DataFrame(type=rep("input",ncol(colData(object))),
-                                        description=character(ncol(colData(object))))
-  }
-  class(mcols(colData(object))$type) <- "character"
-  class(mcols(colData(object))$description) <- "character"
-  mcols(colData(object))$type[ is.na(mcols(colData(object))$type) ] <- ""
-  mcols(colData(object))$description[ is.na(mcols(colData(object))$description) ] <- ""
-  object
+sanitizeColData <- function(object)
+{
+    if (is.null(mcols(colData(object))))
+    {
+        mcols(colData(object)) <- DataFrame(type = rep("input", ncol(colData(object))),
+            description = character(ncol(colData(object))))
+    }
+    class(mcols(colData(object))$type) <- "character"
+    class(mcols(colData(object))$description) <- "character"
+    mcols(colData(object))$type[is.na(mcols(colData(object))$type)] <- ""
+    mcols(colData(object))$description[is.na(mcols(colData(object))$description)] <- ""
+    object
 }
 
-estimateSizeFactors.DESeqDataSet <- function(object, type=c("ratio","iterate"),
-                                             locfunc=stats::median, geoMeans, controlGenes, normMatrix) {
-  type <- match.arg(type, c("ratio","iterate"))
-  # Temporary hack for backward compatibility with "old" DESeqDataSet
-  # objects. Remove once all serialized DESeqDataSet objects around have
-  # been updated.
-  if (!.hasSlot(object, "rowRanges"))
-    object <- updateObject(object)
-  object <- sanitizeColData(object)
-  if (type == "iterate") {
-    sizeFactors(object) <- estimateSizeFactorsIterate(object)
-  } else {
-    if ("avgTxLength" %in% assayNames(object)) {
-      nm <- assays(object)[["avgTxLength"]]
-      nm <- nm / exp(rowMeans(log(nm))) # divide out the geometric mean
-      normalizationFactors(object) <- estimateNormFactors(counts(object),
-                                                          normMatrix=nm,
-                                                          locfunc=locfunc,
-                                                          geoMeans=geoMeans,
-                                                          controlGenes=controlGenes)
-      message("using 'avgTxLength' from assays(dds), correcting for library size")
-    } else if (missing(normMatrix)) {
-      sizeFactors(object) <- estimateSizeFactorsForMatrix(counts(object), locfunc=locfunc,
-                                                          geoMeans=geoMeans,
-                                                          controlGenes=controlGenes)
-    } else {
-      normalizationFactors(object) <- estimateNormFactors(counts(object),
-                                                          normMatrix=normMatrix,
-                                                          locfunc=locfunc,
-                                                          geoMeans=geoMeans,
-                                                          controlGenes=controlGenes)
-      message("using 'normMatrix', adding normalization factors which correct for library size")
+estimateSizeFactors.DESeqDataSet <- function(object, type = c("ratio", "iterate"),
+    locfunc = stats::median, geoMeans, controlGenes, normMatrix)
+    {
+    type <- match.arg(type, c("ratio", "iterate"))
+    # Temporary hack for backward compatibility with 'old' DESeqDataSet objects.
+    # Remove once all serialized DESeqDataSet objects around have been updated.
+    if (!.hasSlot(object, "rowRanges"))
+        object <- updateObject(object)
+    object <- sanitizeColData(object)
+    if (type == "iterate")
+    {
+        sizeFactors(object) <- estimateSizeFactorsIterate(object)
+    } else
+    {
+        if ("avgTxLength" %in% assayNames(object))
+        {
+            nm <- assays(object)[["avgTxLength"]]
+            nm <- nm/exp(rowMeans(log(nm)))  # divide out the geometric mean
+            normalizationFactors(object) <- estimateNormFactors(counts(object),
+                normMatrix = nm, locfunc = locfunc, geoMeans = geoMeans, controlGenes = controlGenes)
+            message("using 'avgTxLength' from assays(dds), correcting for library size")
+        } else if (missing(normMatrix))
+        {
+            sizeFactors(object) <- estimateSizeFactorsForMatrix(counts(object),
+                locfunc = locfunc, geoMeans = geoMeans, controlGenes = controlGenes)
+        } else
+        {
+            normalizationFactors(object) <- estimateNormFactors(counts(object),
+                normMatrix = normMatrix, locfunc = locfunc, geoMeans = geoMeans,
+                controlGenes = controlGenes)
+            message("using 'normMatrix', adding normalization factors which correct for library size")
+        }
     }
-  }
-  object
+    object
 }
