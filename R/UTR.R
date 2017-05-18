@@ -2531,13 +2531,14 @@ parserreadfiles <- function(input.file.dir, input.file.type, sample.group = NULL
 
     if (!is.null(sample.group))
     {
-        x <- unlist(res$input)
+        x <- unlist(file.name.5)
 
         file.name.5 <- lapply(1:length(sample.group), function(sample.group,
             x)
             {
 
-            xx <- x[grep(toupper(sample.group[[u]]), toupper(x))]
+            xx <- x[grep(toupper(sample.group[[u]]),toupper(x))]
+            xx
 
         }, sample.group, x)
 
@@ -2546,7 +2547,7 @@ parserreadfiles <- function(input.file.dir, input.file.type, sample.group = NULL
         # g2 <- grep(sample.group[2], toupper(names(res$input)))
 
         # output.dir.name = reformatPath(output.file.dir) temp3 = output.dir.name
-        re2 <- list(input = file.name.5, input.file.type = input.file.type)
+        re2 <- list(input = file.name.5, input.file.type = input.file.type,sample.group=sample.group)
     } else
     {
         re2 <- list(input = file.name.5, input.file.type = input.file.type)
