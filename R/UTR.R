@@ -3697,7 +3697,7 @@ removeReadsOnExonIntron <- function(input.bed.file.dir, annotation.bed.file.dir,
 
     res <- re$input
 
-    annotationBed <- unlist(parserreadfiles(annotation.bed.file.dir, "bed"))
+    annotationBed <- parserreadfiles(annotation.bed.file.dir,"bed",sample.group=c("hg19_exons.bed","hg19_intron.bed"))
 
     m.id <- grep("login", system("hostname", intern = TRUE))
 
@@ -3717,8 +3717,8 @@ removeReadsOnExonIntron <- function(input.bed.file.dir, annotation.bed.file.dir,
             job.name = paste0("bedRmExonIntron.", u)
             cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
                 Memory = 16000, span.ptile = 16, job.name)
-            exon <- intron <-
-            cmd2 = paste("bedtools intersect -v -a", res[[u]], "-b", exon, intron,
+            exon.intron <- paste(unlist(annotationBed$input),collapse=" ")
+            cmd2 = paste("bedtools intersect -v -a", res[[u]], "-b", exon.intron,
                 "\\>", file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),
                 sep = " ")
             cmd3 = paste(cmd1, cmd2, sep = " ")
@@ -3730,6 +3730,8 @@ removeReadsOnExonIntron <- function(input.bed.file.dir, annotation.bed.file.dir,
         }
 
         cmd <- cmd3
+
+        cat(cmd, "\n\n")
 
         system(cmd)
 
