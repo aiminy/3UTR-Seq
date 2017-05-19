@@ -3797,6 +3797,149 @@ getCount4Downstream <- function(input.bed.file.dir, annotation.bed.file.dir,
 
   }
 
+#' library(org.Hs.eg.db)
+#' res12 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),c(1,2))
+
+#'res21 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),c(2,1))
+#'
+sumCount4Downstream <- function(input.count.file.dir,input.file.pattern,sample.infor.file,group.comparision = c(1,
+                                                                                             2))
+{
+  file.name = file.path(input.count.file.dir, dir(input.count.file.dir, recursive = TRUE, pattern = input.file.pattern))
+  #file.name.2 <- as.list(file.name)
+
+  #names(file.name.2) = basename(file.name)
+
+  res <- lapply(file.name, function(u)
+  {
+    if (!file.size(u) == 0)
+    {
+      re <- read.table(u,header=FALSE)
+
+      file_name = basename(u)
+      pos = gregexpr("-", file_name)
+      a = pos[[1]][1] + 1
+      b = pos[[1]][2] - 1
+      sampleName = substr(file_name, a, b)
+
+      re1 <- as.data.frame(re[,c(4,dim(re)[2])],stringsAsFactors=FALSE)
+
+      colnames(re1) <- c("gene",sampleName)
+
+    }
+    re1
+  })
+
+  merge.all <- function(x, y) {
+    merge(x, y, all=TRUE, by="gene")
+  }
+
+  res1 <- Reduce(merge.all,res)
+
+  if(length(which(is.na(res1))) > 0){
+    res1[is.na(res1)] <- 0
+  }
+
+  res2 <- res1[,-1]
+  row.names(res2) <- res1$gene
+
+
+  #colnames(res)[dim(res)[2]]="Sample"
+
+  # filterByRmNull <- function(a.list)
+  # {
+  #   a.list.2 <- a.list[lapply(a.list, length) >0]
+  #   return(a.list.2)
+  # }
+  #
+  # file.name.4 <- filterByRmNull(file.name.3)
+  #
+   sample.infor <- read.table(sample.infor.file, header = TRUE)
+
+   group <- unique(as.character(sample.infor$Condition))
+
+   group.1.index <- sample.infor[which(sample.infor$Condition %in% group[group.comparision[1]]),]$Sample
+
+   group.2.index <- sample.infor[which(sample.infor$Condition %in% group[group.comparision[2]]),]$Sample
+
+   res3 <- res2[,c(which(colnames(res2) %in% group.1.index),which(colnames(res2) %in% group.2.index))]
+
+   countData <- res3
+
+   a <- length(group.1.index)
+   b <- length(group.2.index)
+
+   colData <- data.frame(row.names=colnames(countData),condition = factor(c(rep(group[group.comparision[1]],a),rep(group[group.comparision[2]],b))))
+
+    dds <- DESeqDataSetFromMatrix(countData, colData, formula(~condition))
+
+    x <- colnames(res12$colData)[which(colnames(res12$colData) %in% "condition")]
+    c1 <- group[group.comparision[1]]
+    c2 <- group[group.comparision[2]]
+
+    contrast.set <- c(x,c1,c2)
+
+    re.DESeq <- results(DESeq(dds),contrast = contrast.set)
+
+    re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[, 2], counts(dds))
+    colnames(re.FC)[7] = paste0("FoldChange(",group[group.comparision[1]],"-vs-",group[group.comparision[2]],")")
+
+    txs.gene <- ReformatTxsGene()
+
+    re.FC <- merge(re.FC, txs.gene$txs_genes_DF_2, by = 0)
+
+    re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
+
+
+
+   rr <- list(res1=res1,res2=res2,res3=res3,colData=colData,re.DESeq=re.DESeq,re.FC=re.FC,re.FC.sorted=re.FC.sorted)
+
+
+   #res <- merge(res,sample.infor,by="Sample")
+
+   #res <- cbind.data.frame(res,paste(res[,c(paste0("V",1):paste0("V",12))],collapse="-"),stringsAsFactors=FALSE)
+
+
+
+  # names(file.name.4) = unlist(lapply(1:length(file.name.4), function(u, file.name.4,
+  #                                                                    sample.infor)
+  # {
+  #
+  #   tmp = file.name.4
+  #   x = tmp[[u]]
+  #   path_name = dirname(x)
+  #   file_name = basename(x)
+  #   pos = gregexpr("-", file_name)
+  #   a = pos[[1]][1] + 1
+  #   b = pos[[1]][2] - 1
+  #   c = substr(file_name, a, b)
+  #   con = sample.infor[match(c, sample.infor$Sample), ]$Condition
+  #   file_name_con = paste0(con, "-", file_name)
+  #
+  #   file_name_con
+  #
+  #
+  # }, file.name.4, sample.infor))
+
+  return(rr)
+
+}
+
+# volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot", legendpos="bottomright", labelsig=TRUE, textcx=1, ...) {
+#   with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main=main, ...))
+#   with(subset(res, padj<sigthresh ), points(log2FoldChange, -log10(pvalue), pch=20, col="red", ...))
+#   with(subset(res, abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(pvalue), pch=20, col="orange", ...))
+#   with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(pvalue), pch=20, col="green", ...))
+#   if (labelsig) {
+#     require(calibrate)
+#     with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=textcx, ...))
+#   }
+#   legend(legendpos, xjust=1, yjust=1, legend=c(paste("FDR<",sigthresh,sep=""), paste("|LogFC|>",lfcthresh,sep=""), "both"), pch=20, col=c("red","orange","green"))
+# }
+# png("diffexpr-volcanoplot.png", 1200, 1000, pointsize=20)
+# volcanoplot(resdata, lfcthresh=1, sigthresh=0.05, textcx=.8, xlim=c(-2.3, 2))
+# dev.off()
+
 
 prepareDaPars <- function(input.wig.file.dir, sample.group = c("Dox", "WT"),
     output.dir)
