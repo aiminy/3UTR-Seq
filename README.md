@@ -91,17 +91,23 @@ Since we are interested in intergenic reads instead of reads overlapping with ex
 ```{r}
 # Step1: Convert the aligned bam files to bed files
 
+R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs')'
 
 # Step2: Remove reads overlappping with exons and intron firstly
 
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/scratch/projects/bbc/aiminy_project/DoGs/BedFileFromBam","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron")'
 
 # Step3: get counts of intergenic reads with 45kb downstream of transcripts 
+
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::getCount4Downstream(""/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/Counts45KB")'
 
 # Step4: convert count files to count table, and perform differential DoGs analysis
+
 res21 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),c(2,1))
 ```
 The following Figure shows differentila DoGs analysis results for two transcripts for CXXC4(shown on the above Figure) under two conditions(KCl-treated and untreated). It is clear that there are differential DoGs in the downstream of CXXC4 gene between two conditions, which is consistent with the above visualization
 ![Image of DeDoGs](inst/extdata/De.png)
 
+***Summary***
+
+Vilborg et al. identitified DoGs. RNA sequencing data for discoverying DoGs is a new type of data, and the streamlined bioinformatics pipeline for processing and analyzing this new type of RNA sequencing data is not available. Here we developed a streamlined pipeline to proceesing DoGs RNA-Seq data. We believe that this bioinforamtics can enhance the research realted to DoGs.
