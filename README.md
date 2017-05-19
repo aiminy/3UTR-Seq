@@ -85,7 +85,7 @@ R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scrat
 ```
 After this, you can load strand-specific BigWig to IGV to visualize DoGs. The following is an example to show DoGs
 ![Image of DoGs](inst/extdata/DoGs.png)
-The above Figure shows two samples under two conditions(KCl-treated and untreated). There are 4 panels, the top two panles shows the coverage of forward and reverse strands  for a sample treaded by KCl;the botton two panles shows the coverage of forward and reverse strands  for a untreated sample. It is clear that we can observe a DoG in the downstream of CXXC4 gene in KCl-treated sample(labeled by red arrow).
+The above Figure shows two samples under two conditions(KCl-treated and untreated). There are 4 panels, the top two panels show the coverage of forward and reverse strand for a sample treated by KCl;the botton two panels show the coverage of forward and reverse strand for an untreated sample. It is clear that we can observe a DoG in the downstream of CXXC4 gene in KCl-treated sample(labeled by red arrow).
 
 Since we are interested in intergenic reads instead of reads overlapping with exons and introns, so we perform the following procedure:
 ```{r}
@@ -108,6 +108,6 @@ res21 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research
 The following Figure shows differentila DoGs analysis results for two transcripts for CXXC4(shown on the above Figure) under two conditions(KCl-treated and untreated). It is clear that there are differential DoGs in the downstream of CXXC4 gene between two conditions, which is consistent with the above visualization
 ![Image of DeDoGs](inst/extdata/De.png)
 
-***Summary***
+**Summary**
 
-Vilborg et al. identitified DoGs. RNA sequencing data for discoverying DoGs is a new type of data, and the streamlined bioinformatics pipeline for processing and analyzing this new type of RNA sequencing data is not available. Here we developed a streamlined pipeline to proceesing DoGs RNA-Seq data. We believe that this bioinforamtics can enhance the research realted to DoGs.
+Vilborg identifyied a new class of long chromatin-associated RNA,named as DoGs. RNA sequencing data for discoverying DoGs is a new type of data, and the streamlined bioinformatics pipeline for processing and analyzing this new type of RNA sequencing data is not available yet. Here we developed a streamlined pipeline to proceesing DoGs RNA-Seq data. We believe that this bioinforamtics can enhance the research related to DoGs.
