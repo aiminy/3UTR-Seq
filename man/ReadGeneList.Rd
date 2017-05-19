@@ -13,8 +13,8 @@ ReadGeneList(dir.name, input.file.pattern.4.interested.gene)
 Title
 }
 \examples{
- dir.name="/media/H_driver/2016/Ramin_azhang/"
- input.file.pattern.4.interested.gene="final_list.csv"
+ dir.name='/media/H_driver/2016/Ramin_azhang/'
+ input.file.pattern.4.interested.gene='final_list.csv'
 gene.interested<-ReadGeneList(dir.name, input.file.pattern.4.interested.gene)
 
 }

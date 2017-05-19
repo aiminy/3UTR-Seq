@@ -19,6 +19,6 @@ df.NT<-re.DESeq.DoGs.plus.minus.gene.interested[,c(1,9:16)]
 rownames(df.NT)<-df.NT[,1]
 df.NT.2<- df.NT[,-1]
 
-CheckBatch(dir.name,"Btach_using_DoGs",df.NT.2)
+CheckBatch(dir.name,'Btach_using_DoGs',df.NT.2)
 
 }

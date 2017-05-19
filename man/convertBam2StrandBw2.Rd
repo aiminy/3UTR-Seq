@@ -2,10 +2,10 @@
 % Please edit documentation in R/UTR.R
 \name{convertBam2StrandBw2}
 \alias{convertBam2StrandBw2}
-\title{R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/","/scratch/projects/bbc/aiminy_project/DoGs/BW_split")'}
+\title{R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/','/scratch/projects/bbc/aiminy_project/DoGs/BW_split')'}
 \usage{
 convertBam2StrandBw2(input.bam.file.dir, output.bw.file.dir)
 }
 \description{
-R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2("/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/","/scratch/projects/bbc/aiminy_project/DoGs/BW_split")'
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/Bam_split/','/scratch/projects/bbc/aiminy_project/DoGs/BW_split')'
 }

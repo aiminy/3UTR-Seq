@@ -19,18 +19,18 @@ read the mapping results from the Dogs of each gene
 }
 \examples{
 
-dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/"
-input.file.pattern="*count.2.txt"
+dir.name='/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/'
+input.file.pattern='*count.2.txt'
 
-dir.name.gene.list="/media/H_driver/2016/Ramin_azhang/"
-pattern.4.gene.list="final_list.csv"
+dir.name.gene.list='/media/H_driver/2016/Ramin_azhang/'
+pattern.4.gene.list='final_list.csv'
 
-out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/"
+out.dir.name='/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/'
 
-out.file.pattern.interested="DoGs_adjust_by_batch_interested_gene"
-out.file.pattern.positive.gene="DoGs_adjust_by_batch_positive"
-out.file.pattern.negative.gene="DoGs_adjust_by_batch_negative"
-out.file.pattern.all= "DoGs_adjust_by_batch_all"
+out.file.pattern.interested='DoGs_adjust_by_batch_interested_gene'
+out.file.pattern.positive.gene='DoGs_adjust_by_batch_positive'
+out.file.pattern.negative.gene='DoGs_adjust_by_batch_negative'
+out.file.pattern.all= 'DoGs_adjust_by_batch_all'
 
 Re.unadjusted.adjusted<-ProcessOutputFilesFrom5Cases(dir.name,input.file.pattern,out.dir.name,out.file.pattern.interested,
 out.file.pattern.positive.gene,
@@ -38,9 +38,9 @@ out.file.pattern.negative.gene,
 out.file.pattern.all,
 dir.name.gene.list,
 pattern.4.gene.list,
-adjust_by_batch="YES")
+adjust_by_batch='YES')
 
-save.image(file=paste0(out.dir.name,"re_save_2.RData"))
-savehistory(file=paste0(out.dir.name,"re_save_2.Rhistory"))
+save.image(file=paste0(out.dir.name,'re_save_2.RData'))
+savehistory(file=paste0(out.dir.name,'re_save_2.Rhistory'))
 
 }

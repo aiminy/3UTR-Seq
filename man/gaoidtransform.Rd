@@ -13,8 +13,8 @@ gaoidtransform(input.file, output.file)
 Title
 }
 \examples{
-input.file <- "/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript.tsv"
-output.file <- "/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript-transformed.tsv"
+input.file <- '/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript.tsv'
+output.file <- '/Volumes/Bioinformatics$/Zhen-Gao/UTR/Gencode-3UTR-transcript-transformed.tsv'
 ThreeUTR:::gaoidtransform(input.file,output.file)
 
 }

@@ -15,8 +15,8 @@ TestUseLongestTxsOfGene
 \examples{
 
 
-out.dir.name="/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/"
-out.file.pattern="DoGs_using_longest_txs_adjust_by_batch"
+out.dir.name='/media/aiminyan/DATA/Ramin_azhang/Counts5CasesEachSample/'
+out.file.pattern='DoGs_using_longest_txs_adjust_by_batch'
 
 re.longest.transcript<-TestUseLongestTxsOfGene(Re.unadjusted.adjusted,out.dir.name,out.file.pattern)
 

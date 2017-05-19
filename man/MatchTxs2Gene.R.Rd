@@ -13,14 +13,14 @@ MatchTxs2Gene
 
 
 
-dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
-output.file="InterestedGeneTxsSorted.csv"
+dir.name='/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/'
+output.file='InterestedGeneTxsSorted.csv'
 
 
 Re.interested.gene<-MatchTxs2Gene.R(re.rMAT,Re.txs,dir.name,output.file)
 
 
-Re.interested.gene[which(Re.interested.gene$SYMBOL \%in\% c("XYLB")),]
+Re.interested.gene[which(Re.interested.gene$SYMBOL \%in\% c('XYLB')),]
 
 
 

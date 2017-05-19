@@ -15,9 +15,9 @@ getutrcount
 }
 \examples{
 
-dir.name <- "/Volumes/Bioinformatics$/Aimin_project/UTR/NewCounts"
-input.file.pattern <- "count.txt"
+dir.name <- '/Volumes/Bioinformatics$/Aimin_project/UTR/NewCounts'
+input.file.pattern <- 'count.txt'
 
-res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"))
+res <- ThreeUTR:::getutrcount(dir.name, input.file.pattern,file.path(system.file('extdata',package = 'ThreeUTR'),'sample_infor.txt'))
 
 }

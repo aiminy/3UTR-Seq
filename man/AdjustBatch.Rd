@@ -15,15 +15,15 @@ AdjustBatch
 }
 \examples{
 
-dir.name="/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/"
+dir.name='/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/Results4NewData/'
 
-re.3UTR<-AdjustBatch(re.rMAT.com.total.test.2,dir.name,"By_P","By_Gene","Interested_gene_only","Interested_gene_only_sig")
+re.3UTR<-AdjustBatch(re.rMAT.com.total.test.2,dir.name,'By_P','By_Gene','Interested_gene_only','Interested_gene_only_sig')
 
-re.3UTR.one.side<-AdjustBatch(re.rMAT.com.total.test.2,dir.name,"By_P_one_side","By_Gene_one_side",
-"Interested_gene_only_one_side","Interested_gene_only_sig_one_side")
+re.3UTR.one.side<-AdjustBatch(re.rMAT.com.total.test.2,dir.name,'By_P_one_side','By_Gene_one_side',
+'Interested_gene_only_one_side','Interested_gene_only_sig_one_side')
 
 
-re.3UTR.one.side.norm<-AdjustBatch(re.rMAT.com.total.test.2,DE.norm.with.rpkm.norm.2,dir.name,"By_P_one_side_norm_2","By_Gene_one_side_norm_2",
-"Interested_gene_only_one_side_norm_2","Interested_gene_only_sig_one_side_norm_2")
+re.3UTR.one.side.norm<-AdjustBatch(re.rMAT.com.total.test.2,DE.norm.with.rpkm.norm.2,dir.name,'By_P_one_side_norm_2','By_Gene_one_side_norm_2',
+'Interested_gene_only_one_side_norm_2','Interested_gene_only_sig_one_side_norm_2')
 
 }

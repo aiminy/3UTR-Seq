@@ -11,7 +11,7 @@ FilterTranscripts
 }
 \examples{
 
-Re.txs<-FilterTranscripts("/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/","final_list.csv")
+Re.txs<-FilterTranscripts('/media/H_driver/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/','final_list.csv')
 
 
 

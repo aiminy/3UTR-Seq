@@ -17,6 +17,6 @@ getcounts
 
 getcounts()
 
-R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getcounts("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/projects/ctsi/bbc/aimin/annotation/hg19_DoGs_2.bed",0,0,"/scratch/projects/bbc/aiminy_project/DoGs")'
+R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getcounts('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/projects/ctsi/bbc/aimin/annotation/hg19_DoGs_2.bed',0,0,'/scratch/projects/bbc/aiminy_project/DoGs')'
 
 }

@@ -19,18 +19,18 @@ read the mapping results from the Dogs of each gene
 \examples{
 
 #new data
-dir.name="/media/H_driver/2016/Ramin_azhang/"
+dir.name='/media/H_driver/2016/Ramin_azhang/'
 
-input.file.pattern="*downstream.count.plus.minus.and.minus.plus.3.FPKM.xls"
+input.file.pattern='*downstream.count.plus.minus.and.minus.plus.3.FPKM.xls'
 
-input.file.pattern.4.interested.gene="final_list.csv"
+input.file.pattern.4.interested.gene='final_list.csv'
 
-out_put="for_bioinfo_core/RNA_seq/Results4Check/"
+out_put='for_bioinfo_core/RNA_seq/Results4Check/'
 
-out_by_p=paste0(out_put,"DE_by_p.csv")
-out_by_gene=paste0(out_put,"DE_by_gene.csv")
-out_gene_interested=paste0(out_put,"DE_by_interested_gene.csv")
-out_gene_interested_sig=paste0(out_put,"DE_by_interested_gene_sig.csv")
+out_by_p=paste0(out_put,'DE_by_p.csv')
+out_by_gene=paste0(out_put,'DE_by_gene.csv')
+out_gene_interested=paste0(out_put,'DE_by_interested_gene.csv')
+out_gene_interested_sig=paste0(out_put,'DE_by_interested_gene_sig.csv')
 
 re<-ProcessOutputFilesFrom3UTR_recount(dir.name,input.file.pattern,input.file.pattern.4.interested.gene,out_by_p,out_by_gene,out_gene_interested,out_gene_interested_sig)
 

@@ -15,13 +15,13 @@ Compare2Pos
 \examples{
 
 #real data
-in1="/Volumes/Bioinformatics$/2016/Ramin_azhang/ResultsDoGsOnlyRmOne/RealData/3UTR_DE_DoGs_adjust_by_batch_all.csv"
+in1='/Volumes/Bioinformatics$/2016/Ramin_azhang/ResultsDoGsOnlyRmOne/RealData/3UTR_DE_DoGs_adjust_by_batch_all.csv'
 
 #permutated data
 
-in1="/Volumes/Bioinformatics$/2016/Ramin_azhang/ResultsDoGsOnlyRmOne/Counts4DoGsOnlyRmOnePermutation/3UTR_DE_DoGs_adjust_by_batch_all.csv"
+in1='/Volumes/Bioinformatics$/2016/Ramin_azhang/ResultsDoGsOnlyRmOne/Counts4DoGsOnlyRmOnePermutation/3UTR_DE_DoGs_adjust_by_batch_all.csv'
 threshold=0.05
-in2="/Volumes/Bioinformatics$/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/final_list.csv"
+in2='/Volumes/Bioinformatics$/2016/Ramin_azhang/for_bioinfo_core/RNA_seq/final_list.csv'
 
 Compare2Pos(in1,threshold,in2)
 

@@ -2,10 +2,10 @@
 % Please edit documentation in R/UTR.R
 \name{convertBam2bed2}
 \alias{convertBam2bed2}
-\title{R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2bed2("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/scratch/projects/bbc/aiminy_project/DoGs/BED2")'}
+\title{R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2bed2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BED2')'}
 \usage{
 convertBam2bed2(input.bam.file.dir, output.bed.file.dir)
 }
 \description{
-R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2bed2("/scratch/projects/bbc/aiminy_project/DoGs/BAM","/scratch/projects/bbc/aiminy_project/DoGs/BED2")'
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2bed2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BED2')'
 }
