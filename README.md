@@ -6,6 +6,12 @@ Vilborg et al. discovered a new class of long chromatin-associated RNAs, named a
 
 **Method**
 
++ Some software you need to install before using this pipeline
+
+bedtools(http://bedtools.readthedocs.io/en/latest/)
+
+tjparnell's biotoolsbox(https://github.com/tjparnell)
+
 + To Install
 
 In R console
