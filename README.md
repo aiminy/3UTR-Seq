@@ -20,7 +20,7 @@ library(devtools)
 
 install_github("aiminy/3UTR-Seq",ref = '3UTR')
 
-Install update ThreeUTR without restarting R
+Install updated ThreeUTR without restarting R
 
 detach("package:ThreeUTR", unload=TRUE)
 
