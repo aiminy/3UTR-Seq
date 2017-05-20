@@ -2602,7 +2602,7 @@ useFastqDump <- function(sra.accession.number, output.dir)
 
 #'Example
 #'
-#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useWget2Download("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq")'
+#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq")'
 #'
 useFastqDumpConvertSra2Fastq <- function(sra.file.dir, output.dir,wait.job.name=NULL)
 {

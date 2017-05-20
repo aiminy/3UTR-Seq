@@ -109,7 +109,7 @@ Since we are interested in intergenic reads instead of reads overlapping with ex
 R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useWget2Download("SRP058633","/nethome/axy148/DoGsExample")'
 
 # Step2: Convert SRA files to fastq files
-R -e 'library(ChipSeq);library(ThreeUTR);re<-ThreeUTR:::useWget2Download("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq")'
+R -e 'library(ChipSeq);library(ThreeUTR);re<-ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq")'
 
 # Step3: Align fastq files to hg19 reference genome
 
@@ -125,8 +125,6 @@ R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles('/scratch/projects/bbc/aiminy
 # Step5: Convert the aligned bam files to bed files
 
 R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs')'
-
-
 
 # Step6: Remove reads overlappping with exons and intron firstly
 
