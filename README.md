@@ -106,15 +106,14 @@ Since we are interested in intergenic reads instead of reads overlapping with ex
 ```{r}
 
 # Step1: Align fastq files to hg19 reference genome
+
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","General")'
 
 # Step2: 
-R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles('/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2','/scratch/projects/bbc/aiminy_project/DoGs/BAM')'
-
-# Rename /SRR2038198/Fs12/accepted_hits.bam and move all bam files to another same directory
-#
+# Rename accepted_hits.bam based on sample name and move all bam files to another same directory
 # Ex:
 # rename /scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2/SRR2038198/Fs12/accepted_hits.bam to /scratch/projects/bbc/aiminy_project/DoGs/BAM/SRR2038198-Fs12-accepted_hits.bam
+
 R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles('/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2','/scratch/projects/bbc/aiminy_project/DoGs/BAM')'
 
 # Step3: Convert the aligned bam files to bed files
