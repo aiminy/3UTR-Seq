@@ -7,7 +7,7 @@ res12 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research
 res21 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),c(2,1))}
 \usage{
 sumCount4Downstream(input.count.file.dir, input.file.pattern, sample.infor.file,
-  group.comparision = c(1, 2))
+  group.comparision = c("condition", 1, 2))
 }
 \description{
 library(org.Hs.eg.db)

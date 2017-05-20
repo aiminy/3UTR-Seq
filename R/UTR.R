@@ -3797,13 +3797,126 @@ getCount4Downstream <- function(input.bed.file.dir, annotation.bed.file.dir,
 
   }
 
+#' res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")
+#'
+convertCountFile2Table <- function(input.count.file.dir,input.file.pattern)
+{
+  file.name = file.path(input.count.file.dir, dir(input.count.file.dir, recursive = TRUE, pattern = input.file.pattern))
+
+  res <- lapply(file.name, function(u)
+  {
+    if (!file.size(u) == 0)
+    {
+      re <- read.table(u,header=FALSE)
+
+      file_name = basename(u)
+
+      re1 <- as.data.frame(re[,c(4,dim(re)[2])],stringsAsFactors=FALSE)
+
+      colnames(re1) <- c("Gene",file_name)
+
+    }
+    re1
+  })
+
+  merge.all <- function(x, y) {
+    merge(x, y, all=TRUE, by="Gene")
+  }
+
+  res1 <- Reduce(merge.all,res)
+
+  if(length(which(is.na(res1))) > 0){
+    res1[is.na(res1)] <- 0
+  }
+
+  res2 <- res1[,-1]
+  row.names(res2) <- res1$Gene
+
+  return(res2)
+
+}
+
+#' res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")
+
+#' res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Untreated","Treated"))
+#'
+#' res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Treated","Untreated"))
+#'
+matchAndDE <- function(res,sample.infor.file,group.comparision = c("condition","Untreated","Treated"))
+{
+  file.name <- colnames(res)
+
+  con.name <- group.comparision[1]
+
+  sample.infor <- read.table(sample.infor.file, header = TRUE)
+  sample.name <- unique(as.character(sample.infor[,1]))
+
+  file.name.new  <- lapply(file.name, function(u,sample.name)
+  {
+      x <- u
+      y <- sample.name
+
+      xx <- lapply(y,function(u,x){
+
+        if(length(grep(u,x))>0)
+        {
+        z <- u
+        z
+        }
+
+      },x)
+
+      xx
+  },sample.name)
+  colnames(res) <- unlist(file.name.new)
+
+  group <- unique(as.character(sample.infor[,2]))
+
+  a.name <- group[which(group %in% group.comparision[2])]
+  b.name <- group[which(group %in% group.comparision[3])]
+
+  group.1.index <- sample.infor[which(sample.infor[,2] %in% a.name),1]
+
+  group.2.index <- sample.infor[which(sample.infor[,2] %in% b.name),1]
+
+  countData <- res[,c(which(colnames(res) %in% group.1.index),which(colnames(res) %in% group.2.index))]
+
+   a <- length(group.1.index)
+   b <- length(group.2.index)
+
+   colData <- data.frame(row.names=colnames(countData),x = factor(c(rep(a.name,a),rep(b.name,b))))
+
+   colnames(colData)[1] <-  con.name
+
+   dds <- DESeqDataSetFromMatrix(countData, colData, formula(paste("~",con.name)))
+
+  x <- colnames(colData)[which(colnames(colData) %in% group.comparision[1])]
+  c1 <- a.name
+  c2 <- b.name
+  contrast.set <- c(x,c1,c2)
+
+  re.DESeq <- results(DESeq(dds),contrast = contrast.set)
+
+  re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[, 2], counts(dds))
+  colnames(re.FC)[7] = paste0("FoldChange(",a.name,"-vs-",b.name,")")
+
+  txs.gene <- ReformatTxsGene()
+
+  re.FC <- merge(re.FC, txs.gene$txs_genes_DF_2, by = 0)
+
+  re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
+
+  rr <- list(countData = countData,colData=colData,re.DESeq=re.DESeq,re.FC=re.FC,re.FC.sorted=re.FC.sorted)
+  return(rr)
+}
+
+
 #' library(org.Hs.eg.db)
 #' res12 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),c(1,2))
 
 #'res21 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),c(2,1))
 #'
-sumCount4Downstream <- function(input.count.file.dir,input.file.pattern,sample.infor.file,group.comparision = c(1,
-                                                                                             2))
+sumCount4Downstream <- function(input.count.file.dir,input.file.pattern,sample.infor.file,group.comparision = c("condition",1,2))
 {
   file.name = file.path(input.count.file.dir, dir(input.count.file.dir, recursive = TRUE, pattern = input.file.pattern))
   #file.name.2 <- as.list(file.name)
@@ -3858,9 +3971,9 @@ sumCount4Downstream <- function(input.count.file.dir,input.file.pattern,sample.i
 
    group <- unique(as.character(sample.infor$Condition))
 
-   group.1.index <- sample.infor[which(sample.infor$Condition %in% group[group.comparision[1]]),]$Sample
+   group.1.index <- sample.infor[which(sample.infor$Condition %in% group[group.comparision[2]]),]$Sample
 
-   group.2.index <- sample.infor[which(sample.infor$Condition %in% group[group.comparision[2]]),]$Sample
+   group.2.index <- sample.infor[which(sample.infor$Condition %in% group[group.comparision[3]]),]$Sample
 
    res3 <- res2[,c(which(colnames(res2) %in% group.1.index),which(colnames(res2) %in% group.2.index))]
 
@@ -3869,20 +3982,20 @@ sumCount4Downstream <- function(input.count.file.dir,input.file.pattern,sample.i
    a <- length(group.1.index)
    b <- length(group.2.index)
 
-   colData <- data.frame(row.names=colnames(countData),condition = factor(c(rep(group[group.comparision[1]],a),rep(group[group.comparision[2]],b))))
+   colData <- data.frame(row.names=colnames(countData),condition = factor(c(rep(group[group.comparision[2]],a),rep(group[group.comparision[3]],b))))
 
     dds <- DESeqDataSetFromMatrix(countData, colData, formula(~condition))
 
-    x <- colnames(res12$colData)[which(colnames(res12$colData) %in% "condition")]
-    c1 <- group[group.comparision[1]]
-    c2 <- group[group.comparision[2]]
+    x <- colnames(colData)[which(colnames(colData) %in% group.comparision[1])]
+    c1 <- group[group.comparision[2]]
+    c2 <- group[group.comparision[3]]
 
     contrast.set <- c(x,c1,c2)
 
     re.DESeq <- results(DESeq(dds),contrast = contrast.set)
 
     re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[, 2], counts(dds))
-    colnames(re.FC)[7] = paste0("FoldChange(",group[group.comparision[1]],"-vs-",group[group.comparision[2]],")")
+    colnames(re.FC)[7] = paste0("FoldChange(",group[group.comparision[2]],"-vs-",group[group.comparision[3]],")")
 
     txs.gene <- ReformatTxsGene()
 
@@ -4560,4 +4673,9 @@ estimateSizeFactors.DESeqDataSet <- function(object, type = c("ratio", "iterate"
         }
     }
     object
+}
+
+filterByRmNull <- function(a.list)
+{  a.list.2 <- a.list[lapply(a.list, length) >0]
+   return(a.list.2)
 }
