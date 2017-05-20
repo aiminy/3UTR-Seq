@@ -116,11 +116,17 @@ R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/sc
 
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::getCount4Downstream(""/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/Counts45KB")'
 
-# Step4: convert count files to count table, and perform differential DoGs analysis
-# In this step, you need to prepare a sample information file to be used as one of input.
-# For the format of this file,you can look up inst/extdata/sample_infor.txt
+# Step4: convert count files to count table, 
+res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")
 
-res21 <- ThreeUTR:::sumCount4Downstream("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),c(2,1))
+
+
+# Step5: perform differential DoGs analysis
+# In this step, you need to prepare a sample information file to be used as one of input.
+# For the format of this file,you can look up #inst/extdata/sample_infor.txt. The first column of this #file is sample name, and the second column is group name #of the sample belong to
+
+res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Untreated","Treated"))
+
 ```
 The following Figure shows differentila DoGs analysis results for two transcripts for CXXC4(shown on the above Figure) under two conditions(KCl-treated and untreated). It is clear that there are differential DoGs in the downstream of CXXC4 gene between two conditions, which is consistent with the above visualization
 ![Image of DeDoGs](inst/extdata/De.png)
