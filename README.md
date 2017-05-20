@@ -104,26 +104,28 @@ The above Figure shows two samples under two conditions(KCl-treated and untreate
 
 Since we are interested in intergenic reads instead of reads overlapping with exons and introns, so we perform the following procedure:
 ```{r}
-# Step1: Convert the aligned bam files to bed files
+
+# Step1: Align fastq files to hg19 reference genome
+ThreeUTR:::useTophat4Alignment("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","parallel")
+
+# Step2: Convert the aligned bam files to bed files
 
 R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs')'
 
-# Step2: Remove reads overlappping with exons and intron firstly
+# Step3: Remove reads overlappping with exons and intron firstly
 
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/scratch/projects/bbc/aiminy_project/DoGs/BedFileFromBam","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron")'
 
-# Step3: get counts of intergenic reads with 45kb downstream of transcripts 
+# Step4: Get counts of intergenic reads with 45kb downstream of transcripts 
 
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::getCount4Downstream(""/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/Counts45KB")'
 
-# Step4: convert count files to count table, 
+# Step5: Convert count files to count table, 
 res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")
 
-
-
-# Step5: perform differential DoGs analysis
+# Step6: Perform differential DoGs analysis
 # In this step, you need to prepare a sample information file to be used as one of input.
-# For the format of this file,you can look up #inst/extdata/sample_infor.txt. The first column of this #file is sample name, and the second column is group name #of the sample belong to
+# For the format of this file,you can look up inst/extdata/sample_infor.txt. The first column of this file is sample name, and the second column is group name of all samples belong to
 
 res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Untreated","Treated"))
 
