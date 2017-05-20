@@ -4740,7 +4740,9 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
                                 genome.index, cmd.input)
 {
 
-  system('echo "process alignment."$LSB_JOBINDEX')
+  job.name <- system('echo "process alignment."$LSB_JOBINDEX',intern = TRUE)
+
+  cat("job.name:",job.name,"\nn")
 
   #system("set mem = \$LSB_JOBINDEX;touch -f mem_\${mem}")
 
