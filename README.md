@@ -106,7 +106,7 @@ Since we are interested in intergenic reads instead of reads overlapping with ex
 ```{r}
 
 # Step1: Align fastq files to hg19 reference genome
-ThreeUTR:::useTophat4Alignment("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","parallel")
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","parallel")'
 
 # Step2: Convert the aligned bam files to bed files
 
@@ -121,13 +121,13 @@ R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/sc
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::getCount4Downstream(""/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/Counts45KB")'
 
 # Step5: Convert count files to count table, 
-res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")
+R -e 'library(ChipSeq);library(ThreeUTR);res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")'
 
 # Step6: Perform differential DoGs analysis
 # In this step, you need to prepare a sample information file to be used as one of input.
 # For the format of this file,you can look up inst/extdata/sample_infor.txt. The first column of this file is sample name, and the second column is group name of all samples belong to
 
-res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Untreated","Treated"))
+R -e 'library(ChipSeq);library(ThreeUTR);res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt");res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Untreated","Treated"))'
 
 ```
 The following Figure shows differentila DoGs analysis results for two transcripts for CXXC4(shown on the above Figure) under two conditions(KCl-treated and untreated). It is clear that there are differential DoGs in the downstream of CXXC4 gene between two conditions, which is consistent with the above visualization
