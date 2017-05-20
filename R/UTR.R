@@ -4735,6 +4735,11 @@ createBubRfun(Rfun)
 useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.file = NULL,
                                 genome.index, cmd.input)
 {
+
+  system("set mem = $LSB_JOBINDEX")
+
+  system("touch -f mem_${mem}")
+
   if (!dir.exists(output.dir))
   {
     dir.create(output.dir, recursive = TRUE)
