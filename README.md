@@ -106,24 +106,35 @@ Since we are interested in intergenic reads instead of reads overlapping with ex
 ```{r}
 
 # Step1: Align fastq files to hg19 reference genome
-R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","parallel")'
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","General")'
 
-# Step2: Convert the aligned bam files to bed files
+# Step2: 
+R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles('/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2','/scratch/projects/bbc/aiminy_project/DoGs/BAM')'
+
+# Rename /SRR2038198/Fs12/accepted_hits.bam and move all bam files to another same directory
+#
+# Ex:
+# rename /scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2/SRR2038198/Fs12/accepted_hits.bam to /scratch/projects/bbc/aiminy_project/DoGs/BAM/SRR2038198-Fs12-accepted_hits.bam
+R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles('/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2','/scratch/projects/bbc/aiminy_project/DoGs/BAM')'
+
+# Step3: Convert the aligned bam files to bed files
 
 R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs')'
 
-# Step3: Remove reads overlappping with exons and intron firstly
+
+
+# Step4: Remove reads overlappping with exons and intron firstly
 
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/scratch/projects/bbc/aiminy_project/DoGs/BedFileFromBam","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron")'
 
-# Step4: Get counts of intergenic reads with 45kb downstream of transcripts 
+# Step5: Get counts of intergenic reads with 45kb downstream of transcripts 
 
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::getCount4Downstream(""/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/Counts45KB")'
 
-# Step5: Convert count files to count table, 
+# Step6: Convert count files to count table, 
 R -e 'library(ChipSeq);library(ThreeUTR);res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")'
 
-# Step6: Perform differential DoGs analysis
+# Step7: Perform differential DoGs analysis
 # In this step, you need to prepare a sample information file to be used as one of input.
 # For the format of this file,you can look up inst/extdata/sample_infor.txt. The first column of this file is sample name, and the second column is group name of all samples belong to
 
