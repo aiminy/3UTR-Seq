@@ -2604,6 +2604,10 @@ useFastqDump <- function(sra.accession.number, output.dir)
 #'
 #'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq")'
 #'
+#'On pegasus, you need to run this if you want to start conversion automatically after downloading using wget
+#'
+#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq",wait.job.name = "wgetDownload")'
+#'
 useFastqDumpConvertSra2Fastq <- function(sra.file.dir, output.dir,wait.job.name=NULL)
 {
 
@@ -2632,7 +2636,7 @@ useFastqDumpConvertSra2Fastq <- function(sra.file.dir, output.dir,wait.job.name=
           job.name <-  paste0("sra2fastq.",u)
 
           if(!is.null(wait.job.name)){
-          wait.job.name <- "wgetDownload"
+          wait.job.name <- wait.job.name
           cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
                                         cores = 32, Memory = 25000, span.ptile = 16, job.name=job.name,wait.job.name=wait.job.name)
            }else
