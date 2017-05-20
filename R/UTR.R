@@ -2561,6 +2561,9 @@ parserreadfiles <- function(input.file.dir, input.file.type, sample.group = NULL
 
 }
 
+#' Example:
+#' R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useWget2Download("SRP058633","/nethome/axy148/DoGsExample")'
+#'
 useWget2Download <- function(sra.accession.number, output.dir)
 {
     cmd0 <- "wget -c -r -nd -np -L"
@@ -2572,7 +2575,18 @@ useWget2Download <- function(sra.accession.number, output.dir)
 
     cmd2 <- paste(cmd0, temp2, "-P", output.dir, sep = " ")
 
-    system(cmd2)
+    m.id <- grep("login", system("hostname", intern = TRUE))
+
+    if(length(m.id) == 1){
+    job.name <- "wgetDownload"
+    cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
+                                  cores = 32, Memory = 25000, span.ptile = 16, job.name)
+    cmd3 <- paste(cmd.p,cmd2,sep = "")
+    }else
+    {cmd3 <- cmd2}
+
+    cmd3
+    #system(cmd3)
 
 }
 
@@ -2586,9 +2600,12 @@ useFastqDump <- function(sra.accession.number, output.dir)
 
 }
 
-useFastqDumpConvertSra2Fastq <- function(sra.file.dir, output.dir)
+#'Example
+#'
+#'R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useWget2Download("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq")'
+#'
+useFastqDumpConvertSra2Fastq <- function(sra.file.dir, output.dir,wait.job.name=NULL)
 {
-    cmd0 <- "fastq-dump --split-3"
 
     re <- parserreadfiles(sra.file.dir, "sra")
 
@@ -2596,21 +2613,40 @@ useFastqDumpConvertSra2Fastq <- function(sra.file.dir, output.dir)
 
     if (!dir.exists(output.dir))
     {
-        dir.create(output.dir)
+        dir.create(output.dir,recursive = TRUE)
     }
 
-    cmd.l <- lapply(res, function(u, output.dir)
+    m.id <- grep("login", system("hostname", intern = TRUE))
+
+    cmd.l <- lapply(1:length(res), function(u, res,m.id,wait.job.name,output.dir)
     {
-        path_name = dirname(u)
+        cmd0 <- "fastq-dump --split-3"
 
-        file_name = file_path_sans_ext(basename(u))
+        path_name = dirname(res[[u]])
 
-        cmd1 <- paste(cmd0, u, "-O", output.dir, sep = " ")
+        file_name = file_path_sans_ext(basename(res[[u]]))
 
-        system(cmd1)
+        cmd1 <- paste(cmd0, res[[u]], "-O", output.dir, sep = " ")
 
-        cmd1
-    }, output.dir)
+        if(length(m.id) == 1){
+          job.name <-  paste0("sra2fastq.",u)
+
+          if(!is.null(wait.job.name)){
+          wait.job.name <- "wgetDownload"
+          cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
+                                        cores = 32, Memory = 25000, span.ptile = 16, job.name=job.name,wait.job.name=wait.job.name)
+           }else
+           {
+             cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
+                                           cores = 32, Memory = 25000, span.ptile = 16, job.name=job.name)
+           }
+          cmd2 <- paste(cmd.p,cmd1,sep = "")
+        }else
+        {cmd2 <- cmd1}
+
+        system(cmd2)
+        cmd2
+    }, res,m.id,wait.job.name,output.dir)
 
     re <- list(cmdl = cmd.l, output.dir = output.dir)
 
@@ -4681,3 +4717,11 @@ filterByRmNull <- function(a.list)
 {  a.list.2 <- a.list[lapply(a.list, length) >0]
    return(a.list.2)
 }
+
+Rfun <- "useWget2Download"
+createBubRfun <- function(Rfun){
+  x <- ChipSeq:::usePegasus("parallel","72:00",16,25000,8,"d")
+  xx <- paste(x,paste0("R -e '",Rfun,"'"),sep=" ")
+  xx
+}
+createBubRfun(Rfun)
