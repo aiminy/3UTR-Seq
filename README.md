@@ -109,7 +109,11 @@ Since we are interested in intergenic reads instead of reads overlapping with ex
 R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useWget2Download("SRP058633","/nethome/axy148/DoGsExample")'
 
 # Step2: Convert SRA files to fastq files
+# If you do not have waited job or run on machine that is not cluster 
 R -e 'library(ChipSeq);library(ThreeUTR);re<-ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq")'
+
+# On pegasus, you need to run this if you want to start conversion automatically after downloading using wget
+R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq",wait.job.name = "wgetDownload")'
 
 # Step3: Align fastq files to hg19 reference genome
 
