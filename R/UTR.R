@@ -4831,6 +4831,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
       cmd15 = paste(cmd4, cmd2, cmd14)
 
       #system(cmd15)
+      cat(cmd15,"\n\n")
 
     } else
     {
@@ -4844,6 +4845,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
                     genome.index, y[1], sep = " ")
       # cmd25= paste(cmd.input,cmd24)
       cmd25 = paste(cmd4, cmd2, cmd24)
+      cat(cmd25,"\n\n")
       #system(cmd25)
     }
 
