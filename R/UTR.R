@@ -2586,7 +2586,7 @@ useWget2Download <- function(sra.accession.number, output.dir)
     {cmd3 <- cmd2}
 
     cmd3
-    #system(cmd3)
+    system(cmd3,intern = TRUE)
 
 }
 
