@@ -147,7 +147,7 @@ R -e 'library(ChipSeq);library(ThreeUTR);res <- convertCountFile2Table("~/Dropbo
 
 R -e 'library(ChipSeq);library(ThreeUTR);res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt");res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Untreated","Treated"))'
 
-# To run from Step1 to Step9 at one time
+# To run from Step1 to Step9 at one time(on test yet)
 R -e 'library(ChipSeq);library(ThreeUTR);library();runDoGs("SRP058633",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","TestPipeline")'
 
 ```
