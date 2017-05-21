@@ -8,6 +8,5 @@ R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useWget2Download("SRP0
 useWget2Download(sra.accession.number, output.dir)
 }
 \description{
-Example:
-R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useWget2Download("SRP058633","/nethome/axy148/DoGsExample")'
+re <- ThreeUTR:::useWget2Download("SRP058633","/nethome/axy148/DoGsExample")
 }
