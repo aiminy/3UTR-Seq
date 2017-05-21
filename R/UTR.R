@@ -4746,7 +4746,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
 
   #cmd ="tophat --library-type fr-firststrand -g 1 -G /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf -p 4 -o /scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2/SRR2038198/Fs12 /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome /scratch/projects/bbc/aiminy_project/DoGsFastq/SRR2038198_1.fastq /scratch/projects/bbc/aiminy_project/DoGsFastq/SRR2038198_2.fastq"
 
-  cat(cmd,"\n\n")
+  #cat(cmd,"\n\n")
 
   #system("set mem = \$LSB_JOBINDEX;touch -f mem_\${mem}")
 
