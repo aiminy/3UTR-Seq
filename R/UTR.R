@@ -4729,7 +4729,7 @@ Rfun <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvert
 
 createBubRfun <- function(Rfun,job.name,wait.job.name){
   x <- ChipSeq:::usePegasus("parallel","72:00",16,25000,8,job.name,wait.job.name)
-  xx <- paste(x,paste0("\"'R -e ",Rfun,"'\""),sep=" ")
+  xx <- paste(x,paste0("\"R -e ",paste0("'",Rfun,"'"),"\""),sep=" ")
   xx
 }
 test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
