@@ -4740,9 +4740,13 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
                                 genome.index, cmd.input)
 {
 
-  job.name <- system('echo "process alignment."$LSB_JOBINDEX',intern = TRUE)
+  #job.name <- system('echo "process alignment."$LSB_JOBINDEX',intern = TRUE)
 
-  cat("job.name:",job.name,"\nn")
+  #cat("job.name:",job.name,"\n\n")
+
+  #cmd ="tophat --library-type fr-firststrand -g 1 -G /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf -p 4 -o /scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2/SRR2038198/Fs12 /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome /scratch/projects/bbc/aiminy_project/DoGsFastq/SRR2038198_1.fastq /scratch/projects/bbc/aiminy_project/DoGsFastq/SRR2038198_2.fastq"
+
+  cat(cmd,"\n\n")
 
   #system("set mem = \$LSB_JOBINDEX;touch -f mem_\${mem}")
 
@@ -4764,6 +4768,9 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
 
   re <- parserreadfiles(input.fastq.files.dir, "fastq")
   res <- re$input
+  job.name <- paste("alignment[1","-",length(res),"]")
+
+  cmd.p <- ChipSeq:::ChipSeq:::usePegasus("parallel","72:00",16,25000,8,job.name)
 
   xx <- lapply(res, function(u)
   {
@@ -4836,7 +4843,10 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
                     genome.index, y[1], y[2], sep = " ")
       # cmd15= paste(cmd.input,cmd14)
 
-      cmd15 = paste(cmd4, cmd2, cmd14)
+      cmd15 = paste(cmd.p, cmd14)
+      job.name <- system('echo "process alignment."$LSB_JOBINDEX',intern = TRUE)
+
+      cat("job.name:",job.name,"\n\n")
 
       #system(cmd15)
       cat(cmd15,"\n\n")
@@ -4852,7 +4862,11 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
       cmd24 = paste(cmd6, gene.model.file, cmd8, sample.name.out.dir.8,
                     genome.index, y[1], sep = " ")
       # cmd25= paste(cmd.input,cmd24)
-      cmd25 = paste(cmd4, cmd2, cmd24)
+      cmd25 = paste(cmd.p, cmd24)
+      job.name <- system('echo "process alignment."$LSB_JOBINDEX',intern = TRUE)
+
+      cat("job.name:",job.name,"\n\n")
+
       cat(cmd25,"\n\n")
       #system(cmd25)
     }
