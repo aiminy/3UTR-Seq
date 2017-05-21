@@ -4774,6 +4774,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
   xxx <- unique(unlist(xx))
   res2 <- unlist(res)
 
+  m.id <- grep("login", system("hostname", intern = TRUE))
   cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
   cmd8 = "-p 4 -o"
 
@@ -4813,12 +4814,17 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
 
       cmd14 = paste(cmd6, gene.model.file, cmd8, sample.name.out.dir.3,
                     genome.index, y[1], y[2], sep = " ")
+      if(length(m.id)==1){
 
       job.name <- paste0("Alignment.",i)
       x <- paste0(wait.job.name,".",i)
       cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)
 
       cmd15 = paste(cmd.p, cmd14)
+      }else
+      {
+        cmd15=cmd14
+      }
       cat(cmd15,"\n\n")
 
     } else
@@ -4832,10 +4838,16 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
       cmd24 = paste(cmd6, gene.model.file, cmd8, sample.name.out.dir.8,
                     genome.index, y[1], sep = " ")
 
-      job.name <- paste0("Alignment.",i)
-      x <- paste0(wait.job.name,".",i)
-      cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)
-      cmd25 = paste(cmd.p, cmd24)
+      if(length(m.id)==1){
+        job.name <- paste0("Alignment.",i)
+        x <- paste0(wait.job.name,".",i)
+        cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)
+        cmd25 = paste(cmd.p, cmd24)
+
+      }else
+      {
+        cmd25=cmd24
+      }
 
       cat(cmd25,"\n\n")
     }
