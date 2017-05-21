@@ -2581,7 +2581,8 @@ useWget2Download <- function(sra.accession.number, output.dir)
     job.name <- "wgetDownload"
     cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
                                   cores = 32, Memory = 25000, span.ptile = 16, job.name)
-    cmd3 <- paste(cmd.p,cmd2,sep = " ")
+    cmd.end.check = ";echo 'done' > 'done.txt'"
+    cmd3 <- paste(cmd.p,paste0(cmd2,cmd.end.check),sep = " ")
     }else
     {cmd3 <- cmd2}
 
