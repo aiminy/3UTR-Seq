@@ -4730,7 +4730,7 @@ createBubRfun <- function(Rfun){
 }
 createBubRfun(Rfun)
 
-#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","General")'
+#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment2("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","General")'
 
 #' On pegasus
 #'
@@ -4770,7 +4770,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
   res <- re$input
   job.name <- paste("alignment[1","-",length(res),"]")
 
-  cmd.p <- ChipSeq:::ChipSeq:::usePegasus("parallel","72:00",16,25000,8,job.name)
+  cmd.p <- ChipSeq:::usePegasus("parallel","72:00",16,25000,8,job.name)
 
   xx <- lapply(res, function(u)
   {
