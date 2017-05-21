@@ -9,9 +9,9 @@ runDoGs <- function(sra.accession.number,sample.info.file,gene.gtf,genome.index,
 
 re <- ThreeUTR:::useWget2Download(sra.accession.number,file.path(output.dir,"SRAFiles"))
 
-re <- ThreeUTR:::useFastqDumpConvertSra2Fastq(file.path(output.dir,"SRAFiles"),file.path(output.dir,"FastqFiles"),wait.job.name = "wgetDownload")
-
-useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")
+# re <- ThreeUTR:::useFastqDumpConvertSra2Fastq(file.path(output.dir,"SRAFiles"),file.path(output.dir,"FastqFiles"),wait.job.name = "wgetDownload")
+#
+# useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")
 
 # processBamFiles(file.path(output.dir,"Alignment"),file.path(output.dir,"ProcessedBam"),wait.job.name="sra2fastq")
 #
