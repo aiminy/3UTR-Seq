@@ -2564,6 +2564,8 @@ parserreadfiles <- function(input.file.dir, input.file.type, sample.group = NULL
 #' Example:
 #' R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useWget2Download("SRP058633","/nethome/axy148/DoGsExample")'
 #'
+#'re <- ThreeUTR:::useWget2Download("SRP058633","/nethome/axy148/DoGsExample")
+#'
 useWget2Download <- function(sra.accession.number, output.dir)
 {
     cmd0 <- "wget -c -r -nd -np -L"
@@ -2581,8 +2583,8 @@ useWget2Download <- function(sra.accession.number, output.dir)
     job.name <- "wgetDownload"
     cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
                                   cores = 32, Memory = 25000, span.ptile = 16, job.name)
-    cmd.end.check = "&& echo 'done wget download' > 'Download.txt'"
-    cmd3 <- paste(cmd.p,paste0(cmd2,cmd.end.check),sep = " ")
+    #cmd.end.check = "&& echo 'done wget download' > 'Download.txt'"
+    cmd3 <- paste(cmd.p,cmd2,sep = " ")
     }else
     {cmd3 <- cmd2}
 
@@ -4723,13 +4725,14 @@ filterByRmNull <- function(a.list)
    return(a.list.2)
 }
 
-Rfun <- "useWget2Download"
-createBubRfun <- function(Rfun){
-  x <- ChipSeq:::usePegasus("parallel","72:00",16,25000,8,"d")
+Rfun <- "\"R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq('/nethome/axy148/DoGsExample','/scratch/projects/bbc/aiminy_project/DoGsFastq',wait.job.name = 'wgetDownload')'\""
+
+createBubRfun <- function(Rfun,job.name,wait.job.name){
+  x <- ChipSeq:::usePegasus("parallel","72:00",16,25000,8,job.name,wait.job.name)
   xx <- paste(x,paste0("R -e '",Rfun,"'"),sep=" ")
   xx
 }
-createBubRfun(Rfun)
+test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
 
 #' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment2("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","General","sra2fastq")'
 
