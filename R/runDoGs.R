@@ -9,13 +9,13 @@ runDoGs <- function(sra.accession.number,sample.info.file,gene.gtf,genome.index,
 
 re <- ThreeUTR:::useWget2Download(sra.accession.number,file.path(output.dir,"SRAFiles"))
 
-#output.dir <- "/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline"
+output.dir <- "/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline"
 
 Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq('
 input=file.path(output.dir,"SRAFiles")
 output=file.path(output.dir,"Fastqfiles")
-Rfun2 <- ',wait.job.name = "wgetDownload")'
-Rfun <- paste0(Rfun1,'"',input,'",','"',output,'"',Rfun2)
+Rfun2 <- ',wait.job.name = \\"wgetDownload\\")'
+Rfun <- paste0(Rfun1,'\\"',input,'\\",','\\"',output,'\\"',Rfun2)
 
 test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
 system(test)
