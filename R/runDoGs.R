@@ -9,13 +9,14 @@ runDoGs <- function(sra.accession.number,sample.info.file,gene.gtf,genome.index,
 
 re <- ThreeUTR:::useWget2Download(sra.accession.number,file.path(output.dir,"SRAFiles"))
 
-Rfun1 <- "R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq("
+Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq('
 input=file.path(output.dir,"SRAFiles")
 output=file.path(output.dir,"Fastqfiles")
-Rfun2 <- ',wait.job.name = \\"wgetDownload\\")\''
+
+Rfun2 <- ',wait.job.name = \\"wgetDownload\\")'
 Rfun <- paste0(Rfun1,'\\"',input,'\\",','\\"',output,'\\"',Rfun2)
 
-#test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
+test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
 system(Rfun)
 
 # useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")
