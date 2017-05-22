@@ -13,7 +13,7 @@ Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConver
 input=file.path(output.dir,"SRAFiles")
 output=file.path(output.dir,"Fastqfiles")
 Rfun2 <- ',wait.job.name = "wgetDownload")'
-Rfun <- paste0(Rfun1,'"',input,'",','"',output,'"',Rfun2)
+Rfun <- paste0(Rfun1,'"',input,'"',',"',output,'"',Rfun2)
 
 test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
 system(Rfun)
