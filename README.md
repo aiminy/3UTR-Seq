@@ -126,28 +126,31 @@ R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment("/scratc
 
 R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles('/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2','/scratch/projects/bbc/aiminy_project/DoGs/BAM')'
 
-# Step5: Convert the aligned bam files to bed files
+# Step5: Convert the aligned bam files to strand-specifi bigwig files
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BW2')
+
+# Step6: Convert the aligned bam files to bed files
 
 R -e 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertbam2bed('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs')'
 
-# Step6: Remove reads overlappping with exons and intron firstly
+# Step7: Remove reads overlappping with exons and intron firstly
 
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::removeReadsOnExonIntron("/scratch/projects/bbc/aiminy_project/DoGs/BedFileFromBam","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron")'
 
-# Step7: Get counts of intergenic reads with 45kb downstream of transcripts 
+# Step8: Get counts of intergenic reads with 45kb downstream of transcripts 
 
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::getCount4Downstream(""/scratch/projects/bbc/aiminy_project/DoGs/BedRmExonIntron","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/Counts45KB")'
 
-# Step8: Convert count files to count table, 
+# Step9: Convert count files to count table, 
 R -e 'library(ChipSeq);library(ThreeUTR);res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")'
 
-# Step9: Perform differential DoGs analysis
+# Step10: Perform differential DoGs analysis
 # In this step, you need to prepare a sample information file to be used as one of input.
 # For the format of this file,you can look up inst/extdata/sample_infor.txt. The first column of this file is sample name, and the second column is group name of all samples belong to
 
 R -e 'library(ChipSeq);library(ThreeUTR);res <- convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt");res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Untreated","Treated"))'
 
-# To run from Step1 to Step9 at one time(on test yet)
+# To run from Step1 to Step10 at one time(on test yet)
 R -e 'library(ChipSeq);library(ThreeUTR);library();runDoGs("SRP058633",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","TestPipeline")'
 
 ```
@@ -156,4 +159,4 @@ The following Figure shows differentila DoGs analysis results for two transcript
 
 **Summary**
 
-Vilborg identifyied a new class of long chromatin-associated RNA,named as DoGs. RNA sequencing data for discoverying DoGs is a new type of data, and the streamlined bioinformatics pipeline for processing and analyzing this new type of RNA sequencing data is not available yet. Here we developed a streamlined pipeline to proceesing DoGs RNA-Seq data. We believe that this bioinforamtics can enhance the research related to DoGs.
+Vilborg identifyied a new class of long chromatin-associated RNA,named as DoGs. RNA sequencing data for discoverying DoGs is a new type of data, and the streamlined bioinformatics pipeline for processing and analyzing this new type of RNA sequencing data is not available yet. Here we developed a streamlined pipeline to proceesing DoGs RNA-Seq data. We believe that this bioinformatics pipeline can enhance the research related to DoGs.
