@@ -33,7 +33,7 @@ genome.index=genome.index
 wait.job.name = 'wait.job.name = "sra2fastq"'
 Rfun2 <- ')'
 
-Rinput <- paste('\\"',input,'\\"','\\"',output,'\\"','\\"',gene.gtf,'\\"',genome.index,'\\"','\\"',wait.job.name,'\\"',sep=",")
+Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\",','\\"',gene.gtf,'\\",',genome.index,'\\",','\\"',wait.job.name,'\\",')
 Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
 test <- createBubRfun(Rfun,"Alignment","sra2fastq")
