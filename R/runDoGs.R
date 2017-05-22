@@ -1,5 +1,11 @@
 #' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runDoGs("SRP058633",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline")'
 #'
+#' gene.gtf="/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
+#' genome.index="/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome"
+#' processed.gene.gtf="/projects/ctsi/bbc/aimin/annotation/"
+#' output.dir="/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline"
+#'
+#'
 runDoGs <- function(sra.accession.number,sample.info.file,gene.gtf,genome.index,processed.gene.gtf,output.dir) {
 
   if (!dir.exists(output.dir))
@@ -14,11 +20,24 @@ Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConver
 input=file.path(output.dir,"SRAFiles")
 output=file.path(output.dir,"Fastqfiles")
 Rfun2 <- ',wait.job.name = "wgetDownload")'
-Rfun <- paste0(Rfun1,'\\"',input,'\\"',',\\"',output,'\\"',Rfun2)
+Rfun3 <- paste0(Rfun1,'\\"',input,'\\"',',\\"',output,'\\"',Rfun2)
+
+run1 <- createBubRfun(Rfun3,"sra2fastq","wgetDownload")
+system(run1)
+
+Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useTophat4Alignment2('
+input=file.path(output.dir,"Fastqfiles")
+output=file.path(output.dir,"Alignment")
+gene.gtf=gene.gtf
+genome.index=genome.index
+wait.job.name = 'wait.job.name = "wgetDownload"'
+Rfun2 <- ')'
+
+Rinput <- paste(input,output,gene.gtf,genome.index,wait.job.name,sep=",")
+Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
 test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
 system(test)
-
 
 # useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")
 
