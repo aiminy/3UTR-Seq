@@ -13,10 +13,13 @@ Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConver
 input=file.path(output.dir,"SRAFiles")
 output=file.path(output.dir,"Fastqfiles")
 Rfun2 <- ',wait.job.name = "wgetDownload")'
-Rfun <- paste0(Rfun1,'"',input,'"',',"',output,'"',Rfun2)
+Rfun <- paste0(Rfun1,'\\"',input,'\\"',',\\"',output,'\\"',Rfun2)
+
+# Rfun <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq",wait.job.name = "wgetDownload")'
 
 test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
-system(Rfun)
+system(test)
+
 
 # useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")
 
