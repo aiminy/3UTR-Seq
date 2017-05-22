@@ -13,17 +13,17 @@ runDoGs <- function(sra.accession.number,sample.info.file,gene.gtf,genome.index,
     dir.create(output.dir, recursive = TRUE)
   }
 
-re <- ThreeUTR:::useWget2Download(sra.accession.number,file.path(output.dir,"SRAFiles"))
-
-# This setting works
-Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq('
-input=file.path(output.dir,"SRAFiles")
-output=file.path(output.dir,"Fastqfiles")
-Rfun2 <- ',wait.job.name = "wgetDownload")'
-Rfun3 <- paste0(Rfun1,'\\"',input,'\\"',',\\"',output,'\\"',Rfun2)
-
-run1 <- createBubRfun(Rfun3,"sra2fastq","wgetDownload")
-system(run1)
+# re <- ThreeUTR:::useWget2Download(sra.accession.number,file.path(output.dir,"SRAFiles"))
+#
+# # This setting works
+# Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq('
+# input=file.path(output.dir,"SRAFiles")
+# output=file.path(output.dir,"Fastqfiles")
+# Rfun2 <- ',wait.job.name = "wgetDownload")'
+# Rfun3 <- paste0(Rfun1,'\\"',input,'\\"',',\\"',output,'\\"',Rfun2)
+#
+# run1 <- createBubRfun(Rfun3,"sra2fastq","wgetDownload")
+# system(run1)
 
 Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useTophat4Alignment2('
 input=file.path(output.dir,"Fastqfiles")
@@ -33,7 +33,7 @@ genome.index=genome.index
 wait.job.name = 'wait.job.name = "sra2fastq"'
 Rfun2 <- ')'
 
-Rinput <- paste(input,output,gene.gtf,genome.index,wait.job.name,sep=",")
+Rinput <- paste('\\"',input,'\\"','\\"',output,'\\"','\\"',gene.gtf,'\\"',genome.index,'\\"','\\"',wait.job.name,'\\"',sep=",")
 Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
 test <- createBubRfun(Rfun,"Alignment","sra2fastq")
