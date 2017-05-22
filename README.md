@@ -126,7 +126,7 @@ R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment("/scratc
 
 R -e 'library(ThreeUTR);ThreeUTR:::processBamFiles('/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2','/scratch/projects/bbc/aiminy_project/DoGs/BAM')'
 
-# Step5: Convert the aligned bam files to strand-specifi bigwig files
+# Step5: Convert the aligned bam files to strand-specific bigwig files
 R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::convertBam2StrandBw2('/scratch/projects/bbc/aiminy_project/DoGs/BAM','/scratch/projects/bbc/aiminy_project/DoGs/BW2')
 
 # Step6: Convert the aligned bam files to bed files
