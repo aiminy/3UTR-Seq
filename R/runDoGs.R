@@ -30,13 +30,13 @@ input=file.path(output.dir,"Fastqfiles")
 output=file.path(output.dir,"Alignment")
 gene.gtf=gene.gtf
 genome.index=genome.index
-wait.job.name = 'wait.job.name = "wgetDownload"'
+wait.job.name = 'wait.job.name = "sra2fastq"'
 Rfun2 <- ')'
 
 Rinput <- paste(input,output,gene.gtf,genome.index,wait.job.name,sep=",")
 Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
-test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
+test <- createBubRfun(Rfun,"Alignment","sra2fastq")
 system(test)
 
 # useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")

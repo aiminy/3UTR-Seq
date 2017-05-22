@@ -4742,7 +4742,7 @@ system(test)
 #'bsub -P bbc -J "alignment[1-8]" -o %J.alignment.%I -e %J.alignment.%I -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment2(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\",\"General\")'"
 #'
 useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.file = NULL,
-                                genome.index, cmd.input,wait.job.name=NULL)
+                                genome.index, cmd.input="parallel",wait.job.name=NULL)
 {
 
   if (!dir.exists(output.dir))
@@ -4830,6 +4830,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
       {
         cmd15=cmd14
       }
+      system(cmd15)
       cat(cmd15,"\n\n")
 
     } else
@@ -4853,7 +4854,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
       {
         cmd25=cmd24
       }
-
+      system(cmd25)
       cat(cmd25,"\n\n")
     }
 
