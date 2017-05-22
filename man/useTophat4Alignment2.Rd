@@ -6,7 +6,8 @@
 On pegasus}
 \usage{
 useTophat4Alignment2(input.fastq.files.dir, output.dir,
-  gene.model.file = NULL, genome.index, cmd.input, wait.job.name = NULL)
+  gene.model.file = NULL, genome.index, cmd.input = "parallel",
+  wait.job.name = NULL)
 }
 \description{
 bsub -P bbc -J "alignment[1-8]" -o %J.alignment.%I -e %J.alignment.%I -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment2(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\",\"General\")'"
