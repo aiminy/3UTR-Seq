@@ -4725,7 +4725,7 @@ filterByRmNull <- function(a.list)
    return(a.list.2)
 }
 
-Rfun <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq",wait.job.name = "wgetDownload")'
+# Rfun <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::useFastqDumpConvertSra2Fastq("/nethome/axy148/DoGsExample","/scratch/projects/bbc/aiminy_project/DoGsFastq",wait.job.name = "wgetDownload")'
 
 createBubRfun <- function(Rfun,job.name,wait.job.name){
   x <- ChipSeq:::usePegasus("parallel","72:00",16,25000,8,job.name,wait.job.name)
