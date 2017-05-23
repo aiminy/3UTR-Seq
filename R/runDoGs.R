@@ -36,7 +36,7 @@ Rfun2 <- ')'
 Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\",','\\"',gene.gtf,'\\",','\\"',genome.index,'\\",',wait.job.name)
 Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
-test <- createBubRfun(Rfun,"Alignment","sra2fastq")
+test <- createBubRfun(Rfun,"Alignment",NULL)
 system(test)
 
 # useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")
