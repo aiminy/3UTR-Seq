@@ -4741,6 +4741,13 @@ system(test)
 #'
 #'bsub -P bbc -J "alignment[1-8]" -o %J.alignment.%I -e %J.alignment.%I -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment2(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\",\"General\")'"
 #'
+#'bsub -P bbc -J "alignment" -o %J.alignment.log -e %J.alignment.err -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment2(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\")'"
+#'
+#'
+#'
+#'
+#'
+#'
 useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.file = NULL,
                                 genome.index, cmd.input="parallel",wait.job.name=NULL)
 {
@@ -4822,8 +4829,13 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
       #if(length(m.id)==1){
 
       job.name <- paste0("Alignment.",i)
+      if(!is.null(wait.job.name))
+      {
       x <- paste0(wait.job.name,".",i)
-      cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)
+      cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)  }else
+      {
+      cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name)
+      }
 
       cmd15 = paste(cmd.p, cmd14)
       #}else
@@ -4846,8 +4858,15 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
 
       #if(length(m.id)==1){
         job.name <- paste0("Alignment.",i)
-        x <- paste0(wait.job.name,".",i)
-        cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)
+
+        if(!is.null(wait.job.name))
+        {
+          x <- paste0(wait.job.name,".",i)
+          cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)  }else
+          {
+            cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name)
+          }
+
         cmd25 = paste(cmd.p, cmd24)
 
       #}else
