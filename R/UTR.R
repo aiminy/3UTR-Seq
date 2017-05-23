@@ -4732,8 +4732,8 @@ createBubRfun <- function(Rfun,job.name,wait.job.name){
   xx <- paste(x,paste0("\"R -e ",paste0("\'",Rfun,"\'"),"\""),sep=" ")
   xx
 }
-test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
-system(test)
+#test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
+#system(test)
 
 #' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment2("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","General","sra2fastq")'
 
