@@ -4936,7 +4936,8 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
 
   #for (i in 1:length(xxx))
   #{
-    sample.name <- xxx[index]
+    i <- index
+    sample.name <- xxx[i]
     sample.name.out.dir <- file.path(output.dir, sample.name)
 
     if (!dir.exists(sample.name.out.dir))
@@ -4972,19 +4973,19 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
                     genome.index, y[1], y[2], sep = " ")
       #if(length(m.id)==1){
 
-      job.name <- paste0("Alignment.",i)
-      if(!is.null(wait.job.name))
-      {
-        x <- paste0(wait.job.name,".",i)
-        cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)  }else
-        {
-          cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name)
-        }
-
-      cmd15 = paste(cmd.p, cmd14)
+      # job.name <- paste0("Alignment.",i)
+      # if(!is.null(wait.job.name))
+      # {
+      #   x <- paste0(wait.job.name,".",i)
+      #   cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)  }else
+      #   {
+      #     cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name)
+      #   }
+      #
+      # cmd15 = paste(cmd.p, cmd14)
       #}else
       #{
-      #  cmd15=cmd14
+       cmd15=cmd14
       #}
       #system(cmd15,intern = TRUE,ignore.stdout = TRUE)
       cat(cmd15,"\n\n")
@@ -5001,21 +5002,21 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
                     genome.index, y[1], sep = " ")
 
       #if(length(m.id)==1){
-      job.name <- paste0("Alignment.",i)
-
-      if(!is.null(wait.job.name))
-      {
-        x <- paste0(wait.job.name,".",i)
-        cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)  }else
-        {
-          cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name)
-        }
-
-      cmd25 = paste(cmd.p, cmd24)
+      # job.name <- paste0("Alignment.",i)
+      #
+      # if(!is.null(wait.job.name))
+      # {
+      #   x <- paste0(wait.job.name,".",i)
+      #   cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)  }else
+      #   {
+      #     cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name)
+      #   }
+      #
+      # cmd25 = paste(cmd.p, cmd24)
 
       #}else
       #{
-      #cmd25=cmd24
+      cmd25=cmd24
       #}
       #system(cmd25,intern = TRUE,ignore.stdout = TRUE)
       cat(cmd25,"\n\n")
