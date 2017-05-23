@@ -4881,7 +4881,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
 
 }
 
-#' bsub -P bbc -J "alignment[1-8]" -o %J.alignment.%I -e %J.alignment.%I -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::alignmentUseJobArray(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\",\"General\")'"
+#' bsub -P bbc -J "alignment[1-8]" -o %J.alignment.%I -e %J.alignment.%I -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::alignmentUseJobArray(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\")'"
 
 alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.file = NULL,
                                  genome.index, cmd.input="parallel",wait.job.name=NULL)
@@ -4892,7 +4892,14 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
     dir.create(output.dir, recursive = TRUE)
   }
 
-  system('echo "process alignment."$LSB_JOBINDEX')
+  index <- system('echo $LSB_JOBINDEX',intern = TRUE)
+  total <- system('echo $LSB_JOBINDEX_END',intern = TRUE)
+
+  cat(index,"\n\n")
+  cat(total,"\n\n")
+
+  # tophat --library-type fr-firststrand -g 1 -G /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf -p 4 -o /scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2/SRR2038504/Fs /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome /scratch/projects/bbc/aiminy_project/DoGsFastq/SRR2038504.fastq
+
 
   re <- parserreadfiles(input.fastq.files.dir, "fastq")
   res <- re$input
@@ -4927,9 +4934,9 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
   cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
   cmd8 = "-p 4 -o"
 
-  for (i in 1:length(xxx))
-  {
-    sample.name <- xxx[i]
+  #for (i in 1:length(xxx))
+  #{
+    sample.name <- xxx[index]
     sample.name.out.dir <- file.path(output.dir, sample.name)
 
     if (!dir.exists(sample.name.out.dir))
@@ -5008,13 +5015,13 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
 
       #}else
       #{
-      cmd25=cmd24
+      #cmd25=cmd24
       #}
       #system(cmd25,intern = TRUE,ignore.stdout = TRUE)
       cat(cmd25,"\n\n")
     }
 
-  }
+  #}
 
 }
 
