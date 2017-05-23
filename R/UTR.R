@@ -4880,3 +4880,144 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
   }
 
 }
+
+#' bsub -P bbc -J "alignment[1-8]" -o %J.alignment.%I -e %J.alignment.%I -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::alignmentUseJobArray(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\",\"General\")'"
+
+alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.file = NULL,
+                                 genome.index, cmd.input="parallel",wait.job.name=NULL)
+{
+
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir, recursive = TRUE)
+  }
+
+  system('echo "process alignment."$LSB_JOBINDEX')
+
+  re <- parserreadfiles(input.fastq.files.dir, "fastq")
+  res <- re$input
+
+  xx <- lapply(res, function(u)
+  {
+    path_name = dirname(u)
+
+    file_name = file_path_sans_ext(basename(u))
+
+    if (regexpr(pattern = "_", file_name) != -1)
+    {
+      # cat('match:',file_name,'\n')
+
+      p <- regexpr(pattern = "_", file_name)
+      pp <- p - 1
+      x <- substr(file_name, 1, pp)
+
+    } else
+    {
+      # cat('no match:',file_name,'\n')
+      x <- file_name
+    }
+
+    x
+  })
+
+  xxx <- unique(unlist(xx))
+  res2 <- unlist(res)
+
+  m.id <- grep("login", system("hostname", intern = TRUE))
+  cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
+  cmd8 = "-p 4 -o"
+
+  for (i in 1:length(xxx))
+  {
+    sample.name <- xxx[i]
+    sample.name.out.dir <- file.path(output.dir, sample.name)
+
+    if (!dir.exists(sample.name.out.dir))
+    {
+      dir.create(sample.name.out.dir, recursive = TRUE)
+    }
+
+    y <- res2[grep(xxx[i], res2)]
+
+    if (length(y) == 2)
+    {
+      yy1 <- basename(y[1])
+      yy2 <- basename(y[2])
+
+      p1 <- regexpr(pattern = "_", yy1)
+      pp1 <- p1 + 1
+      x1 <- substr(yy1, pp1, pp1)
+
+      p2 <- regexpr(pattern = "_", yy2)
+      pp2 <- p2 + 1
+      x2 <- substr(yy2, pp2, pp2)
+
+
+      sample.name.out.dir.3 = file.path(sample.name.out.dir, paste0("Fs",
+                                                                    x1, x2))
+
+      if (!dir.exists(sample.name.out.dir.3))
+      {
+        dir.create(sample.name.out.dir.3, recursive = TRUE)
+      }
+
+      cmd14 = paste(cmd6, gene.model.file, cmd8, sample.name.out.dir.3,
+                    genome.index, y[1], y[2], sep = " ")
+      #if(length(m.id)==1){
+
+      job.name <- paste0("Alignment.",i)
+      if(!is.null(wait.job.name))
+      {
+        x <- paste0(wait.job.name,".",i)
+        cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)  }else
+        {
+          cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name)
+        }
+
+      cmd15 = paste(cmd.p, cmd14)
+      #}else
+      #{
+      #  cmd15=cmd14
+      #}
+      #system(cmd15,intern = TRUE,ignore.stdout = TRUE)
+      cat(cmd15,"\n\n")
+
+    } else
+    {
+      sample.name.out.dir.8 = file.path(sample.name.out.dir, "Fs")
+
+      if (!dir.exists(sample.name.out.dir.8))
+      {
+        dir.create(sample.name.out.dir.8, recursive = TRUE)
+      }
+      cmd24 = paste(cmd6, gene.model.file, cmd8, sample.name.out.dir.8,
+                    genome.index, y[1], sep = " ")
+
+      #if(length(m.id)==1){
+      job.name <- paste0("Alignment.",i)
+
+      if(!is.null(wait.job.name))
+      {
+        x <- paste0(wait.job.name,".",i)
+        cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name,wait.job.name = x)  }else
+        {
+          cmd.p <- ChipSeq:::usePegasus(cmd.input,"72:00",16,25000,8,job.name)
+        }
+
+      cmd25 = paste(cmd.p, cmd24)
+
+      #}else
+      #{
+      cmd25=cmd24
+      #}
+      #system(cmd25,intern = TRUE,ignore.stdout = TRUE)
+      cat(cmd25,"\n\n")
+    }
+
+  }
+
+}
+
+
+
+
