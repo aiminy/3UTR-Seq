@@ -30,7 +30,7 @@ input=file.path(output.dir,"Fastqfiles")
 output=file.path(output.dir,"Alignment")
 gene.gtf=gene.gtf
 genome.index=genome.index
-wait.job.name = 'wait.job.name = "sra2fastq"'
+#wait.job.name = 'wait.job.name = "sra2fastq"'
 Rfun2 <- ')'
 
 Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\",','\\"',gene.gtf,'\\",','\\"',genome.index,'\\",',wait.job.name)
