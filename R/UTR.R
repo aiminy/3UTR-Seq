@@ -4842,7 +4842,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
       #{
       #  cmd15=cmd14
       #}
-      system(cmd15)
+      system(cmd25,intern = TRUE,ignore.stdout = TRUE)
       cat(cmd15,"\n\n")
 
     } else
@@ -4873,7 +4873,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
       #{
         cmd25=cmd24
       #}
-      system(cmd25)
+      system(cmd25,intern = TRUE,ignore.stdout = TRUE)
       cat(cmd25,"\n\n")
     }
 
