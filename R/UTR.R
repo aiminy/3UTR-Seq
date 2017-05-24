@@ -5128,7 +5128,7 @@ createBsubJobArrayRfun <- function(Rfun,job.name,wait.job.name){
   xx <- paste(x,paste0("\"R -e ",paste0("\'",Rfun,"\'"),"\""),sep=" ")
   xx
 }
-test <- createBubRfun(Rfun,"sra2fastq[1-8]","wgetDownload")
-system(test)
+#test <- createBubRfun(Rfun,"sra2fastq[1-8]","wgetDownload")
+#system(test)
 
 
