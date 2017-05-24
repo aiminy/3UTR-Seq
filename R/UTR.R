@@ -5134,4 +5134,59 @@ createBsubJobArrayRfun <- function(Rfun,job.name,wait.job.name){
 #test <- createBubRfun(Rfun,"sra2fastq[1-8]","wgetDownload")
 #system(test)
 
+processBamFilesUseJobArray <- function(input.alignment.dir, output.dir)
+{
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir, recursive = TRUE)
+  }
 
+  re <- file.path(input.alignment.dir, dir(input.alignment.dir, recursive = TRUE,
+                                           pattern = "accepted_hits.bam"))
+
+  index <- system('echo $LSB_JOBINDEX',intern = TRUE)
+  total <- system('echo $LSB_JOBINDEX_END',intern = TRUE)
+
+  cat(index,"\n\n")
+  cat(total,"\n\n")
+
+  cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+
+  cmd1 = "bsub -P bbc -J \"bamProcess\" -o %J.bamProcess.log -e %J.bamProcess.err -W"
+
+  cmd2 <- "mv"
+
+#  y <- lapply(re, function(u)
+#  {
+    # /SRR2038198/Fs12/accepted_hits.bam
+
+    u <- as.integer(index)
+
+    dir.name.0 <- dirname(re[[u]])
+    dir.name.1 <- dirname(dir.name.0)
+
+    x <- basename(dir.name.0)
+    y <- basename(dir.name.1)
+    file.name <- basename(re[[u]])
+
+    sample.name <- paste(y, x, file.name, sep = "-")
+
+    cmd <- paste(cmd2, re[[u]], file.path(output.dir, sample.name),
+                 sep = " ")
+
+   ## system(cmd,intern = TRUE)
+    cat(cmd,"\n\n")
+  #})
+
+  #print(y)
+
+  # yyy <- lapply(y, function(u)
+  # {
+  #   yy <- system(u, intern = TRUE)
+  #   yy
+  # })
+  #
+  # yyyy <- unlist(yyy)
+  #
+  # return(yyyy)
+}

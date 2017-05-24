@@ -71,7 +71,7 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   Rfun2 <- ',wait.job.name = "wgetDownload")'
   Rfun3 <- paste0(Rfun1,'\\"',input,'\\"',',\\"',output,'\\"',Rfun2)
 
-  run1 <- createBubRfun(Rfun3,"sra2fastq","wgetDownload")
+  run1 <- createBsubJobArrayRfun(Rfun3,"sra2fastq[1-8]","wgetDownload")
   system(run1)
 
   Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::alignmentUseJobArray('
@@ -79,13 +79,13 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   output=file.path(output.dir,"Alignment")
   gene.gtf=gene.gtf
   genome.index=genome.index
-  wait.job.name = 'wait.job.name = "sra2fastq"'
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
   Rfun2 <- ')'
 
-  Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\",','\\"',gene.gtf,'\\",','\\"',genome.index,'\\",',wait.job.name)
+  Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\",','\\"',gene.gtf,'\\",','\\"',genome.index,'\\"')
   Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
-  test <- createBubRfun(Rfun,"Alignment","sra2fastq")
+  test <- createBsubJobArrayRfun(Rfun,"Alignment[1-8]","sra2fastq")
   system(test)
 
   # useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")
