@@ -153,6 +153,10 @@ R -e 'library(ChipSeq);library(ThreeUTR);res <- ThreeUTR:::convertCountFile2Tabl
 # To run from Step1 to Step10 at one time(on test yet)
 R -e 'library(ChipSeq);library(ThreeUTR);library();runDoGs("SRP058633",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","TestPipeline")'
 
+# To run from Step1 to Step10 at one time on cluster
+R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runDoGsOnCluster("SRP058633",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline")'
+
+
 ```
 The following Figure shows differentila DoGs analysis results for two transcripts for CXXC4(shown on the above Figure) under two conditions(KCl-treated and untreated). It is clear that there are differential DoGs in the downstream of CXXC4 gene between two conditions, which is consistent with the above visualization
 ![Image of DeDoGs](inst/extdata/De.png)
