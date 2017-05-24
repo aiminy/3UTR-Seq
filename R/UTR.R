@@ -4935,8 +4935,8 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
   print(xxx)
   print(res2)
 
-  print(xxx[index])
-  print(xxx[as.integer(index)])
+  #print(xxx[index])
+  #print(xxx[as.integer(index)])
 
   m.id <- grep("login", system("hostname", intern = TRUE))
   cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
@@ -4944,7 +4944,7 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
 
   #for (i in 1:length(xxx))
   #{
-    i <- index
+    i <- as.integer(index)
     sample.name <- xxx[i]
     sample.name.out.dir <- file.path(output.dir, sample.name)
 
