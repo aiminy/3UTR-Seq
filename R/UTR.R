@@ -5056,7 +5056,7 @@ convertSra2FastqUseJobArray <- function(sra.file.dir, output.dir)
 
 #  cmd.l <- lapply(1:length(res), function(u, res,m.id,wait.job.name,output.dir)
 #  {
-    u <- index
+    u <- as.integer(index)
     cmd0 <- "fastq-dump --split-3"
 
     path_name = dirname(res[[u]])
