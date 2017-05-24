@@ -4885,7 +4885,7 @@ useTophat4Alignment2 <- function(input.fastq.files.dir, output.dir, gene.model.f
 
 }
 
-#' bsub -P bbc -J "alignment[1-8]" -o %J.alignment.%I -e %J.alignment.%I -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::alignmentUseJobArray(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\")'"
+#' bsub -P bbc -J "alignment[1-8]" -o %J.alignment.%I.log -e %J.alignment.%I.err -W 72:00 -n 16 -q parallel -R 'rusage[mem= 25000 ] span[ptile= 8 ]' -u aimin.yan@med.miami.edu "R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::alignmentUseJobArray(\"/scratch/projects/bbc/aiminy_project/DoGsFastq\",\"/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf\",\"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome\")'"
 
 alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.file = NULL,
                                  genome.index, cmd.input="parallel",wait.job.name=NULL)
@@ -4902,13 +4902,10 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
   cat(index,"\n\n")
   cat(total,"\n\n")
 
-  # tophat --library-type fr-firststrand -g 1 -G /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf -p 4 -o /scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2/SRR2038504/Fs /projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome /scratch/projects/bbc/aiminy_project/DoGsFastq/SRR2038504.fastq
-
-
   re <- parserreadfiles(input.fastq.files.dir, "fastq")
   res <- re$input
 
-  print(res)
+  #print(res)
   xx <- lapply(res, function(u)
   {
     path_name = dirname(u)
@@ -4934,6 +4931,12 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
 
   xxx <- unique(unlist(xx))
   res2 <- unlist(res)
+
+  print(xxx)
+  print(res2)
+
+  print(xxx[index])
+  print(xxx[as.integer(index)])
 
   m.id <- grep("login", system("hostname", intern = TRUE))
   cmd6 = "tophat --library-type fr-firststrand -g 1 -G"
