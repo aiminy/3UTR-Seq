@@ -1,5 +1,7 @@
 #' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runDoGs("SRP058633",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline")'
 #'
+#'
+#' sample.info.file=file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt")
 #' gene.gtf="/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
 #' genome.index="/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome"
 #' processed.gene.gtf="/projects/ctsi/bbc/aimin/annotation/"
@@ -55,6 +57,8 @@ system(test)
 
 }
 
+#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runDoGsOnCluster("SRP058633",file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline")'
+
 runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,genome.index,processed.gene.gtf,output.dir) {
 
   if (!dir.exists(output.dir))
@@ -68,11 +72,11 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertSra2FastqUseJobArray('
   input=file.path(output.dir,"SRAFiles")
   output=file.path(output.dir,"Fastqfiles")
-  Rfun2 <- ',wait.job.name = "wgetDownload")'
+  Rfun2 <- ')'
   Rfun3 <- paste0(Rfun1,'\\"',input,'\\"',',\\"',output,'\\"',Rfun2)
 
-  run1 <- createBsubJobArrayRfun(Rfun3,"sra2fastq[1-8]","wgetDownload")
-  system(run1)
+  sra2fastq <- createBsubJobArrayRfun(Rfun3,"sra2fastq[1-8]","wgetDownload")
+  system(sra2fastq)
 
   Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::alignmentUseJobArray('
   input=file.path(output.dir,"Fastqfiles")
@@ -85,22 +89,82 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\",','\\"',gene.gtf,'\\",','\\"',genome.index,'\\"')
   Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
-  test <- createBsubJobArrayRfun(Rfun,"Alignment[1-8]","sra2fastq")
-  system(test)
+  alignment <- createBsubJobArrayRfun(Rfun,"Alignment[1-8]","sra2fastq")
+  system(alignment)
 
-  # useTophat4Alignment2(file.path(output.dir,"FastqFiles"),file.path(output.dir,"Alignment"),gene.gtf,genome.index,"parallel",wait.job.name="sra2fastq")
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::processBamFilesUseJobArray('
+  input=file.path(output.dir,"Alignment")
+  output=file.path(output.dir,"Bam")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
 
-  # processBamFiles(file.path(output.dir,"Alignment"),file.path(output.dir,"ProcessedBam"),wait.job.name="sra2fastq")
-  #
-  # convertbam2bed(file.path(output.dir,"ProcessedBam"),file.path(output.dir,"Bed"),wait.job.name="sra2fastq")
-  #
-  # removeReadsOnExonIntron(file.path(output.dir,"Bed"),processed.gene.gtf,file.path(output.dir,"BedRmEandI"),wait.job.name="sra2fastq")
-  #
-  # getCount4Downstream(file.path(output.dir,"BedRmEandI"),processed.gene.gtf,file.path(output.dir,"Counts"),wait.job.name="sra2fastq")
-  #
-  # res <- convertCountFile2Table(file.path(output.dir,"Counts"),"*.txt",wait.job.name="sra2fastq")
-  #
-  # res.new <- ThreeUTR:::matchAndDE(res,sample.info.file,group.comparision = c("condition","Untreated","Treated"),wait.job.name="sra2fastq")
+  Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  processbam <- createBsubJobArrayRfun(Rfun,"ProcessBam[1-8]","Alignment")
+  system(processbam)
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertBam2bedUsingJobArray('
+  input=file.path(output.dir,"Bam")
+  output=file.path(output.dir,"BedFromBam")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  bam2bed <- createBsubJobArrayRfun(Rfun,"Bam2Bed[1-8]","ProcessBam")
+  system(bam2bed)
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::removeReadsOnExonIntronUsingJobArray('
+  input=file.path(output.dir,"BedFromBam")
+  processed.gene.gtf=processed.gene.gtf
+  output=file.path(output.dir,"BedRmExonIntron")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]","Bam2Bed")
+  system(rm.exon.intron)
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getCount4DownstreamUsingJobArray('
+  input=file.path(output.dir,"BedRmExonIntron")
+  processed.gene.gtf=processed.gene.gtf
+  output=file.path(output.dir,"Counts")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  counting <- createBsubJobArrayRfun(Rfun,"Count[1-8]","RmExonIntron")
+  system(counting)
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::CountAndDE('
+  input=file.path(output.dir,"Counts")
+  #processed.gene.gtf=processed.gene.gtf
+  sample.info.file=sample.info.file
+  output=file.path(output.dir,"Results")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',sample.info.file,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  get.DE <- createBsubJobArrayRfun(Rfun,"Summary[1]","Count")
+  system(get.DE)
 
 }
 

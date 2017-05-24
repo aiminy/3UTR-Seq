@@ -4995,7 +4995,7 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
       #{
        cmd15=cmd14
       #}
-      #system(cmd15,intern = TRUE,ignore.stdout = TRUE)
+      system(cmd15,intern = TRUE,ignore.stdout = TRUE)
       cat(cmd15,"\n\n")
 
     } else
@@ -5026,7 +5026,7 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
       #{
       cmd25=cmd24
       #}
-      #system(cmd25,intern = TRUE,ignore.stdout = TRUE)
+      system(cmd25,intern = TRUE,ignore.stdout = TRUE)
       cat(cmd25,"\n\n")
     }
 
@@ -5034,7 +5034,7 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
 
 }
 
-convertSra2FastqUseJobArray <- function(sra.file.dir, output.dir,wait.job.name=NULL)
+convertSra2FastqUseJobArray <- function(sra.file.dir, output.dir)
 {
 
   re <- parserreadfiles(sra.file.dir, "sra")
@@ -5150,11 +5150,11 @@ processBamFilesUseJobArray <- function(input.alignment.dir, output.dir)
   cat(index,"\n\n")
   cat(total,"\n\n")
 
-  cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
+#  cmd0 = "72:00 -n 8 -q general -u aimin.yan@med.miami.edu"
 
-  cmd1 = "bsub -P bbc -J \"bamProcess\" -o %J.bamProcess.log -e %J.bamProcess.err -W"
+#  cmd1 = "bsub -P bbc -J \"bamProcess\" -o %J.bamProcess.log -e %J.bamProcess.err -W"
 
-  cmd2 <- "mv"
+  cmd2 <- "cp"
 
 #  y <- lapply(re, function(u)
 #  {
@@ -5174,7 +5174,7 @@ processBamFilesUseJobArray <- function(input.alignment.dir, output.dir)
     cmd <- paste(cmd2, re[[u]], file.path(output.dir, sample.name),
                  sep = " ")
 
-   ## system(cmd,intern = TRUE)
+    system(cmd,intern = TRUE)
     cat(cmd,"\n\n")
   #})
 
@@ -5190,3 +5190,202 @@ processBamFilesUseJobArray <- function(input.alignment.dir, output.dir)
   #
   # return(yyyy)
 }
+
+convertBam2bedUsingJobArray <- function(input.bamfile.dir, output.bedfile.dir)
+{
+  res <- parserreadfiles(input.bamfile.dir, "bam")
+
+  res <- res$input
+
+  index <- system('echo $LSB_JOBINDEX',intern = TRUE)
+  total <- system('echo $LSB_JOBINDEX_END',intern = TRUE)
+
+  cat(index,"\n\n")
+  cat(total,"\n\n")
+
+  #m.id <- grep("login", system("hostname", intern = TRUE))
+
+  # if (!dir.exists(output.bedfile.dir)) { dir.create(output.bedfile.dir,
+  # recursive = TRUE) }
+
+  #output.bedfile.dir <- file.path(output.bedfile.dir, "BedFileFromBam")
+
+  if (!dir.exists(output.bedfile.dir))
+  {
+    dir.create(output.bedfile.dir, recursive = TRUE)
+  }
+
+ # cmd.l <- lapply(1:length(res), function(u, m.id, res, output.bedfile.dir)
+#  {
+    # cat(u,'\n') cmd9 <- 'grep' cmd10 <- '~/PathwaySplice/inst/extdata/' cmd11
+    # <- '/QC.spliceJunctionAndExonCounts.forJunctionSeq.txt' cmd12 <- '>' cmd13
+    # <- paste0('/Counts.',n,'.genes.txt') xxx <- gsub(';','',xx)
+    u <- as.integer(index)
+    path_name = dirname(res[[u]])
+    path_name2 <- basename(path_name)
+
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    file_name <- paste0(path_name2, "-", file_name)
+    # if (m.id == 1)
+    # {
+    #   job.name <- paste0("bam2bed.", u)
+    #   cmd0 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+    #                                Memory = 25000, span.ptile = 16, job.name)
+
+      cmd1 <- "bedtools bamtobed -i"
+      cmd2 <- ">"
+
+      cmd3 <- paste(cmd1, res[[u]], cmd2, file.path(output.bedfile.dir,
+                                                          paste0(file_name, ".bed")), sep = " ")
+    # } else
+    # {
+    #   cmd3 <- paste(cmd1, res[[u]], cmd2, file.path(output.bedfile.dir,
+    #                                                 paste0(file_name, ".bed")), sep = " ")
+    # }
+
+    system(cmd3)
+
+    cat(cmd3,"\n\n")
+ # }, m.id, res, output.bedfile.dir)
+
+#  re <- list(cmdl = cmd.l, output.bedfile.dir = output.bedfile.dir)
+
+#  re
+
+}
+
+removeReadsOnExonIntronUsingJobArray <- function(input.bed.file.dir, annotation.bed.file.dir,
+                                    output.bed.file.dir)
+{
+  re <- parserreadfiles(input.bed.file.dir, "bed")
+
+  res <- re$input
+
+  annotationBed <- parserreadfiles(annotation.bed.file.dir,"bed",sample.group=c("hg19_exons.bed","hg19_intron.bed"))
+
+  #m.id <- grep("login", system("hostname", intern = TRUE))
+
+  if (!dir.exists(output.bed.file.dir))
+  {
+    dir.create(output.bed.file.dir, recursive = TRUE)
+  }
+
+  index <- system('echo $LSB_JOBINDEX',intern = TRUE)
+  total <- system('echo $LSB_JOBINDEX_END',intern = TRUE)
+
+  cat(index,"\n\n")
+  cat(total,"\n\n")
+
+
+#  cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
+#                                          span.ptile, res, annotationBed, output.bed.file.dir)
+#  {
+
+    u <- as.integer(index)
+
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    # if (m.id == 1)
+    # {
+    #   job.name = paste0("bedRmExonIntron.", u)
+    #   cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+    #                                Memory = 16000, span.ptile = 16, job.name)
+    #   exon.intron <- paste(unlist(annotationBed$input),collapse=" ")
+    #   cmd2 = paste("bedtools intersect -v -a", res[[u]], "-b", exon.intron,
+    #                "\\>", file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),
+    #                sep = " ")
+    #   cmd3 = paste(cmd1, cmd2, sep = " ")
+    # } else
+
+      cmd3 = paste("bedtools intersect -v -a", res[[u]], "-b", exon, intron,
+                   ">", file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),
+                   sep = " ")
+#}
+
+    cmd <- cmd3
+
+    cat(cmd, "\n\n")
+
+    system(cmd)
+
+    cmd
+ # }, m.id, Wall.time, cores, Memory, span.ptile, res, annotationBed, output.bed.file.dir)
+
+}
+
+getCount4DownstreamUsingJobArray <- function(input.bed.file.dir, annotation.bed.file.dir,
+                                output.count.file.dir)
+{
+
+  index <- system('echo $LSB_JOBINDEX',intern = TRUE)
+  total <- system('echo $LSB_JOBINDEX_END',intern = TRUE)
+
+  cat(index,"\n\n")
+  cat(total,"\n\n")
+
+  re <- parserreadfiles(input.bed.file.dir, "bed")
+
+  res <- re$input
+
+  annotationBed <- parserreadfiles(annotation.bed.file.dir,"bed",sample.group=c("hg19_gene.bed"))
+
+  #m.id <- grep("login", system("hostname", intern = TRUE))
+
+  if (!dir.exists(output.count.file.dir))
+  {
+    dir.create(output.count.file.dir, recursive = TRUE)
+  }
+
+  #cmd.l <- lapply(1:length(res), function(u, m.id, Wall.time, cores, Memory,
+  #                                        span.ptile, res, annotationBed, output.count.file.dir)
+  #{
+    u <- as.integer(index)
+
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    # if (m.id == 1)
+    # {
+    #   job.name = paste0("bed2count.", u)
+    #   cmd1 <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00", cores = 32,
+    #                                Memory = 16000, span.ptile = 16, job.name)
+    #   exon.intron <- paste(unlist(annotationBed$input),collapse=" ")
+    #   cmd2 = paste("bedtools window -a",exon.intron,"-b",res[[u]],"-l 0 -r 45000 -sw -c",
+    #                "\\>", file.path(output.count.file.dir, paste0(file_name, "_downstream_count.txt")),
+    #                sep = " ")
+    #   cmd3 = paste(cmd1, cmd2, sep = " ")
+    # } else
+    #{
+      cmd3 = paste("bedtools window -a",exon.intron,"-b",res[[u]],"-l 0 -r 45000 -sw -c",
+                   ">", file.path(output.count.file.dir, paste0(file_name, "_downstream_count.txt")),
+                   sep = " ")
+    #}
+
+    cmd <- cmd3
+
+    cat(cmd, "\n\n")
+
+    system(cmd)
+
+  #  cmd
+#  }, m.id, Wall.time, cores, Memory, span.ptile, res, annotationBed, output.count.file.dir)
+
+}
+
+CountAndDE <- function(output.count.dir,sample.info.file,output.res.dir) {
+
+  if (!dir.exists(output.res.dir))
+  {
+    dir.create(output.res.dir, recursive = TRUE)
+  }
+
+  res <- convertCountFile2Table(output.count.dir,"*.txt")
+
+  res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Treated","Untreated"))
+
+  write.table(res.new$re.FC.sorted,file = file.path(output.res.dir,"Results.csv"),quote = FALSE,sep = "\t",row.names = TRUE,col.names = TRUE)
+
+}
+
+
+
