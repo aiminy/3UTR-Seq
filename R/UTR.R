@@ -4732,8 +4732,12 @@ createBubRfun <- function(Rfun,job.name,wait.job.name){
   xx <- paste(x,paste0("\"R -e ",paste0("\'",Rfun,"\'"),"\""),sep=" ")
   xx
 }
-#test <- createBubRfun(Rfun,"sra2fastq","wgetDownload")
-#system(test)
+test <- createBubRfun(Rfun,"sra2fastq[1-8]","wgetDownload")
+system(test)
+
+
+
+
 
 #' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::useTophat4Alignment2("/scratch/projects/bbc/aiminy_project/DoGsFastq","/scratch/projects/bbc/aiminy_project/DoGs_AlignmentBamTophatGeneral2","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","General","sra2fastq")'
 
@@ -4904,6 +4908,7 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
   re <- parserreadfiles(input.fastq.files.dir, "fastq")
   res <- re$input
 
+  print(res)
   xx <- lapply(res, function(u)
   {
     path_name = dirname(u)
@@ -5026,6 +5031,104 @@ alignmentUseJobArray <- function(input.fastq.files.dir, output.dir, gene.model.f
 
 }
 
+convertSra2FastqUseJobArray <- function(sra.file.dir, output.dir,wait.job.name=NULL)
+{
 
+  re <- parserreadfiles(sra.file.dir, "sra")
+
+  res <- re$input
+
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir,recursive = TRUE)
+  }
+
+  m.id <- grep("login", system("hostname", intern = TRUE))
+
+  index <- system('echo $LSB_JOBINDEX',intern = TRUE)
+  total <- system('echo $LSB_JOBINDEX_END',intern = TRUE)
+
+  cat(index,"\n\n")
+  cat(total,"\n\n")
+
+#  cmd.l <- lapply(1:length(res), function(u, res,m.id,wait.job.name,output.dir)
+#  {
+    u <- index
+    cmd0 <- "fastq-dump --split-3"
+
+    path_name = dirname(res[[u]])
+
+    file_name = file_path_sans_ext(basename(res[[u]]))
+
+    cmd1 <- paste(cmd0, res[[u]], "-O", output.dir, sep = " ")
+
+    # if(length(m.id) == 1){
+    #   job.name <-  paste0("sra2fastq.",u)
+    #
+    #   if(!is.null(wait.job.name)){
+    #     wait.job.name <- wait.job.name
+    #     cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
+    #                                   cores = 32, Memory = 25000, span.ptile = 16, job.name=job.name,wait.job.name=wait.job.name)
+    #   }else
+    #   {
+    #     cmd.p <- ChipSeq:::usePegasus("parallel", Wall.time = "72:00",
+    #                                   cores = 32, Memory = 25000, span.ptile = 16, job.name=job.name)
+    #   }
+    #   cmd2 <- paste(cmd.p,cmd1,sep = "")
+    # }else
+    cmd2 <- cmd1
+
+    system(cmd2)
+    cat(cmd2,"\n")
+ # }, res,m.id,wait.job.name,output.dir)
+
+  #re <- list(cmdl = cmd.l, output.dir = output.dir)
+
+  #re
+
+}
+
+useJobArrayOnPegasus <- function(job.option=c("general","parallel","bigmem")
+         , Wall.time, cores, Memory, span.ptile,job.name,wait.job.name=NULL) {
+
+  job.option <- match.arg(job.option)
+
+  index.job <- regexpr("\\[",job.name)[1]
+
+  job.name.array <- substr(job.name,1,(index.job-1))
+
+  switch (job.option,
+          parallel = {
+            cmd0 = paste(Wall.time,"-n",cores,"-q parallel -R 'rusage[mem=",Memory,"] span[ptile=",span.ptile,"]' -u aimin.yan@med.miami.edu",sep = " ")
+          },
+          bigmem = {
+            cmd0 = paste(Wall.time,"-n",cores,"-q bigmem -R 'rusage[mem=",Memory,"] span[ptile=", span.ptile, "]' -u aimin.yan@med.miami.edu",sep = " ")
+          },
+          general = {
+            cmd0 = paste(Wall.time,"-n",cores,"-q general -R 'rusage[mem=",Memory,"] span[ptile=",span.ptile, "]' -u aimin.yan@med.miami.edu",sep = " ")
+          }
+  )
+
+  if(!is.null(wait.job.name)){
+    cmd1 = paste0("bsub -w \"done(\"", wait.job.name, "\")\"", " -P bbc -J \"",
+                  job.name, paste0("\" -o %J.", job.name.array, ".$I.log "), paste0("-e %J.",
+                                                                           job.name.array, ".$I.err -W"))
+  }else{
+    cmd1 = paste0("bsub -P bbc -J \"",job.name, paste0("\" -o %J.", job.name.array, ".$I.log "), paste0("-e %J.",
+                                                                                               job.name.array, ".$I.err -W"))
+  }
+
+  cmd = paste(cmd1,cmd0,sep=" ")
+
+  return(cmd)
+}
+
+createBsubJobArrayRfun <- function(Rfun,job.name,wait.job.name){
+  x <- useJobArrayOnPegasus("parallel","72:00",16,25000,8,job.name,wait.job.name)
+  xx <- paste(x,paste0("\"R -e ",paste0("\'",Rfun,"\'"),"\""),sep=" ")
+  xx
+}
+test <- createBubRfun(Rfun,"sra2fastq[1-8]","wgetDownload")
+system(test)
 
 
