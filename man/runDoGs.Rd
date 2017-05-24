@@ -8,6 +8,7 @@ runDoGs(sra.accession.number, sample.info.file, gene.gtf, genome.index,
   processed.gene.gtf, output.dir)
 }
 \description{
+sample.info.file=file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt")
 gene.gtf="/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
 genome.index="/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome"
 processed.gene.gtf="/projects/ctsi/bbc/aimin/annotation/"
