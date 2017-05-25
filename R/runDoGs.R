@@ -132,7 +132,9 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
   Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
-  rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]","Bam2Bed")
+  #rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]","Bam2Bed")
+
+  rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]",NULL)
   system(rm.exon.intron)
 
   Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getCount4DownstreamUsingJobArray('

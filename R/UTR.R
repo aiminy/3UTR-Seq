@@ -5286,6 +5286,8 @@ removeReadsOnExonIntronUsingJobArray <- function(input.bed.file.dir, annotation.
 
     file_name = file_path_sans_ext(basename(res[[u]]))
 
+    exon.intron <- paste(unlist(annotationBed$input),collapse=" ")
+
     # if (m.id == 1)
     # {
     #   job.name = paste0("bedRmExonIntron.", u)
@@ -5298,7 +5300,7 @@ removeReadsOnExonIntronUsingJobArray <- function(input.bed.file.dir, annotation.
     #   cmd3 = paste(cmd1, cmd2, sep = " ")
     # } else
 
-      cmd3 = paste("bedtools intersect -v -a", res[[u]], "-b", exon, intron,
+      cmd3 = paste("bedtools intersect -v -a", res[[u]], "-b", exon.intron,
                    ">", file.path(output.bed.file.dir, paste0(file_name, "_rm_exon_intron.bed")),
                    sep = " ")
 #}
