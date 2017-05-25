@@ -5096,9 +5096,11 @@ useJobArrayOnPegasus <- function(job.option=c("general","parallel","bigmem")
 
   job.option <- match.arg(job.option)
 
-  index.job <- regexpr("\\[",job.name)[1]
+  #index.job <- regexpr("\\[",job.name)[1]
 
-  job.name.array <- substr(job.name,1,(index.job-1))
+  #job.name.array <- substr(job.name,1,(index.job-1))
+
+  job.name.array <- job.name
 
   switch (job.option,
           parallel = {
