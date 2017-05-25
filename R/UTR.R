@@ -5116,11 +5116,10 @@ useJobArrayOnPegasus <- function(job.option=c("general","parallel","bigmem")
 
   if(!is.null(wait.job.name)){
     cmd1 = paste0("bsub -w \"done(\"", wait.job.name, "\")\"", " -P bbc -J \"",
-                  job.name, paste0("\" -o %J.", job.name.array, ".$I.log "), paste0("-e %J.",
-                                                                           job.name.array, ".$I.err -W"))
+                  job.name, paste0("\" -o %J.", job.name.array, ".log "), paste0("-e %J.",
+                                                                           job.name.array, ".err -W"))
   }else{
-    cmd1 = paste0("bsub -P bbc -J \"",job.name, paste0("\" -o %J.", job.name.array, ".$I.log "), paste0("-e %J.",
-                                                                                               job.name.array, ".$I.err -W"))
+    cmd1 = paste0("bsub -P bbc -J \"",job.name, paste0("\" -o %J.", job.name.array, ".log "), paste0("-e %J.",job.name.array, ".err -W"))
   }
 
   cmd = paste(cmd1,cmd0,sep=" ")
@@ -5384,11 +5383,17 @@ CountAndDE <- function(output.count.dir,sample.info.file,output.res.dir) {
     dir.create(output.res.dir, recursive = TRUE)
   }
 
+  x <- read.table(file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),header = TRUE)
+
+  g.1 <- colnames(x)[2]
+  g.2 <- unique(as.character(x[,2]))[2]
+  g.3 <- unique(as.character(x[,2]))[1]
+
   res <- convertCountFile2Table(output.count.dir,"*.txt")
 
-  res.new <- ThreeUTR:::matchAndDE(res,file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),group.comparision = c("condition","Treated","Untreated"))
+  res.new <- ThreeUTR:::matchAndDE(res,sample.info.file,group.comparision = c(g.1,g.2,g.3))
 
-  write.table(res.new$re.FC.sorted,file = file.path(output.res.dir,"Results.csv"),quote = FALSE,sep = "\t",row.names = TRUE,col.names = TRUE)
+  write.table(res.new$re.FC.sorted,file = file.path(output.res.dir,"Results.csv"),quote = FALSE,sep = "\t",row.names = FALSE,col.names = TRUE)
 
 }
 
