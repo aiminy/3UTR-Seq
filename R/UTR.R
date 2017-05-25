@@ -5335,6 +5335,7 @@ getCount4DownstreamUsingJobArray <- function(input.bed.file.dir, annotation.bed.
   annotationBed <- parserreadfiles(annotation.bed.file.dir,"bed",sample.group=c("hg19_gene.bed"))
 
   #m.id <- grep("login", system("hostname", intern = TRUE))
+  exon.intron <- paste(unlist(annotationBed$input),collapse=" ")
 
   if (!dir.exists(output.count.file.dir))
   {

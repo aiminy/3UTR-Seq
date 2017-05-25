@@ -119,23 +119,23 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   #
   # bam2bed <- createBsubJobArrayRfun(Rfun,"Bam2Bed[1-8]","ProcessBam")
   # system(bam2bed)
-
-  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::removeReadsOnExonIntronUsingJobArray('
-  input=file.path(output.dir,"BedFromBam")
-  processed.gene.gtf=processed.gene.gtf
-  output=file.path(output.dir,"BedRmExonIntron")
-  #gene.gtf=gene.gtf
-  #genome.index=genome.index
-  #wait.job.name = 'wait.job.name = "sra2fastq"'
-  Rfun2 <- ')'
-
-  Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
-  Rfun <-paste0(Rfun1,Rinput,Rfun2)
-
-  #rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]","Bam2Bed")
-
-  rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]",NULL)
-  system(rm.exon.intron)
+#
+#   Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::removeReadsOnExonIntronUsingJobArray('
+#   input=file.path(output.dir,"BedFromBam")
+#   processed.gene.gtf=processed.gene.gtf
+#   output=file.path(output.dir,"BedRmExonIntron")
+#   #gene.gtf=gene.gtf
+#   #genome.index=genome.index
+#   #wait.job.name = 'wait.job.name = "sra2fastq"'
+#   Rfun2 <- ')'
+#
+#   Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
+#   Rfun <-paste0(Rfun1,Rinput,Rfun2)
+#
+#   #rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]","Bam2Bed")
+#
+#   rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]",NULL)
+#   system(rm.exon.intron)
 
   Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getCount4DownstreamUsingJobArray('
   input=file.path(output.dir,"BedRmExonIntron")
@@ -149,7 +149,8 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
   Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
-  counting <- createBsubJobArrayRfun(Rfun,"Count[1-8]","RmExonIntron")
+  #counting <- createBsubJobArrayRfun(Rfun,"Count[1-8]","RmExonIntron")
+  counting <- createBsubJobArrayRfun(Rfun,"Count[1-8]",NULL)
   system(counting)
 
   Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::CountAndDE('
