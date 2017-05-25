@@ -153,7 +153,7 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   counting <- createBsubJobArrayRfun(Rfun,"Count[1-8]",NULL)
   system(counting)
 
-  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::CountAndDE('
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);library(org.Hs.eg.db);re <- ThreeUTR:::CountAndDE('
   input=file.path(output.dir,"Counts")
   #processed.gene.gtf=processed.gene.gtf
   sample.info.file=sample.info.file
@@ -166,7 +166,8 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   Rinput <- paste0('\\"',input,'\\",','\\"',sample.info.file,'\\",','\\"',output,'\\"')
   Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
-  get.DE <- createBsubJobArrayRfun(Rfun,"Summary[1]","Count")
+#  get.DE <- createBsubJobArrayRfun(Rfun,"Summary[1]","Count")
+  get.DE <- createBsubJobArrayRfun(Rfun,"Summary[1]",NULL)
   system(get.DE)
 
 }
