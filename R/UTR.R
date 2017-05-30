@@ -3938,7 +3938,9 @@ matchAndDE <- function(res,sample.infor.file,group.comparision = c("condition","
   c2 <- b.name
   contrast.set <- c(x,c1,c2)
 
-  re.DESeq <- results(DESeq(dds),contrast = contrast.set)
+  dds <- DESeq(dds)
+
+  re.DESeq <- results(dds,contrast = contrast.set)
 
   re.FC <- cbind(as.data.frame(re.DESeq), 2^re.DESeq[, 2], counts(dds))
   colnames(re.FC)[7] = paste0("FoldChange(",a.name,"-vs-",b.name,")")
@@ -3949,7 +3951,7 @@ matchAndDE <- function(res,sample.infor.file,group.comparision = c("condition","
 
   re.FC.sorted <- re.FC[order(re.FC$pvalue), ]
 
-  rr <- list(countData = countData,colData=colData,re.DESeq=re.DESeq,re.FC=re.FC,re.FC.sorted=re.FC.sorted)
+  rr <- list(countData = countData,colData=colData,dds=dds, re.DESeq=re.DESeq,re.FC=re.FC,re.FC.sorted=re.FC.sorted)
   return(rr)
 }
 
@@ -5395,7 +5397,131 @@ CountAndDE <- function(output.count.dir,sample.info.file,output.res.dir) {
 
   write.table(res.new$re.FC.sorted,file = file.path(output.res.dir,"Results.csv"),quote = FALSE,sep = "\t",row.names = FALSE,col.names = TRUE)
 
+  return(res.new)
+
 }
 
+#' res <- ThreeUTR:::convertCountFile2Table("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts","*.txt")
 
+#' library(org.Hs.eg.db)
+#' res <- ThreeUTR:::CountAndDE("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts",file.path(system.file("extdata", package = "ThreeUTR"),"sample_infor.txt"),"~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Results")
 
+#' output.res.dir <- "~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Results"
+#' res.sum <- ThreeUTR:::sumResult(res,"~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Results")
+#'
+sumResult <-function(res,output.res.dir){
+
+  if (!dir.exists(output.res.dir))
+  {
+    dir.create(output.res.dir, recursive = TRUE)
+  }
+
+  re <- res$re.DESeq
+  table(re$padj<0.05)
+  ## Order by adjusted p-value
+  re <- re[order(re$padj), ]
+  ## Merge with normalized count data
+  redata <- merge(as.data.frame(re), as.data.frame(counts(res$dds, normalized=TRUE)), by="row.names", sort=FALSE)
+  names(redata)[1] <- "Gene"
+  head(redata)
+
+  hist(re$pvalue, breaks=50, col="grey")
+
+  attr(re,"metadata")$filterThreshold
+
+  #attr(re,"metadata")$filterNumRej
+
+  png(file.path(output.res.dir,"independent-filtering.png"))
+  plot(attr(re,"metadata")$filterNumRej, type="b", xlab="quantiles of baseMean", ylab="number of rejections")
+  dev.off()
+
+  # Regularized log transformation for clustering/heatmaps, etc
+  rld <- rlogTransformation(res$dds)
+  head(assay(rld))
+  hist(assay(rld))
+
+  # Colors for plots below
+  ## Ugly:
+  ## (mycols <- 1:length(unique(condition)))
+  ## Use RColorBrewer, better
+  library(RColorBrewer)
+
+  condition <- res$colData[,1]
+  n <- length(res$colData[,1])
+
+  (mycols <- brewer.pal(n, "Dark2")[1:length(unique(condition))])
+
+  # Sample distance heatmap
+  sampleDists <- as.matrix(dist(t(assay(rld))))
+  library(gplots)
+  png(file.path(output.res.dir,"qc-heatmap-samples.png"), w=1000, h=1000, pointsize=20)
+  heatmap.2(as.matrix(sampleDists), key=F, trace="none",
+            col=colorpanel(100, "black", "white"),
+            ColSideColors=mycols[condition], RowSideColors=mycols[condition],
+            margin=c(10, 10), main="Sample Distance Matrix")
+  dev.off()
+
+  png(file.path(output.res.dir,"qc-pca.png"), 1000, 1000, pointsize=20)
+  rld_pca(rld,colors=mycols,intgroup=colnames(res$colData)[1],legendpos="bottomleft",xlim=c(-100, 100),ylim=c(-100,100))
+  dev.off()
+
+  png(file.path(output.res.dir,"diffexpr-maplot.png"), 1500, 1000, pointsize=20)
+  maplot(redata, main="MA Plot")
+  dev.off()
+
+  png(file.path(output.res.dir,"diffexpr-volcanoplot.png"), 1200, 1000, pointsize=20)
+  volcanoplot(redata, lfcthresh=1, sigthresh=0.05, textcx=.8, xlim=c(-8, 8))
+  dev.off()
+
+}
+
+maplot <- function (res, thresh=0.05, labelsig=TRUE, textcx=1, ...) {
+  with(res, plot(baseMean, log2FoldChange, pch=20, cex=.5, log="x", ...))
+  with(subset(res, padj<thresh), points(baseMean, log2FoldChange, col="red", pch=20, cex=1.5))
+  if (labelsig) {
+    require(calibrate)
+    with(subset(res, padj<thresh), textxy(baseMean, log2FoldChange, labs=Gene, cex=textcx, col=2))
+  }
+}
+
+# Principal components analysis
+## Could do with built-in DESeq2 function:
+## DESeq2::plotPCA(rld, intgroup="condition")
+rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL, legendpos="bottomleft", main="PCA Biplot", textcx=1, ...) {
+  require(genefilter)
+  require(calibrate)
+  require(RColorBrewer)
+  rv = rowVars(assay(rld))
+  select = order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
+  pca = prcomp(t(assay(rld)[select, ]))
+  fac = factor(apply(as.data.frame(colData(rld)[, intgroup, drop = FALSE]), 1, paste, collapse = " : "))
+  if (is.null(colors)) {
+    if (nlevels(fac) >= 3) {
+      colors = brewer.pal(nlevels(fac), "Paired")
+    }   else {
+      colors = c("black", "red")
+    }
+  }
+  pc1var <- round(summary(pca)$importance[2,1]*100, digits=1)
+  pc2var <- round(summary(pca)$importance[2,2]*100, digits=1)
+  pc1lab <- paste0("PC1 (",as.character(pc1var),"%)")
+  pc2lab <- paste0("PC1 (",as.character(pc2var),"%)")
+  plot(PC2~PC1, data=as.data.frame(pca$x), bg=colors[fac], pch=21, xlab=pc1lab, ylab=pc2lab, main=main, ...)
+  with(as.data.frame(pca$x), textxy(PC1, PC2, labs=rownames(as.data.frame(pca$x)), cex=textcx))
+  legend(legendpos, legend=levels(fac), col=colors, pch=20)
+  #     rldyplot(PC2 ~ PC1, groups = fac, data = as.data.frame(pca$rld),
+  #            pch = 16, cerld = 2, aspect = "iso", col = colours, main = draw.key(key = list(rect = list(col = colours),
+  #                                                                                         terldt = list(levels(fac)), rep = FALSE)))
+}
+
+volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot", legendpos="bottomright", labelsig=TRUE, textcx=1, ...) {
+  with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main=main, ...))
+  with(subset(res, padj<sigthresh ), points(log2FoldChange, -log10(pvalue), pch=20, col="red", ...))
+  with(subset(res, abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(pvalue), pch=20, col="orange", ...))
+  with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(pvalue), pch=20, col="green", ...))
+  if (labelsig) {
+    require(calibrate)
+    with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=textcx, ...))
+  }
+  legend(legendpos, xjust=1, yjust=1, legend=c(paste("FDR<",sigthresh,sep=""), paste("|LogFC|>",lfcthresh,sep=""), "both"), pch=20, col=c("red","orange","green"))
+}
