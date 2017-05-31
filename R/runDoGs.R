@@ -193,5 +193,21 @@ runSpliceJunction <- function(output.dir,wait.job=NULL) {
 
 }
 
+#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runRmExonAndIntronFromSplicingJunctions("/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline2","/projects/ctsi/bbc/aimin/annotation/")'
+#'
+runRmExonAndIntronFromSplicingJunctions <- function(output.dir, processed.gene.gtf,wait.job=NULL) {
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::removeReadsOnExonIntronUsingJobArray('
+  input=file.path(output.dir,"SpliceBed")
+  processed.gene.gtf=processed.gene.gtf
+  output=file.path(output.dir,"SpliceBedRmExonIntron")
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]",wait.job.name=wait.job)
+
+  system(rm.exon.intron)
+}
 
 
