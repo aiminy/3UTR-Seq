@@ -172,7 +172,7 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
 
 }
 
-#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runSpliceJunction("/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline")'
+#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runSpliceJunction("/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline2")'
 
 runSpliceJunction <- function(output.dir,wait.job=NULL) {
 
@@ -187,14 +187,10 @@ runSpliceJunction <- function(output.dir,wait.job=NULL) {
   Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\"')
   Rfun <-paste0(Rfun1,Rinput,Rfun2)
 
-  if(!is.null(wait.job)){
-    processbam <- createBsubJobArrayRfun(Rfun,"ProcessBam[1-8]",wait.job)
-  }else
-  {
-    processbam <- createBsubJobArrayRfun(Rfun,"ProcessBam[1-8]")
-  }
+  processbam <- createBsubJobArrayRfun(Rfun,"ProcessSpliceJunction[1-8]",wait.job.name=wait.job)
 
   system(processbam)
+
 }
 
 
