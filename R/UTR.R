@@ -5567,9 +5567,71 @@ processSpliceJunctionFilesUseJobArray <- function(input.alignment.dir, output.di
   cat(cmd,"\n\n")
 }
 
+#' res.sum <- ThreeUTR:::generateSmallBedFile(res,"~/Dropbox (BBSR)/Aimin_project/Research/DoGs/SmallExample")
+#'
+generateSmallBedFile <- function(res,output.res.dir){
+
+  if (!dir.exists(output.res.dir))
+  {
+    dir.create(output.res.dir, recursive = TRUE)
+  }
 
 
+  re <- res$re.FC.sorted
+  table(re$padj<0.05)
 
+  re1 <- re[which(re$padj<0.05),]
 
+  gene.list <- unique(re1$gene)
+  gene.list.choose <- sample(gene.list,100)
 
+  re2 <- re1[which(re1$gene %in% gene.list.choose),]
+
+  re3 <- re2[,which(colnames(re2) %in% c("seqnames","start","end"))]
+
+  re4 <- re3[order(re3$seqnames),]
+
+  write.table(re4,file = file.path(output.res.dir,"sample_genes.bed"),quote = FALSE,sep = "\t",row.names = FALSE,col.names = FALSE)
+
+}
+
+generateSubSetBam <- function(input.alignment.dir,defined.region.bed.file,output.dir){
+
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir, recursive = TRUE)
+  }
+
+  annotationBed <- parserreadfiles(annotation.bed.file.dir,"bed",sample.group=c("sample_genes.bed"))
+
+  annotation.gene <- paste(unlist(annotationBed$input),collapse=" ")
+
+  re <- file.path(input.alignment.dir, dir(input.alignment.dir, recursive = TRUE,
+                                           pattern = "*.bam"))
+
+  index <- system('echo $LSB_JOBINDEX',intern = TRUE)
+  total <- system('echo $LSB_JOBINDEX_END',intern = TRUE)
+
+  cat(index,"\n\n")
+  cat(total,"\n\n")
+
+  cmd2 <- "intersectBed -abam"
+
+  u <- as.integer(index)
+
+  dir.name.0 <- dirname(re[[u]])
+  dir.name.1 <- dirname(dir.name.0)
+
+  x <- basename(dir.name.0)
+  y <- basename(dir.name.1)
+  file.name <- basename(re[[u]])
+
+  sample.name <- paste(y, x, file.name, sep = "-")
+
+  cmd <- paste(cmd2,re[[u]],"-b",annotation.gene,">",file.path(output.dir, paste0(sample.name,"_region.bam")),sep = " ")
+
+  system(cmd,intern = TRUE)
+  cat(cmd,"\n\n")
+
+}
 

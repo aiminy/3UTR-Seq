@@ -210,4 +210,21 @@ runRmExonAndIntronFromSplicingJunctions <- function(output.dir, processed.gene.g
   system(rm.exon.intron)
 }
 
+#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runGenerateSubSetBam("/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline2","/projects/ctsi/bbc/aimin/annotation/")'
+#'
+runGenerateSubSetBam <- function(output.dir, processed.gene.gtf,wait.job=NULL) {
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::generateSubSetBam('
+  input=file.path(output.dir,"Bam")
+  processed.gene.gtf=processed.gene.gtf
+  output=file.path(output.dir,"BamExample")
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  rm.exon.intron <- createBsubJobArrayRfun(Rfun,"GeneRateBamExample[1-8]",wait.job.name=wait.job)
+
+  system(rm.exon.intron)
+}
+
 
