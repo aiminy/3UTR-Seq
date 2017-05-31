@@ -164,10 +164,38 @@ runDoGsOnCluster <- function(sra.accession.number,sample.info.file,gene.gtf,geno
   Rfun2 <- ')'
 
   Rinput <- paste0('\\"',input,'\\",','\\"',sample.info.file,'\\",','\\"',output,'\\"')
-  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+  Rfun <- paste0(Rfun1,Rinput,Rfun2)
 
   get.DE <- createBsubJobArrayRfun(Rfun,"Summary[1]","Count")
  #get.DE <- createBsubJobArrayRfun(Rfun,"Summary[1]",NULL)
   system(get.DE)
 
 }
+
+#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runSpliceJunction("/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline")'
+
+runSpliceJunction <- function(output.dir,wait.job=NULL) {
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::processSpliceJunctionFilesUseJobArray('
+  input=file.path(output.dir,"Alignment")
+  output=file.path(output.dir,"SpliceBed")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  if(!is.null(wait.job)){
+    processbam <- createBsubJobArrayRfun(Rfun,"ProcessBam[1-8]",wait.job)
+  }else
+  {
+    processbam <- createBsubJobArrayRfun(Rfun,"ProcessBam[1-8]")
+  }
+
+  system(processbam)
+}
+
+
+

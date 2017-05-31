@@ -5395,6 +5395,8 @@ CountAndDE <- function(output.count.dir,sample.info.file,output.res.dir) {
 
   res.new <- ThreeUTR:::matchAndDE(res,sample.info.file,group.comparision = c(g.1,g.2,g.3))
 
+  sumResult(res.new,output.res.dir)
+
   write.table(res.new$re.FC.sorted,file = file.path(output.res.dir,"Results.csv"),quote = FALSE,sep = "\t",row.names = FALSE,col.names = TRUE)
 
   return(res.new)
@@ -5425,12 +5427,12 @@ sumResult <-function(res,output.res.dir){
   names(redata)[1] <- "Gene"
   head(redata)
 
-  hist(re$pvalue, breaks=50, col="grey")
+  png(file.path(output.res.dir,"diffexpr-pvalue.png"))
+  hist(re$pvalue, breaks=50, col="grey",main = "Histogram of p value from differential analysis")
+  dev.off()
 
   attr(re,"metadata")$filterThreshold
-
   #attr(re,"metadata")$filterNumRej
-
   png(file.path(output.res.dir,"independent-filtering.png"))
   plot(attr(re,"metadata")$filterNumRej, type="b", xlab="quantiles of baseMean", ylab="number of rejections")
   dev.off()
@@ -5525,3 +5527,49 @@ volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot", 
   }
   legend(legendpos, xjust=1, yjust=1, legend=c(paste("FDR<",sigthresh,sep=""), paste("|LogFC|>",lfcthresh,sep=""), "both"), pch=20, col=c("red","orange","green"))
 }
+
+
+
+processSpliceJunctionFilesUseJobArray <- function(input.alignment.dir, output.dir)
+{
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir, recursive = TRUE)
+  }
+
+  re <- file.path(input.alignment.dir, dir(input.alignment.dir, recursive = TRUE,
+                                           pattern = "junctions.bed"))
+
+  index <- system('echo $LSB_JOBINDEX',intern = TRUE)
+  total <- system('echo $LSB_JOBINDEX_END',intern = TRUE)
+
+  cat(index,"\n\n")
+  cat(total,"\n\n")
+
+
+  cmd2 <- "cp"
+
+  u <- as.integer(index)
+
+  dir.name.0 <- dirname(re[[u]])
+  dir.name.1 <- dirname(dir.name.0)
+
+  x <- basename(dir.name.0)
+  y <- basename(dir.name.1)
+  file.name <- basename(re[[u]])
+
+  sample.name <- paste(y, x, file.name, sep = "-")
+
+  cmd <- paste(cmd2, re[[u]], file.path(output.dir, sample.name),
+               sep = " ")
+
+  system(cmd,intern = TRUE)
+  cat(cmd,"\n\n")
+}
+
+
+
+
+
+
+
