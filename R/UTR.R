@@ -5628,6 +5628,8 @@ generateSubSetBam <- function(input.alignment.dir,annotation.bed.file.dir,output
 
   sample.name <- paste(y, x, file.name, sep = "-")
 
+  sample.name <- file_path_sans_ext(sample.name)
+
   cmd <- paste(cmd2,re[[u]],"-b",annotation.gene,">",file.path(output.dir, paste0(sample.name,"_region.bam")),sep = " ")
 
   system(cmd,intern = TRUE)
