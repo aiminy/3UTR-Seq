@@ -5595,7 +5595,7 @@ generateSmallBedFile <- function(res,output.res.dir){
 
 }
 
-generateSubSetBam <- function(input.alignment.dir,defined.region.bed.file,output.dir){
+generateSubSetBam <- function(input.alignment.dir,annotation.bed.file.dir,output.dir){
 
   if (!dir.exists(output.dir))
   {

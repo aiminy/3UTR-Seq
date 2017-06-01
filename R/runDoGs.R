@@ -226,5 +226,3 @@ runGenerateSubSetBam <- function(output.dir, processed.gene.gtf,wait.job=NULL) {
 
   system(rm.exon.intron)
 }
-
-
