@@ -226,3 +226,86 @@ runGenerateSubSetBam <- function(output.dir, processed.gene.gtf,wait.job=NULL) {
 
   system(rm.exon.intron)
 }
+
+
+#' If you already have BAM files available, you can use this function to perform analysis
+#'
+#' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runDoGsOnClusterStartFromBam(file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/TestPipeline")'
+
+runDoGsOnClusterStartFromBam <- function(sample.info.file,gene.gtf,genome.index,processed.gene.gtf,output.dir) {
+
+  if (!dir.exists(output.dir))
+  {
+    dir.create(output.dir, recursive = TRUE)
+  }
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::convertBam2bedUsingJobArray('
+  input=file.path(output.dir,"Bam")
+  output=file.path(output.dir,"BedFromBam")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  bam2bed <- createBsubJobArrayRfun(Rfun,"Bam2Bed[1-8]","ProcessBam")
+  system(bam2bed)
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::removeReadsOnExonIntronUsingJobArray('
+  input=file.path(output.dir,"BedFromBam")
+  processed.gene.gtf=processed.gene.gtf
+  output=file.path(output.dir,"BedRmExonIntron")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]","Bam2Bed")
+
+  #rm.exon.intron <- createBsubJobArrayRfun(Rfun,"RmExonIntron[1-8]",NULL)
+  system(rm.exon.intron)
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);re <- ThreeUTR:::getCount4DownstreamUsingJobArray('
+  input=file.path(output.dir,"BedRmExonIntron")
+  processed.gene.gtf=processed.gene.gtf
+  output=file.path(output.dir,"Counts")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',processed.gene.gtf,'\\",','\\"',output,'\\"')
+  Rfun <-paste0(Rfun1,Rinput,Rfun2)
+
+  counting <- createBsubJobArrayRfun(Rfun,"Count[1-8]","RmExonIntron")
+  #counting <- createBsubJobArrayRfun(Rfun,"Count[1-8]",NULL)
+  system(counting)
+
+  Rfun1 <- 'library(ChipSeq);library(ThreeUTR);library(org.Hs.eg.db);re <- ThreeUTR:::CountAndDE('
+  input=file.path(output.dir,"Counts")
+  #processed.gene.gtf=processed.gene.gtf
+  sample.info.file=sample.info.file
+  output=file.path(output.dir,"Results")
+  #gene.gtf=gene.gtf
+  #genome.index=genome.index
+  #wait.job.name = 'wait.job.name = "sra2fastq"'
+  Rfun2 <- ')'
+
+  Rinput <- paste0('\\"',input,'\\",','\\"',sample.info.file,'\\",','\\"',output,'\\"')
+  Rfun <- paste0(Rfun1,Rinput,Rfun2)
+
+  get.DE <- createBsubJobArrayRfun(Rfun,"Summary[1]","Count")
+  #get.DE <- createBsubJobArrayRfun(Rfun,"Summary[1]",NULL)
+  system(get.DE)
+
+}
+
+
+
+
+
