@@ -227,7 +227,6 @@ runGenerateSubSetBam <- function(output.dir, processed.gene.gtf,wait.job=NULL) {
   system(rm.exon.intron)
 }
 
-
 #' If you already have BAM files available, you can use this function to perform analysis
 #'
 #' R -e 'library(ChipSeq);library(ThreeUTR);ThreeUTR:::runDoGsOnClusterStartFromBam(file.path(system.file("extdata",package = "ThreeUTR"),"sample_infor.txt"),"/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf","/projects/ctsi/bbc/Genome_Ref/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome","/projects/ctsi/bbc/aimin/annotation/","/scratch/projects/bbc/aiminy_project/DoGs/Example")'
@@ -307,8 +306,3 @@ runDoGsOnClusterStartFromBam <- function(sample.info.file,gene.gtf,genome.index,
   system(get.DE)
 
 }
-
-
-
-
-
