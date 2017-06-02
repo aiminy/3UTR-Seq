@@ -5409,6 +5409,7 @@ CountAndDE <- function(output.count.dir,sample.info.file,output.res.dir) {
 #' res <- ThreeUTR:::CountAndDE("~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Counts",file.path(system.file("extdata", package = "ThreeUTR"),"sample_infor.txt"),"~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Results")
 
 #' output.res.dir <- "~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Results"
+#'
 #' res.sum <- ThreeUTR:::sumResult(res,"~/Dropbox (BBSR)/Aimin_project/Research/DoGs/Results")
 #'
 sumResult <-function(res,output.res.dir){
@@ -5463,18 +5464,25 @@ sumResult <-function(res,output.res.dir){
             margin=c(10, 10), main="Sample Distance Matrix")
   dev.off()
 
-  png(file.path(output.res.dir,"qc-pca.png"), 1000, 1000, pointsize=20)
-  rld_pca(rld,colors=mycols,intgroup=colnames(res$colData)[1],legendpos="bottomleft",xlim=c(-100, 100),ylim=c(-100,100))
+  png(file.path(output.res.dir,"qc-pca-1.png"), 1000, 1000, pointsize=20)
+  rld_pca(rld,colors=mycols,intgroup=colnames(res$colData)[1],legendpos="bottomleft",xlim=c(-30, 30),ylim=c(-20,30))
+  dev.off()
+
+  png(file.path(output.res.dir,"qc-pca-2.png"), 1000, 1000, pointsize=20)
+  DESeq2::plotPCA(rld, intgroup=colnames(res$colData)[1])
   dev.off()
 
   png(file.path(output.res.dir,"diffexpr-maplot.png"), 1500, 1000, pointsize=20)
   maplot(redata, main="MA Plot")
   dev.off()
 
-  png(file.path(output.res.dir,"diffexpr-volcanoplot.png"), 1200, 1000, pointsize=20)
+  png(file.path(output.res.dir,"diffexpr-volcanoplot-1.png"), 1200, 1000, pointsize=20)
   volcanoplot(redata, lfcthresh=1, sigthresh=0.05, textcx=.8, xlim=c(-8, 8))
   dev.off()
 
+  png(file.path(output.res.dir,"diffexpr-volcanoplot-2.png"), 1200, 1000, pointsize=20)
+  deawVolcano(re)
+  dev.off()
 }
 
 maplot <- function (res, thresh=0.05, labelsig=TRUE, textcx=1, ...) {
@@ -5509,7 +5517,11 @@ rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL, legen
   pc1lab <- paste0("PC1 (",as.character(pc1var),"%)")
   pc2lab <- paste0("PC1 (",as.character(pc2var),"%)")
   plot(PC2~PC1, data=as.data.frame(pca$x), bg=colors[fac], pch=21, xlab=pc1lab, ylab=pc2lab, main=main, ...)
-  with(as.data.frame(pca$x), textxy(PC1, PC2, labs=rownames(as.data.frame(pca$x)), cex=textcx))
+
+#  with(as.data.frame(pca$x), textxy(PC1, PC2, labs=rownames(as.data.frame(pca$x)), cex=textcx))
+
+  with(as.data.frame(pca$x), textxy(PC1, PC2, labs=NULL,cex=textcx))
+
   legend(legendpos, legend=levels(fac), col=colors, pch=20)
   #     rldyplot(PC2 ~ PC1, groups = fac, data = as.data.frame(pca$rld),
   #            pch = 16, cerld = 2, aspect = "iso", col = colours, main = draw.key(key = list(rect = list(col = colours),
@@ -5517,15 +5529,20 @@ rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL, legen
 }
 
 volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot", legendpos="bottomright", labelsig=TRUE, textcx=1, ...) {
-  with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main=main, ...))
-  with(subset(res, padj<sigthresh ), points(log2FoldChange, -log10(pvalue), pch=20, col="red", ...))
-  with(subset(res, abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(pvalue), pch=20, col="orange", ...))
-  with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(pvalue), pch=20, col="green", ...))
+  with(res, plot(log2FoldChange, -log10(padj), pch=20, main=main, ...))
+  abline(h=1.3, col = "blue")
+  with(subset(res, padj<sigthresh ), points(log2FoldChange, -log10(padj), pch=20, col="red", ...))
+  with(subset(res, abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(padj), pch=20, col="orange", ...))
+  with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(padj), pch=20, col="green", ...))
   if (labelsig) {
     require(calibrate)
-    with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=textcx, ...))
+ #   with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), textxy(log2FoldChange, -log10(padj), labs=Gene, cex=textcx, ...))
+
+    with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), textxy(log2FoldChange, -log10(padj), labs=NULL, cex=textcx, ...))
+
   }
-  legend(legendpos, xjust=1, yjust=1, legend=c(paste("FDR<",sigthresh,sep=""), paste("|LogFC|>",lfcthresh,sep=""), "both"), pch=20, col=c("red","orange","green"))
+  legend(legendpos, xjust=1, yjust=1, legend=c(paste("FDR<",sigthresh,sep=""), paste("|Log2FoldChange|>",lfcthresh,sep=""), "both"), pch=20, col=c("red","orange","green"))
+
 }
 
 
@@ -5567,9 +5584,9 @@ processSpliceJunctionFilesUseJobArray <- function(input.alignment.dir, output.di
   cat(cmd,"\n\n")
 }
 
-#' res.sum <- ThreeUTR:::generateSmallBedFile(res,"~/Dropbox (BBSR)/Aimin_project/Research/DoGs/SmallExample")
+#' res.sum <- ThreeUTR:::generateSmallBedFile(res,strand.specific=TRUE,"~/Dropbox (BBSR)/Aimin_project/Research/DoGs/SmallExample")
 #'
-generateSmallBedFile <- function(res,output.res.dir){
+generateSmallBedFile <- function(res,strand.specific=FALSE,output.res.dir){
 
   if (!dir.exists(output.res.dir))
   {
@@ -5587,11 +5604,19 @@ generateSmallBedFile <- function(res,output.res.dir){
 
   re2 <- re1[which(re1$gene %in% gene.list.choose),]
 
-  re3 <- re2[,which(colnames(re2) %in% c("seqnames","start","end"))]
+  re3 <- re2[,which(colnames(re2) %in% c("seqnames","start","end","strand"))]
 
+  if(strand.specific == TRUE){
+  re3[which(re3$strand == "+"),]$end <- re3[which(re3$strand == "+"),]$end+45000
+  re3[which(re3$strand == "-"),]$start <- re3[which(re3$strand == "-"),]$start+45000
+}
   re4 <- re3[order(re3$seqnames),]
 
-  write.table(re4,file = file.path(output.res.dir,"sample_genes.bed"),quote = FALSE,sep = "\t",row.names = FALSE,col.names = FALSE)
+  write.table(re4[,1:3],file = file.path(output.res.dir,"sample_genes.bed"),quote = FALSE,sep = "\t",row.names = FALSE,col.names = FALSE)
+
+  re <- list(re2=re2,re3=re3,re4=re4)
+
+  return(re)
 
 }
 
@@ -5637,3 +5662,47 @@ generateSubSetBam <- function(input.alignment.dir,annotation.bed.file.dir,output
 
 }
 
+#results <- res$re.DESeq
+#deawVolcano(results)
+
+deawVolcano <- function(results) {
+  library(dplyr)
+  library(ggplot2)
+  data <- data.frame(gene = row.names(results),
+                     pvalue = -log10(results$padj),
+                     lfc = results$log2FoldChange)
+  data <- na.omit(data)
+
+  data <- data %>% mutate(color = ifelse(data$lfc > 0 & data$pvalue > 1.3,
+                          yes = "Treated",
+                          no = ifelse(data$lfc < 0 & data$pvalue > 1.3,
+                                      yes = "Untreated",
+                                      no = "none")))
+
+
+  # Color corresponds to fold change directionality
+  colored <- ggplot(data, aes(x = lfc, y = pvalue)) +
+    geom_point(aes(color = factor(color)), size = 1.75, alpha = 0.8, na.rm = T) + # add gene points
+    theme_bw(base_size = 16) + # clean up theme
+    theme(legend.position = "none") + # remove legend
+    ggtitle(label = "Volcano Plot", subtitle = "Colored by directionality") +  # add title
+    xlab(expression(log[2]("Treated" / "Untreated"))) + # x-axis label
+    ylab(expression(-log[10]("adjusted p-value"))) + # y-axis label
+    geom_vline(xintercept = 0, colour = "black") + # add line at 0
+    geom_hline(yintercept = 1.3, colour = "black") + # p(0.05) = 1.3
+    annotate(geom = "text",
+             label = "Untreated",
+             x = -2, y = 85,
+             size = 7, colour = "black") + # add Untreated text
+    annotate(geom = "text",
+             label = "Treated",
+             x = 2, y = 85,
+             size = 7, colour = "black") + # add Treated text
+    scale_color_manual(values = c("Treated" = "#E64B35",
+                                  "Untreated" = "#3182bd",
+                                  "none" = "#636363")) # change colors
+
+  # Plot figure
+  #colored
+  colored + scale_y_continuous(trans = "log1p")
+}
